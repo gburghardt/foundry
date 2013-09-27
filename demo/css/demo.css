@@ -1,0 +1,93 @@
+body {
+	font-family: Arial, sans-serif;
+	font-size: 1em;
+	margin: 0 1em;
+	padding: 0;
+}
+
+footer {
+	clear: both;
+}
+
+.main {
+	margin: 0 20%;
+	padding: 0 1em;
+}
+
+.module {
+	background-color: #f0f0f0;
+	border: 1px solid #707070;
+	border-radius: .5em;
+	margin: 0 0 1em 0;
+}
+
+.module.flyover {
+	height: 100px;
+	position: absolute;
+	width: 300px;
+}
+
+.module-body {
+	padding: 0 8px;
+}
+
+.module-selection ol {
+	border-bottom: 1px solid #707070;
+	list-style-type: none;
+	margin: 0 0 1em 0;
+	padding: 0;
+}
+
+.module-title {
+	margin: 0;
+	padding: .25em 8px;
+}
+
+.module-selection ol > li {
+	border-top: 1px solid #707070;
+	cursor: default;
+	padding: .25em 8px;
+}
+
+.module-tasks ol li.done {
+	color: #505050;
+	text-decoration: line-through;
+}
+
+.module-tasks ol li button {
+	float: right;
+}
+
+pre {
+	overflow: auto;
+	width: 100%;
+}
+
+.right {
+	float: right;
+	width: 20%;
+}
+
+.selected {
+	background-color: #ffc;
+}
+
+.side {
+	float: left;
+	width: 20%;
+}
+
+
+
+
+
+.loading {
+	background-image: url(../images/ajax-loader.gif);
+	background-repeat: no-repeat;
+	background-attachment: scroll;
+	background-position: 50% 50%;
+}
+
+.loading * {
+	visibility: hidden;
+}

@@ -1,0 +1,13 @@
+{
+	"name": "Events",
+	"version": "1.0.0",
+	"author": "Greg Burghardt <greg_burghardt@yahoo.com>",
+	"description": "",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gburghardt/events.git"
+	},
+	"dependencies": {
+		"inherit.js": "1.x"
+	}
+}

@@ -1,0 +1,341 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Foundry Demo</title>
+	<style type="text/css">
+		@import "./css/demo.css";
+	</style>
+</head>
+<body>
+
+<h1>Foundry Demo</h1>
+
+<p>See Foundry in action!</p>
+
+<p>Don't forget to scroll to down and right to see modules become initialized as they scroll into view.</p>
+
+<section class="side">
+	<div class="module">
+		<h2 class="module-title">Menu</h2>
+		<nav class="module-body">
+			<p>Dynamically create new modules!</p>
+			<ul>
+				<li><button type="button"
+				        data-action="app.createModule"
+				        data-actionparams='{
+				            "module": {
+				                "type": "dynamicModule",
+				                "template": "dynamicModule"
+				            },
+				            "container": {
+				                "selector": ".main"
+				            }
+				        }'
+				    >New Module (Middle)</button></li>
+				<li><button type="button"
+				        data-action="app.createModule"
+				        data-actionparams='{
+				            "module": {
+				                "type": "dynamicModule",
+				                "template": "dynamicModule"
+				            },
+				            "container": {
+				                "insert": "bottom",
+				                "selector": ".side"
+				            }
+				        }'
+				    >New Module (Left)</button></li>
+				<li><button type="button"
+				        data-action="app.createModule"
+				        data-actionparams='{
+				            "module": {
+				                "type": "dynamicModule",
+				                "template": "dynamicModule"
+				            },
+				            "container": {
+				                "selector": "footer"
+				            }
+				        }'
+				    >New Module (Footer)</button></li>
+			</ul>
+		</nav>
+	</div>
+
+	<div class="module">
+		<h2 class="module-title">Foundry Is Findable</h2>
+		<div class="module-body">
+			<p>
+				Since Foundry uses a strict object hierarchy starting with the
+				application object, it is easy to browse the objects available
+				on the page. Try entering these commands below in your
+				browser's debugging tools:
+			</p>
+<pre>app
+app.moduleManager
+app.moduleManager.factory
+app.moduleManager.factory.objectFactory
+app.moduleManager.groups
+app.moduleManager.groups.tasks[0]
+app.moduleManager.registry
+app.moduleManager.registry["2"]
+app.objectFactory
+</pre>
+		</div>
+	</div>
+
+</section>
+
+<section class="right">
+
+	<div class="module loading" data-module-lazyload="any" data-modules="recentTasks">
+		<h2 class="module-title">Recently Added Tasks</h2>
+		<div class="module-body">
+			<p>
+				Modules in different root elements communicate through events!
+				This module listens for <code>task.added</code>
+			</p>
+			<p>Add a task to see this module react.</p>
+			<ol></ol>
+			<script type="text/html" class="template"><li>#{task}</li></script>
+		</div>
+	</div>
+
+	<div class="module loading" data-module-lazyload="any" data-modules="recentTasks" data-module-options='{"eventSuffix":"completed"}'>
+		<h2 class="module-title">Recently Completed Tasks</h2>
+		<div class="module-body">
+			<p>
+				Use <code>data-module-options</code> to configure instances
+				of the same class differently. This instance listens for <code>task.completed</code>.
+			</p>
+			<p>Complete a task to see this module react.</p>
+			<ol></ol>
+			<script type="text/html" class="template"><li>#{task}</li></script>
+		</div>
+	</div>
+
+	<p>
+		<strong>Modules can be configured to initialize on mouse over.</strong>
+	</p>
+
+	<p>Move your mouse over the box below:</p>
+
+	<div class="module loading" data-module-lazyload="mouseover" data-modules="lazyLoaded" style="min-height: 100px;"></div>
+
+</section>
+
+<section class="main">
+
+	<div class="module loading" data-module-lazyload="any" data-modules="tasks" data-module-options='{"actionPrefix":"tasks", "defaultModule": true}'>
+		<h2 class="module-title">Tasks</h2>
+		<form class="module-body" action="#" method="get" data-action="tasks.add">
+			<p>Add and complete tasks here to see how the page reacts.</p>
+			<p>
+				<label>New task: <input type="text" size="50" name="task_text"></label>
+				<button type="submit">Add</button>
+			</p>
+			<p>
+				Items:
+				<button type="button" data-action="tasks.removeDone">Remove Finished Tasks</button>
+			</p>
+		</form>
+		<div data-module-property="selection" data-modules="selection" data-module-options='{"actionPrefix":"tasks.selection"}'>
+			<ol></ol>
+			<script type="text/html" class="item-template">
+				<li data-action="tasks.selection.toggleSelection">
+					<button type="button" data-action="tasks.remove">X</button>
+					<input type="checkbox" data-action="tasks.toggleDone">
+					<span>#{text}</span>
+				</li>
+			</script>
+		</div>
+	</div>
+
+	<div class="module loading" data-module-lazyload="any" data-modules="selection" data-module-options='{"actionPrefix":"sel"}'>
+		<h2 class="module-title">Fruits</h2>
+		<div class="module-body">
+			<p>Click the items below to toggle their selected state.</p>
+		</div>
+		<ol>
+			<li data-action="sel.toggleSelection">Apples</li>
+			<li data-action="sel.toggleSelection">Oranges</li>
+			<li data-action="sel.toggleSelection">Bananas</li>
+		</ol>
+	</div>
+
+</section>
+
+<footer>
+	
+</footer>
+
+<div class="module loading flyover" data-module-lazyload="any" data-modules="lazyLoaded" style="top: 1200px; left: 0px;"></div>
+<div class="module loading flyover" data-module-lazyload="any" data-modules="lazyLoaded" style="top: 1200px; left: 500px;"></div>
+<div class="module loading flyover" data-module-lazyload="any" data-modules="lazyLoaded" style="top: 950px; left: 2000px;"></div>
+<div class="module loading flyover" data-module-lazyload="any" data-modules="lazyLoaded" style="top: 100px; left: 2000px;"></div>
+<div class="module loading flyover" data-module-lazyload="any" data-modules="lazyLoaded" style="top: 350px; left: 2000px;"></div>
+<div class="module loading flyover" data-module-lazyload="any" data-modules="lazyLoaded" style="top: 1500px; left: 0px;"></div>
+<div class="module loading flyover" data-module-lazyload="any" data-modules="lazyLoaded" style="top: 2000px; left: 0px;"></div>
+
+<script type="text/html" data-template="dynamicModule">
+	<h2 class="module-title">Dynamic Module</h2>
+	<div class="module-body">
+		<p>
+			<label for="dynamic-module-#{guid}">Fake text box:</label>
+			<input type="text" id="dynamic-module-#{guid}" size="30">
+		</p>
+		<p>This module was created on #{createdAt}</p>
+		<p>GUID: #{guid}</p>
+		<p>Timestamp: #{timestamp}</p>
+		<p><button type="button" data-action="cancel">Cancel</button></p>
+	</div>
+</script>
+
+<!-- Class Libraries -->
+<script type="text/javascript" src="../vendor/inherit.js/lib/function.js"></script>
+<script type="text/javascript" src="../vendor/callbacks/lib/callbacks.js"></script>
+<script type="text/javascript" src="../vendor/callbacks/lib/callbacks/utils.js"></script>
+<script type="text/javascript" src="../vendor/dom_event_delegator/lib/dom/events/delegator.js"></script>
+<script type="text/javascript" src="../vendor/element_store/lib/element_store.js"></script>
+<script type="text/javascript" src="../vendor/element_store/lib/element_store/utils.js"></script>
+<script type="text/javascript" src="../vendor/events/lib/events.js"></script>
+<script type="text/javascript" src="../vendor/events/lib/events/dispatcher.js"></script>
+<script type="text/javascript" src="../vendor/events/lib/events/event.js"></script>
+<script type="text/javascript" src="../vendor/events/lib/events/publisher.js"></script>
+<script type="text/javascript" src="../vendor/events/lib/events/application_events.js"></script>
+<script type="text/javascript" src="../vendor/events/lib/events/notifications.js"></script>
+<script type="text/javascript" src="../vendor/hash/lib/hash.js"></script>
+<script type="text/javascript" src="../vendor/hypodermic/lib/hypodermic.js"></script>
+
+<!-- Base Framework -->
+<script type="text/javascript" src="../vendor/module/lib/module.js"></script>
+<script type="text/javascript" src="../vendor/module/lib/module/factory.js"></script>
+<script type="text/javascript" src="../vendor/module/lib/module/manager.js"></script>
+<script type="text/javascript" src="../vendor/module/lib/module/manager/lazy_loader.js"></script>
+<script type="text/javascript" src="../vendor/module/lib/module/manager/sub_module_properties.js"></script>
+<script type="text/javascript" src="../vendor/promise/lib/promise.js"></script>
+<script type="text/javascript" src="../src/application.js"></script>
+
+<!-- Application Files -->
+<script type="text/javascript" src="./js/modules/date_created_module.js"></script>
+<script type="text/javascript" src="./js/modules/recent_tasks_module.js"></script>
+<script type="text/javascript" src="./js/modules/selection_module.js"></script>
+<script type="text/javascript" src="./js/modules/show_date_module.js"></script>
+<script type="text/javascript" src="./js/modules/task_list_module.js"></script>
+
+<!-- Bootstrapping Code -->
+<script type="text/javascript">
+
+(function(window, document) {
+
+	var DependencyConfig = {
+		application: {
+			className: "Application",
+			singleton: true,
+			properties: {
+				config: { id: "applicationConfig" },
+				delegator: { id: "delegator" },
+				elementStore: { id: "elementStore" },
+				eventDispatcher: { id: "globalEventDispatcher" },
+				moduleManager: { id: "moduleManager" },
+				objectFactory: { id: "objectFactory" }
+			}
+		},
+		applicationConfig: {
+			className: "Hash",
+			singleton: true,
+			constructorArgs: [{
+				value: {
+					// Error handling:
+					handleActionErrors: true,
+					handleApplicationErrors: false,
+
+					// Modules
+					eagerLoadModules: true,
+					lazyLoadModules: true
+				}
+			}]
+		},
+		delegator: {
+			className: "dom.events.Delegator"
+		},
+		elementStore: {
+			className: "ElementStore"
+		},
+		globalEventDispatcher: {
+			className: "Events.Dispatcher",
+			singleton: true
+		},
+		module: {
+			abstract: true,
+			properties: {
+				delegator: { id: "delegator" },
+				elementStore: { id: "elementStore" },
+				eventDispatcher: { id: "globalEventDispatcher" },
+				options: { id: "moduleOptions" }
+			}
+		},
+		moduleFactory: {
+			className: "Module.Factory",
+			singleton: true,
+			properties: {
+				objectFactory: { id: "objectFactory" }
+			}
+		},
+		moduleManager: {
+			className: "Module.Manager",
+			singleton: true,
+			properties: {
+				factory: { id: "moduleFactory" }
+			}
+		},
+		moduleOptions: {
+			className: "Hash",
+			constructorArgs: [{
+				value: {
+					// Global default module options go here
+				}
+			}]
+		},
+
+		// Modules for your application
+		dynamicModule: {
+			className: "DateCreatedModule",
+			parent: "module"
+		},
+		lazyLoaded: {
+			className: "ShowDateModule",
+			parent: "module"
+		},
+		recentTasks: {
+			className: "RecentTasksModule",
+			parent: "module"
+		},
+		selection: {
+			className: "SelectionModule",
+			parent: "module"
+		},
+		tasks: {
+			className: "TaskListModule",
+			parent: "module"
+		}
+	};
+
+	var objectFactory = new Hypodermic(DependencyConfig);
+	window.app = objectFactory.getInstance("application");
+
+	app.configure(function(config) {
+		// Custom config settings go here
+		config.myCustomSetting = "something";
+		config.eagerLoadModules = false;
+	});
+
+	window.onload = function() {
+		app.init(document.getElementsByTagName("html")[0]);
+	};
+
+})(window, document);
+
+</script>
+</body>
+</html>
