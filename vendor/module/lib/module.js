@@ -103,7 +103,6 @@ var Module = Object.extend({
 			this._initActions();
 			this._initCallbacks();
 			this._initNotifications();
-			this.callbacks.execute("beforeElementStoreInit");
 			this.initElementStore(this.element);
 			this.callbacks.execute("beforeReady");
 			this._ready();
@@ -243,7 +242,7 @@ var Module = Object.extend({
 
 		setOptions: function setOptions(overrides) {
 			if (!this.hasOwnProperty("options")) {
-				this.options = overrides;
+				this.options = new Hash(overrides);
 			}
 			else {
 				this.options.merge(overrides);

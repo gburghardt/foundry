@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="edge">
+		<title>Foundry Tutorials: Building a Task List</title>
+		<style type="text/css">
+			.done {
+				color: #505050;
+				text-decoration: line-through;
+			}
+		</style>
+	</head>
+	<body>
+		<div data-modules="TaskListModule">
+			<h2>My Todo List</h2>
+
+			<form method="get" action="#" data-action="add">
+				<p>
+					<label>Task: <input type="text" name="task" size="60"></label>
+					<button type="submit">Add</button>
+				</p>
+			</form>
+
+			<ol></ol>
+
+			<script type="text/html" class="template">
+				<li>
+					<input type="checkbox" data-action="toggleComplete">
+					<span></span>
+					<button type="button" data-action="remove">X</button>
+				</li>
+			</script>
+		</div>
+
+		<div data-modules="RecentTasksModule">
+			<h2>Recently Added:</h2>
+			<ol></ol>
+			<script type="text/html" class="template">
+				<li>#{task}</li>
+			</script>
+		</div>
+
+		<div data-modules="RecentTasksModule" data-module-options='{"eventSuffix": "completed"}'>
+			<h2>Recently Completed:</h2>
+			<ol></ol>
+			<script type="text/html" class="template">
+				<li>#{task}</li>
+			</script>
+		</div>
+
+		<!-- Class Libraries -->
+		<script type="text/javascript" src="../../../vendor/inherit.js/lib/function.js"></script>
+		<script type="text/javascript" src="../../../vendor/callbacks/lib/callbacks.js"></script>
+		<script type="text/javascript" src="../../../vendor/callbacks/lib/callbacks/utils.js"></script>
+		<script type="text/javascript" src="../../../vendor/dom_event_delegator/lib/dom/events/delegator.js"></script>
+		<script type="text/javascript" src="../../../vendor/element_store/lib/element_store.js"></script>
+		<script type="text/javascript" src="../../../vendor/element_store/lib/element_store/utils.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/dispatcher.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/event.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/publisher.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/application_events.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/notifications.js"></script>
+		<script type="text/javascript" src="../../../vendor/hash/lib/hash.js"></script>
+
+		<!-- Base Framework -->
+		<script type="text/javascript" src="../../../vendor/module/lib/module.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/factory.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/manager.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/manager/lazy_loader.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/manager/sub_module_properties.js"></script>
+		<script type="text/javascript" src="../../../src/application.js"></script>
+
+		<!-- Your Application Files -->
+		<script type="text/javascript" src="./modules/task_list_module.js"></script>
+		<script type="text/javascript" src="./modules/recent_tasks_module.js"></script>
+
+		<script type="text/javascript">
+
+			var app = new Application();
+
+			app.config = new Hash();
+			app.moduleManager = new Module.Manager();
+
+			app.configure(function(config) {
+				config.eagerLoadModules = true;
+			});
+
+			window.onload = function() {
+				app.init(document.getElementsByTagName("html")[0]);
+			};
+
+			window.onunload = function() {
+				app.destructor();
+				app = null;
+			};
+
+		</script>
+
+	</body>
+</html>

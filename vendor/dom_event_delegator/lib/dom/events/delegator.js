@@ -38,7 +38,12 @@ dom.events.Delegator = function() {
 
 	if (!this.addEventListener) {
 		this.addEventListener = function(element, eventType, callback) {
-			element.addEventListener(eventType, callback, false);
+			if (element.addEventListener) {
+				element.addEventListener(eventType, callback, false);
+			}
+			else {
+				element.attachEvent("on" + eventType, callback);
+			}
 		};
 	}
 
@@ -68,7 +73,12 @@ dom.events.Delegator = function() {
 
 	if (!this.removeEventListener) {
 		this.removeEventListener = function(element, eventType, callback) {
-			element.removeEventListener(eventType, callback, false);
+			if (element.removeEventListener) {
+				element.removeEventListener(eventType, callback, false);
+			}
+			else {
+				element.detachEvent("on" + eventType, callback);
+			}
 		};
 	}
 
@@ -207,7 +217,7 @@ dom.events.Delegator = function() {
 				// This event has not been delegated yet. Start the delegation at the target
 				// element for the event. Note that event.target !== self.node. The
 				// event.target object is the element that got clicked, for instance.
-				event.actionTarget = event.target;
+				event.actionTarget = event.target || event.srcElement;
 			}
 		}
 

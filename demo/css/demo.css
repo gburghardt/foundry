@@ -21,6 +21,12 @@ footer {
 	margin: 0 0 1em 0;
 }
 
+.module .module {
+	background-color: transparent;
+	border-radius: 0;
+	border-width: 0;
+}
+
 .module.flyover {
 	height: 100px;
 	position: absolute;
@@ -31,7 +37,7 @@ footer {
 	padding: 0 8px;
 }
 
-.module-selection ol {
+.module.selection ol {
 	border-bottom: 1px solid #707070;
 	list-style-type: none;
 	margin: 0 0 1em 0;
@@ -43,18 +49,18 @@ footer {
 	padding: .25em 8px;
 }
 
-.module-selection ol > li {
+.module.selection ol > li {
 	border-top: 1px solid #707070;
 	cursor: default;
 	padding: .25em 8px;
 }
 
-.module-tasks ol li.done {
+.module.tasks ol li.done {
 	color: #505050;
 	text-decoration: line-through;
 }
 
-.module-tasks ol li button {
+.module.tasks ol li button {
 	float: right;
 }
 
@@ -76,10 +82,6 @@ pre {
 	float: left;
 	width: 20%;
 }
-
-
-
-
 
 .loading {
 	background-image: url(../images/ajax-loader.gif);

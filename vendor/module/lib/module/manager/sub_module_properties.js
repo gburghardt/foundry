@@ -2,7 +2,6 @@ Module.Manager.SubModuleProperties = {
 
 	included: function included(Klass) {
 		if (Klass.addCallback) {
-			Klass.addCallback("beforeElementStoreInit", "addSubModuleElementStoreConfigs")
 			Klass.addCallback("beforeReady", "initSubModules");
 		}
 	},
@@ -14,6 +13,12 @@ Module.Manager.SubModuleProperties = {
 				return;
 			}
 
+			this.elementStore.setConfig({
+				collections: {
+					subModules: { selector: "[data-module-property]", nocache: true }
+				}
+			});
+
 			var elements = this.elementStore.getCollection("subModules"),
 			    i = 0, length = elements.length, name;
 
@@ -21,14 +26,6 @@ Module.Manager.SubModuleProperties = {
 				name = elements[i].getAttribute("data-module-property");
 				this._createSubModuleProperty(name, elements[i]);
 			}
-		},
-
-		addSubModuleElementStoreConfigs: function addSubModuleElementStoreConfigs() {
-			this.elementStore.setConfig({
-				collections: {
-					subModules: { selector: "[data-module-property]", nocache: true }
-				}
-			});
 		},
 
 		_createSubModuleProperty: function _createSubModuleProperty(name, element) {

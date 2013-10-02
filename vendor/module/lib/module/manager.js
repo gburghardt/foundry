@@ -104,7 +104,7 @@ Module.Manager.prototype = {
 	},
 
 	createModule: function createModule(element, type, options, register) {
-		var className = element.className + " module-" + type.replace(/([.A-Z]+)/g, function(match, $1) {
+		var className = element.className + " module " + type.charAt(0).toLowerCase() + type.slice(1, type.length).replace(/([.A-Z]+)/g, function(match, $1) {
 			return "-" + $1.replace(/\./g, "").toLowerCase();
 		});
 
@@ -156,6 +156,7 @@ Module.Manager.prototype = {
 	},
 
 	getModuleMetaData: function getModuleMetaData(element) {
+		var length;
 		var types = element.getAttribute("data-modules");
 		var options = element.getAttribute("data-module-options");
 		var metaData = {
