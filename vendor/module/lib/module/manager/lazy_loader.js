@@ -30,6 +30,14 @@ Module.Manager.LazyLoader = {
 				addEvents();
 
 				initModulesInsideViewport();
+
+				if (!_scrollElement.scrollTop && !_scrollElement.scrollLeft) {
+					// Not all browser agree on the _scrollElement. We are at the
+					// top of the page so we don't know whether the browser is
+					// scrolling the <html> or <body> tag. Defer judgement until
+					// the user has scrolled.
+					_scrollElement = null;
+				}
 			}
 
 			function destructor() {
@@ -79,7 +87,12 @@ Module.Manager.LazyLoader = {
 
 			function getScrollElement() {
 				if (_scrollElement === null) {
-					_scrollElement = _document.getElementsByTagName("html")[0];
+					if (_document.body.scrollTop || _document.body.scrollLeft) {
+						_scrollElement = _document.body;
+					}
+					else {
+						_scrollElement = _document.documentElement;
+					}
 				}
 
 				return _scrollElement;
@@ -168,7 +181,7 @@ Module.Manager.LazyLoader = {
 					if ((this.isRightInBounds(position) || this.isLeftInBounds(position)) && (this.isTopInBounds(position) || this.isBottomInBounds(position))) {
 						visible = true;
 					}
-					
+
 					return visible;
 				},
 
