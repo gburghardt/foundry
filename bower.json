@@ -1,26 +1,20 @@
 {
 	"name": "foundry",
+	"description": "Foundry is a modern, object oriented JavaScript framework built for speed of development, flexibility and file size.",
 	"version": "0.0.1",
-	"private": true,
 	"homepage": "https://github.com/gburghardt/foundry",
 	"authors": [
 		"Greg Burghardt <greg_burghardt@yahoo.com>"
 	],
-	"description": "Foundry is a modern, object oriented JavaScript framework built for speed of development, flexibility and file size.",
 	"license": "MIT",
+	"private": true,
 	"repository": { "type": "git", "url": "https://github.com/gburghardt/foundry.git" },
 	"main": [
 		"src/application.js"
 	],
 	"dependencies": {
-		"Inherit.js":          "https://github.com/gburghardt/inherit.js.git",
-		"callbacks":           "https://github.com/gburghardt/callbacks.git",
-		"dom_event_delegator": "https://github.com/gburghardt/dom_event_delegator.git",
-		"element_store":       "https://github.com/gburghardt/element_store.git",
-		"events":              "https://github.com/gburghardt/events.git",
-		"hash":                "https://github.com/gburghardt/hash.git",
-		"hypodermic":          "https://github.com/gburghardt/hypodermic.git",
-		"module":              "https://github.com/gburghardt/module.git"
+		"module_controller": "1.0.1",
+		"hypodermic": "1.0.0"
 	},
 	"devDependencies": {
 		"jasmine": "https://github.com/pivotal/jasmine.git"
