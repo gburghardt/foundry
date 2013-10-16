@@ -8,12 +8,12 @@
 				return $(html);
 			},
 
-			querySelector: function querySelector(selector) {
-				return $(this._root).find(selector).eq(0);
+			querySelector: function querySelector(selector, element) {
+				return $(element || this._root).find(selector).eq(0);
 			},
 
-			querySelectorAll: function querySelectorAll(selector) {
-				return $(this._root).find(selector);
+			querySelectorAll: function querySelectorAll(selector, element) {
+				return $(element || this._root).find(selector);
 			}
 
 		}

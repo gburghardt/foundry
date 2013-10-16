@@ -2,12 +2,12 @@ ElementStore.PrototypeAdaptor = {
 
 	prototype: {
 
-		querySelector: function querySelector(selector) {
-			return $(this.element).down(selector)[0];
+		querySelector: function querySelector(selector, element) {
+			return $(element || this._root).down(selector);
 		},
 
-		querySelectorAll: function querySelectorAll(selector) {
-			return $(this.element).down(selector);
+		querySelectorAll: function querySelectorAll(selector, element) {
+			return $(element || this._root).select(selector);
 		}
 
 	}

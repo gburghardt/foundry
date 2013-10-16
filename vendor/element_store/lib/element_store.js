@@ -219,12 +219,12 @@ ElementStore.prototype = {
 		return "[object ElementStore]";
 	},
 
-	_querySelector: function _querySelector(selector) {
-		return this._root.querySelector(selector);
+	_querySelector: function _querySelector(selector, element) {
+		return (element || this._root).querySelector(selector);
 	},
 
-	_querySelectorAll: function _querySelectorAll(selector) {
-		return this._root.querySelectorAll(selector);
+	_querySelectorAll: function _querySelectorAll(selector, element) {
+		return (element || this._root).querySelectorAll(selector);
 	}
 
 };

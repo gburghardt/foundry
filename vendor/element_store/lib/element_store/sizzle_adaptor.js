@@ -2,12 +2,12 @@ ElementStore.SizzleAdaptor = {
 
 	prototype: {
 
-		querySelector: function querySelector(selector) {
-			return Sizzle(selector, this._root)[0];
+		querySelector: function querySelector(selector, element) {
+			return Sizzle(selector, element || this._root)[0];
 		},
 
-		querySelectorAll: function querySelectorAll(selector) {
-			return Sizzle(selector, this._root);
+		querySelectorAll: function querySelectorAll(selector, element) {
+			return Sizzle(selector, element || this._root);
 		}
 
 	}
