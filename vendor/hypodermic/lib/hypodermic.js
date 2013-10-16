@@ -93,18 +93,24 @@
 				throw new Error("Failed to create instance. Class \"" + config.className + "\" was not found");
 			}
 
-			// instance is to be created from constructor function
+			if (Object.prototype.toString.call(Klass) === "[object Function]") {
+				// instance is to be created from constructor function
 
-			if (config.constructorArgs) {
-				ProxyClass = function() {};
-				ProxyClass.prototype = Klass.prototype;
+				if (config.constructorArgs) {
+					ProxyClass = function() {};
+					ProxyClass.prototype = Klass.prototype;
 
-				instance = new ProxyClass();
-				constructorArgs = this._getConstructorArgs(config.constructorArgs);
-				Klass.apply(instance, constructorArgs);
+					instance = new ProxyClass();
+					constructorArgs = this._getConstructorArgs(config.constructorArgs);
+					Klass.apply(instance, constructorArgs);
+				}
+				else {
+					instance = new Klass();
+				}
 			}
 			else {
-				instance = new Klass();
+				// instance is already an object
+				instance = Klass;
 			}
 
 			// inject properties from parent configs
