@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="edge">
+		<title>Foundry Tutorials: Sub Modules</title>
+		<style type="text/css">
+			.done {
+				color: #505050;
+				text-decoration: line-through;
+			}
+			.selected {
+				background-color: #ffffcc;
+			}
+		</style>
+	</head>
+	<body>
+		<div data-modules="TaskListModule" data-module-options='{"actionPrefix":"tasks"}'>
+			<h2>My Todo List</h2>
+
+			<form method="get" action="#" data-action="tasks.add">
+				<p>
+					<label>Task: <input type="text" name="task" size="60"></label>
+					<button type="submit">Add</button>
+				</p>
+			</form>
+
+			<div data-module-property="selection" data-modules="SelectionModule" data-module-options='{"actionPrefix": "tasks.selection"}'>
+				<ol class="selection-list"></ol>
+
+				<script type="text/html" class="item-template">
+					<li data-action="tasks.selection.toggleSelection">
+						<input type="checkbox" data-action="tasks.toggleComplete">
+						<span>#{text}</span>
+						<button type="button" data-action="tasks.selection.removeItem">X</button>
+					</li>
+				</script>
+			</div>
+		</div>
+
+		<div data-modules="RecentTasksModule">
+			<h2>Recently Added:</h2>
+			<ol></ol>
+			<script type="text/html" class="template">
+				<li>#{task}</li>
+			</script>
+		</div>
+
+		<div data-modules="RecentTasksModule" data-module-options='{"eventSuffix": "completed"}'>
+			<h2>Recently Completed:</h2>
+			<ol></ol>
+			<script type="text/html" class="template">
+				<li>#{task}</li>
+			</script>
+		</div>
+
+		<!-- Class Libraries -->
+		<script type="text/javascript" src="../../../vendor/inherit.js/lib/function.js"></script>
+		<script type="text/javascript" src="../../../vendor/callbacks/lib/callbacks.js"></script>
+		<script type="text/javascript" src="../../../vendor/callbacks/lib/callbacks/utils.js"></script>
+		<script type="text/javascript" src="../../../vendor/dom_event_delegator/lib/dom/events/delegator.js"></script>
+		<script type="text/javascript" src="../../../vendor/element_store/lib/element_store.js"></script>
+		<script type="text/javascript" src="../../../vendor/element_store/lib/element_store/utils.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/dispatcher.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/event.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/publisher.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/application_events.js"></script>
+		<script type="text/javascript" src="../../../vendor/events/lib/events/notifications.js"></script>
+		<script type="text/javascript" src="../../../vendor/hash/lib/hash.js"></script>
+
+		<!-- Base Framework -->
+		<script type="text/javascript" src="../../../vendor/module/lib/module.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/factory.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/manager.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/manager/lazy_loader.js"></script>
+		<script type="text/javascript" src="../../../vendor/module/lib/module/manager/sub_module_properties.js"></script>
+		<script type="text/javascript" src="../../../src/application.js"></script>
+
+		<!-- Your Application Files -->
+		<script type="text/javascript" src="./modules/task_list_module.js"></script>
+		<script type="text/javascript" src="./modules/selection_module.js"></script>
+		<script type="text/javascript" src="../task_list/modules/recent_tasks_module.js"></script>
+
+		<script type="text/javascript">
+
+			var app = new Application();
+
+			app.config = new Hash();
+			app.moduleManager = new Module.Manager();
+
+			app.configure(function(config) {
+				config.eagerLoadModules = true;
+			});
+
+			window.onload = function() {
+				app.init(document.getElementsByTagName("html")[0]);
+			};
+
+			window.onunload = function() {
+				app.destructor();
+				app = null;
+			};
+
+		</script>
+
+	</body>
+</html>
