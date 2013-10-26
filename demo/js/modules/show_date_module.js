@@ -1,4 +1,4 @@
-var ShowDateModule = Module.extend({
+var ShowDateModule = Module.Base.extend({
 
 	prototype: {
 

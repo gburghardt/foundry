@@ -1,4 +1,4 @@
-var TaskListModule = Module.extend({
+var TaskListModule = Module.Base.extend({
 
 	prototype: {
 

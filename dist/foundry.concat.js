@@ -1,499 +1,118 @@
-/*! foundry 2014-02-05 */
-(function() {
+/*! foundry 2014-04-24 */
+(function(global) {
 
-	var _isMSIE = (/msie/i).test(navigator.userAgent);
+var toString = global.Object.prototype.toString;
 
-	function include(mixin) {
-		var key;
-
-		// include class level methods
-		if (mixin.self) {
-			for (key in mixin.self) {
-				if (mixin.self.hasOwnProperty(key) && !this[key]) {
-					this[key] = mixin.self[key];
-				}
-			}
-		}
-
-		// include instance level methods
-		if (mixin.prototype) {
-			for (key in mixin.prototype) {
-				if (mixin.prototype.hasOwnProperty(key) && !this.prototype[key]) {
-					this.prototype[key] = mixin.prototype[key];
-				}
-			}
-		}
-
-		// include other mixins
-		if (mixin.includes) {
-			mixin.includes = (mixin.includes instanceof Array) ? mixin.includes : [mixin.includes];
-
-			for (var i = 0, length = mixin.includes.length; i < length; i++) {
-				this.include(mixin.includes[i]);
-			}
-		}
-
-		if (mixin.included) {
-			mixin.included(this);
-		}
-
-		mixin = null;
-	}
-
-	function extend(descriptor) {
-		descriptor = descriptor || {};
-		var key, i, length;
-
-		// Constructor function for our new class
-		var Klass;
-
-		if (_isMSIE) {
-			Klass = function() {
-				// MSIE does not set the __proto__ property automatically, so we must do it at runtime
-				//if (!this.hasOwnProperty("__proto__")) {
-					this.__proto__ = Klass.prototype;
-				//}
-
-				if (!Klass.__inheriting) {
-					this.initialize.apply(this, arguments);
-				}
-			};
-		}
-		else {
-			// All other browsers play nice.
-			Klass = function() {
-				if (!Klass.__inheriting) {
-					this.initialize.apply(this, arguments);
-				}
-			};
-		}
-
-		// Flag to prevent calling Klass#initialize when setting up the inheritance chain.
-		Klass.__inheriting = false;
-
-		// "inherit" class level methods
-		for (key in this) {
-			if (this.hasOwnProperty(key)) {
-				Klass[key] = this[key];
-			}
-		}
-
-		// new class level methods
-		if (descriptor.self) {
-			for (key in descriptor.self) {
-				if (descriptor.self.hasOwnProperty(key)) {
-					Klass[key] = descriptor.self[key];
-				}
-			}
-		}
-
-		// Set up true prototypal inheritance for ECMAScript compatible browsers
-		try {
-			this.__inheriting = true;     // Set the flag indicating we are inheriting from the parent class
-			Klass.prototype = new this(); // The "new" operator generates a new prototype object, setting the __proto__ property all browsers except MSIE
-			this.__inheriting = false;    // Unset the inheriting flag
-		}
-		catch (error) {
-			this.__inheriting = false;    // Oops! Something catestrophic went wrong during inheriting. Unset the inheritance flag
-			throw error;                  // Throw the error. Let the developer fix this.
-		}
-
-		// new instance level methods
-		if (_isMSIE) {
-			// MSIE does not set the __proto__ property so we forefully set it here.
-			Klass.prototype.__proto__ = this.prototype;
-		}
-
-		// new instance level methods
-		if (descriptor.prototype) {
-			for (key in descriptor.prototype) {
-				if (descriptor.prototype.hasOwnProperty(key)) {
-					Klass.prototype[key] = descriptor.prototype[key];
-				}
-			}
-		}
-
-		// apply mixins
-		if (descriptor.includes) {
-			// force includes to be an array
-			descriptor.includes = (descriptor.includes instanceof Array) ? descriptor.includes : [descriptor.includes];
-
-			for (i = 0, length = descriptor.includes.length; i < length; i++) {
-				Klass.include(descriptor.includes[i]);
-			}
-		}
-
-		// ensure new prototype has an initialize method
-		Klass.prototype.initialize = Klass.prototype.initialize || function() {};
-
-		// set reference to constructor function in new prototype
-		Klass.prototype.constructor = Klass;
-
-		descriptor = null;
-
-		return Klass;
-	}
-
-	// Make "include" available to the World
-	if (!Function.prototype.include) {
-		Function.prototype.include = include;
-	}
-
-	// Make "extend" available to the World
-	if (!Function.prototype.extend) {
-		if (Object.extend) {
-			// Some JavaScript libraries already have an "extend" function
-			Object._extend = extend;
-		}
-
-		Function.prototype.extend = extend;
-	}
-
-})();
-
-
-var Cerealizer = {
-
-	_instances: {},
-
-	objectFactory: null,
-
-	_types: {},
-
-	getInstance: function getInstance(name) {
-		if (this._types[name]) {
-			if (!this._instances[name]) {
-				var instance;
-
-				if (this.objectFactory) {
-					instance = this.objectFactory.getInstance(name);
-
-					if (!instance) {
-						throw new Error("Could not get serializer instance from object factory for type: " + name);
-					}
-				}
-				else {
-					instance = new this._types[name]();
-				}
-
-				this._instances[name] = instance;
-			}
-
-			return this._instances[name];
-		}
-		else {
-			throw new Error("Cannot get instance for unregistered type: " + name);
-		}
-	},
-
-	registerType: function registerType(klass, names) {
-		for (var i = 0, length = names.length; i < length; i++) {
-			this._types[ names[i] ] = klass;
-		}
-	}
-
-};
-
-Cerealizer.Json = function Json() {};
-
-Cerealizer.Json.prototype = {
-
-	constructor: Cerealizer.Json,
-
-	regex: /^[{\[]].*[}\]]$/g,
-
-	deserialize: function deserialize(str) {
-		return JSON.parse(str);
-	},
-
-	serialize: function serialize(data) {
-		return JSON.stringify(data);
-	},
-
-	test: function test(str) {
-		return this.regex.test(str);
-	},
-
-	toString: function toString() {
-		return "[object Cerealizer.Json]";
-	}
-
-};
-
-if (!window.JSON) {
-	throw new Error("No native JSON parser was found. Consider using JSON2.js (https://github.com/douglascrockford/JSON-js)");
+function isArray(x) {
+	return toString.call(x) === "[object Array]";
 }
 
-Cerealizer.registerType(Cerealizer.Json, [
-	"json",
-	"text/json",
-	"application/json"
-]);
-
-Cerealizer.QueryString = function QueryString() {};
-
-Cerealizer.QueryString.prototype = {
-
-	constructor: Cerealizer.QueryString,
-
-	hashNotation: true,
-
-	keysRegex: /[\[\].]+/,
-
-	pairsRegex: /([^=&]+)=([^&]+)/g,
-
-	regex: /([^=&]+)=([^&]+)/,
-
-	_convert: function _convert(s) {
-		s = typeof s === "string" ? unescape(s) : s;
-
-		if (/^[-+0-9.]+$/.test(s) && !isNaN(s)) {
-			return Number(s);
+function merge(source, destination, safe) {
+	for (var key in source) {
+		if (source.hasOwnProperty(key) && (!safe || !destination.hasOwnProperty(key))) {
+			destination[key] = source[key];
 		}
-		else if (/^(true|false)$/.test(s)) {
-			return s === "true";
-		}
-		else if (s === "NaN") {
-			return NaN;
-		}
-		else {
-			return s;
-		}
-	},
-
-	_convertAndHydrate: function _convertAndHydrate(data, key, value) {
-		value = this._convert(unescape(value));
-
-		if (this._isValid(value)) {
-			keys = key
-				.replace(/]$/, "")
-				.split(this.keysRegex);
-
-			this._hydrate(data, keys, value);
-		}
-	},
-
-	deserialize: function deserialize(str) {
-		var that = this;
-		var data = {};
-		var keys, values;
-
-		str.replace(/^\?/, "").replace(this.pairsRegex, function(match, key, value) {
-			if (/\[\]/.test(key)) {
-				throw new Error("Cannot deserialize keys with empty array notation: " + key);
-			}
-
-			that._convertAndHydrate(data, key, value);
-		});
-
-		return data;
-	},
-
-	_hydrate: function _hydrate(data, keys, value) {
-		var currData = data,
-		    key, i = 0,
-		    length = keys.length - 1,
-		    lastKey = unescape( keys[ keys.length - 1 ] );
-
-		// Find the object we want to set the value on
-		for (i; i < length; i++) {
-			key = unescape(keys[i]);
-
-			if (!currData.hasOwnProperty(key)) {
-				currData[key] = {};
-			}
-
-			currData = currData[key];
-		}
-
-		currData[lastKey] = value;
-		currData = keys = null;
-
-		return data;
-	},
-
-	_isValid: function _isValid(value) {
-		if (value === null || value === undefined) {
-			return false;
-		}
-		else {
-			var t = typeof(value);
-
-			if (t === "number") {
-				return !isNaN(value);
-			}
-			else {
-				return (t === "string" || t === "boolean") ? true : false;
-			}
-		}
-	},
-
-	_isObject: function _isObject(x) {
-		return Object.prototype.toString.call(x) === "[object Object]";
-	},
-
-	serialize: function serialize(data) {
-		var keyDelimeterLeft = this.hashNotation ? "[" : ".",
-		    keyDelimeterRight = this.hashNotation ? "]" : "",
-		    arrayKeyDelimeterLeft = "[",
-		    arrayKeyDelimeterRight = "]",
-		    params = [];
-
-		return this._serialize(data, params, "", keyDelimeterLeft, keyDelimeterRight, arrayKeyDelimeterLeft, arrayKeyDelimeterRight).join("&");
-	},
-
-	_serialize: function _serialize(data, params, keyPrefix, keyDelimeterLeft, keyDelimeterRight, arrayKeyDelimeterLeft, arrayKeyDelimeterRight) {
-		var nextKeyPrefix,
-		    arrayKeyRegex = /^[0-9+]$/,
-		    name, value;
-
-		for (var key in data) {
-			if (data.hasOwnProperty(key)) {
-				if (this._isObject(data[key])) {
-					if (keyPrefix) {
-						if (arrayKeyRegex.test(key)) {
-							nextKeyPrefix = keyPrefix + arrayKeyDelimeterLeft + key + arrayKeyDelimeterRight;
-						}
-						else {
-							nextKeyPrefix = keyPrefix + keyDelimeterLeft + key + keyDelimeterRight;
-						}
-					}
-					else {
-						nextKeyPrefix = key;
-					}
-
-					this._serialize(data[key], params, nextKeyPrefix, keyDelimeterLeft, keyDelimeterRight, arrayKeyDelimeterLeft, arrayKeyDelimeterRight);
-				}
-				else if (this._isValid(data[key])) {
-					if (keyPrefix) {
-						if (arrayKeyRegex.test(key)) {
-							name = keyPrefix + arrayKeyDelimeterLeft + escape(key) + arrayKeyDelimeterRight;
-						}
-						else {
-							name = keyPrefix + keyDelimeterLeft + escape(key) + keyDelimeterRight;
-						}
-					}
-					else {
-						name = escape(key);
-					}
-
-					value = escape(data[key]);
-					params.push(name + "=" + value);
-				}
-			}
-		}
-
-		return params;
-	},
-
-	test: function test(str) {
-		return this.regex.test(str);
-	},
-
-	toString: function toString() {
-		return "[object Cerealizer.QueryString]";
 	}
-
-};
-
-Cerealizer.registerType(Cerealizer.QueryString, [
-	"queryString",
-	"application/x-www-form-urlencoded",
-	"multipart/form-data"
-]);
-
-Cerealizer.Xml = function Xml() {
-	this.parser = this.constructor.getParser();
-};
-
-Cerealizer.Xml.getParser = function getParser() {
-	if (window.DOMParser) {
-		return new DOMParser();
-	}
-	else {
-		return null;
-	}
-};
-
-Cerealizer.Xml.prototype = {
-
-	constructor: Cerealizer.Xml,
-
-	parser: null,
-
-	regex: /^\s*<[a-zA-Z][a-zA-Z0-9:]*.*?<\/[a-zA-Z0-9:]+[a-zA-Z]>\s*$/,
-
-	_deserializeMSIE: function _deserializeMSIE(str) {
-		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-		xmlDoc.async = false;
-		xmlDoc.loadXML(str);
-
-		return xmlDoc;
-	},
-
-	_deserializeStandard: function _deserializeStandard(str) {
-		return this.parser.parseFromString(str, "text/xml");
-	},
-
-	_escape: function _escape(x) {
-		return String(x)
-			.replace(/\&/g, "&amp;")
-			.replace(/"/g, "&quot;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;");
-	},
-
-	_isObject: function _isObject(x) {
-		return Object.prototype.toString.call(x) === "[object Object]";
-	},
-
-	serialize: function serialize(data) {
-		var tags = this._serialize(data, []);
-		return tags.join("");
-	},
-
-	_serialize: function _serialize(data, tags) {
-		for (var key in data) {
-			if (data.hasOwnProperty(key)) {
-				if (this._isObject(data[key])) {
-					tags.push("<" + key + ">");
-					this._serialize(data[key], tags);
-					tags.push("</" + key + ">");
-				}
-				else {
-					tags.push("<" + key + ">" + this._escape(data[key]) + "</" + key + ">");
-				}
-			}
-		}
-
-		return tags;
-	},
-
-	test: function test(str) {
-		return this.regex.test(str);
-	},
-
-	toString: function toString() {
-		return "[object Cerealizer.Xml]";
-	}
-
-};
-
-if (window.DOMParser) {
-	Cerealizer.Xml.prototype.deserialize = Cerealizer.Xml.prototype._deserializeStandard;
-}
-else if (window.ActiveXObject) {
-	Cerealizer.Xml.prototype.deserialize = Cerealizer.Xml.prototype._deserializeMSIE;
-}
-else {
-	throw new Error("No native XML parser could be found.");
 }
 
-Cerealizer.registerType(Cerealizer.Xml, [
-	"xml",
-	"text/xml",
-	"application/xml"
-]);
+function includeAll(mixins, Klass) {
+	if (!Klass) {
+		throw new Error("Missing required argument: Klass");
+	}
+
+	mixins = isArray(mixins) ? mixins : [mixins];
+
+	var i = 0, length = mixins.length;
+
+	for (i; i < length; i++) {
+		if (!mixins[i]) {
+			throw new Error("Mixin at index " + i + " is null or undefined");
+		}
+
+		Klass.include(mixins[i]);
+	}
+}
+
+function include(mixin) {
+	var key, Klass = this;
+
+	// include class level methods
+	if (mixin.self) {
+		merge(mixin.self, Klass, true);
+	}
+
+	// include instance level methods
+	if (mixin.prototype) {
+		merge(mixin.prototype, Klass.prototype, true);
+	}
+
+	// include other mixins
+	if (mixin.includes) {
+		includeAll(mixin.includes, Klass);
+	}
+
+	if (mixin.included) {
+		mixin.included(Klass);
+	}
+
+	mixin = null;
+}
+
+function extend(descriptor) {
+	descriptor = descriptor || {};
+
+	var key, i, length, ParentKlass = this;
+
+	// Constructor function for our new class
+	var ChildKlass = function ChildKlass() {
+		this.initialize.apply(this, arguments);
+	};
+
+	// "inherit" class level methods
+	merge(ParentKlass, ChildKlass);
+
+	// new class level methods
+	if (descriptor.self) {
+		merge(descriptor.self, ChildKlass);
+	}
+
+	// Set up true prototypal inheritance
+	ChildKlass.prototype = Object.create(ParentKlass.prototype);
+
+	// new instance level methods
+	if (descriptor.prototype) {
+		merge(descriptor.prototype, ChildKlass.prototype);
+	}
+
+	// apply mixins
+	if (descriptor.includes) {
+		includeAll(descriptor.includes, ChildKlass);
+	}
+
+	ChildKlass.prototype.initialize = ChildKlass.prototype.initialize || function initialize() {};
+	ChildKlass.prototype.constructor = ChildKlass;
+
+	ParentKlass = descriptor = null;
+
+	return ChildKlass;
+}
+
+// Make "include" available to the World
+if (!global.Function.prototype.include) {
+	global.Function.prototype.include = include;
+}
+
+// Make "extend" available to the World
+if (!global.Function.prototype.extend) {
+	if (global.Object.extend) {
+		// Some JavaScript libraries already have an "extend" function
+		global.Object._extend = extend;
+	}
+
+	global.Function.prototype.extend = extend;
+}
+
+})(this);
 
 function Callbacks(context, types) {
 	if (context) {
@@ -569,6 +188,8 @@ Callbacks.prototype = {
 Callbacks.Utils = {
 	self: {
 		addCallback: function addCallback(name, method) {
+			this.prototype.callbacks = this.prototype.callbacks || {};
+
 			if (!this.prototype.callbacks[name]) {
 				this.prototype.callbacks[name] = [];
 			}
@@ -577,11 +198,13 @@ Callbacks.Utils = {
 			}
 
 			this.prototype.callbacks[name].push(method);
+
+			return this;
 		}
 	},
 
 	prototype: {
-		callbacks: {},
+		callbacks: null,
 
 		initCallbacks: function initCallbacks(types) {
 			if (!this.hasOwnProperty("callbacks")) {
@@ -602,333 +225,298 @@ Callbacks.Utils = {
 	}
 };
 
-dom = window.dom || {};
-dom.events = dom.events || {};
+var Oxydizr = {};
+Oxydizr.FrontController = function FrontController() {
+	this.events = {};
+	this.controllers = {};
+	this.handleEvent = this.handleEvent.bind(this);
+	this.handleEnterpress = this.handleEnterpress.bind(this);
+}
 
-dom.events.Delegator = function() {
+Oxydizr.FrontController.prototype = {
 
-// Access: Public
+	catchErrors: false,
 
-	this.initialize = function(delegate, node, actionPrefix) {
-		this.actionPrefix = null;
-		this.eventTypes = [];
-		this.eventTypesAdded = {};
-		this.eventActionMapping = null;
-		this.actionEventMapping = null;
-		this.delegate = delegate || null;
-		this.node = node || null;
+	controllers: null,
 
-		if (actionPrefix) {
-			this.setActionPrefix(actionPrefix);
+	element: null,
+
+	errorHandler: {
+		handleError: function(error, controller, event, element, params, action, controllerId) {
+			console.error(error);
+
+			console.log({
+				controller: controller,
+				event: event,
+				element: element,
+				params: params,
+				action: action,
+				controllerId: controllerId
+			});
+
+			return true;
 		}
-	};
+	},
 
-	this.destructor = function() {
-		if (this.node) {
-			this.removeEventTypes(this.eventTypes);
-			this.node = null;
+	events: null,
+
+	constructor: Oxydizr.FrontController,
+
+	destructor: function() {
+		if (this.controllers) {
+			for (var controllerId in this.controllers) {
+				if (this.controllers.hasOwnProperty(controllerId)) {
+					this.unregisterController(this.controllers[controllerId]);
+					this.controllers[controllerId] = null;
+				}
+			}
+
+			this.controllers = null;
 		}
 
-		this.delegate = self = null;
-	};
+		if (this.events) {
+			for (var eventName in this.events) {
+				if (this.events.hasOwnProperty(eventName)) {
+					this._removeEvent(this.element, eventName, this.events[eventName]);
+				}
+			}
 
-	this.init = function() {
-		if (typeof this.node === "string") {
-			this.node = document.getElementById(this.node);
+			this.events = null;
 		}
+
+		this.element = null;
+	},
+
+	init: function(element) {
+		if (element) {
+			this.element = element;
+		}
+
+		if (!this.element) {
+			throw new Error("Missing required argument: element");
+		}
+
+		// click and submit events are so common that we just subscribe to them
+		this.registerEvents("click", "submit");
 
 		return this;
-	};
+	},
 
-	if (!this.addEventListener) {
-		this.addEventListener = function(element, eventType, callback) {
-			if (element.addEventListener) {
-				element.addEventListener(eventType, callback, false);
-			}
-			else {
-				element.attachEvent("on" + eventType, callback);
-			}
-		};
-	}
-
-	this.addEventType = function(eventType) {
-		if (this.eventTypesAdded[eventType]) {
-			return;
+	_addEvent: function(element, eventName, eventInfo) {
+		if (!this.events[eventName]) {
+			this.events[eventName] = eventInfo;
+			this._addEventListener(element, eventInfo.name, eventInfo.handler, eventInfo.capture);
 		}
+	},
 
-		if (eventType === "enterpress") {
-			this.addEventListener(this.node, "keypress", handleEnterpressEvent);
+	_addEventListener: function(element, name, handler, capture) {
+		element.addEventListener(name, handler, capture);
+	},
+
+	_createDelegateId: function() {
+		var index = 1000;
+
+		return function() {
+			return String(++index);
+		};
+	}(),
+
+	_getActions: function(element) {
+		var actionsAttr = element.getAttribute("data-actions");
+
+		if (!actionsAttr || /^\s*$/.test(actionsAttr)) {
+			return [];
 		}
 		else {
-			this.addEventListener(this.node, eventType, handleEvent);
+			return actionsAttr
+				.replace(/^\s+|\s+$/g, "")
+				.split(/[.\s+]/g);
 		}
+	},
 
-		this.eventTypes.push(eventType);
-		this.eventTypesAdded[eventType] = true;
-	};
+	_getMethodFromAction: function(controller, action, event) {
+		var method = null;
 
-	this.addEventTypes = function(eventTypes) {
-		var i = 0, length = eventTypes.length;
-
-		for (i; i < length; ++i) {
-			this.addEventType(eventTypes[i]);
-		}
-	};
-
-	if (!this.removeEventListener) {
-		this.removeEventListener = function(element, eventType, callback) {
-			if (element.removeEventListener) {
-				element.removeEventListener(eventType, callback, false);
-			}
-			else {
-				element.detachEvent("on" + eventType, callback);
-			}
-		};
-	}
-
-	this.removeEventType = function(eventType) {
-		if (this.eventTypesAdded[eventType]) {
-			if (eventType === "enterpress") {
-				this.removeEventListener(this.node, "keypress", handleEnterpressEvent);
-			}
-			else {
-				this.removeEventListener(this.node, eventType, handleEvent);
-			}
-
-			this.eventTypesAdded[eventType] = false;
-		}
-	};
-
-	this.removeEventTypes = function(eventTypes) {
-		var i = 0, length = eventTypes.length;
-
-		for (i; i < length; ++i) {
-			this.removeEventType(eventTypes[i]);
-		}
-	};
-
-	this.setActionPrefix = function(actionPrefix) {
-		if (!actionPrefix.match(/\.$/)) {
-			actionPrefix += ".";
-		}
-
-		this.actionPrefix = actionPrefix;
-	};
-
-	this.setEventActionMapping = function(mapping) {
-		var eventType, i, length;
-
-		if (this.eventActionMapping) {
-			for (eventType in this.eventActionMapping) {
-				if (this.eventActionMapping.hasOwnProperty(eventType)) {
-					this.removeEventType(eventType);
-				}
-			}
-		}
-
-		this.actionEventMapping = {};
-
-		for (eventType in mapping) {
-			if (mapping.hasOwnProperty(eventType)) {
-				this.addEventType(eventType);
-				mapping[eventType] = (mapping[eventType] instanceof Array) ? mapping[eventType] : [ mapping[eventType] ];
-
-				for (i = 0, length = mapping[eventType].length; i < length; i++) {
-					this.actionEventMapping[ mapping[eventType][i] ] = eventType;
-				}
-			}
-		}
-
-		this.eventActionMapping = mapping;
-
-		mapping = null;
-	};
-
-	if (!this.triggerEvent) {
-		this.triggerEvent = function(type) {
-			var event = getDocument().createEvent("CustomEvent");
-			event.initCustomEvent(type, true, false, null);
-			this.node.dispatchEvent(event);
-			event = null;
-		};
-	}
-
-// Access: Private
-
-	var self = this;
-
-	this.node = null;
-
-	this.eventTypes = null;
-
-	this.eventTypesAdded = null;
-
-	this.delegate = null;
-
-	function getActionParams(element, eventType) {
-		var paramsAttr = element.getAttribute("data-actionparams-" + eventType) ||
-		                 element.getAttribute("data-actionparams");
-
-		element = null;
-
-		return (paramsAttr) ? JSON.parse(paramsAttr) : {};
-	}
-
-	function getDocument() {
-		return self.node.ownerDocument;
-	}
-
-	function getAction(rawAction) {
-		return self.actionPrefix ? rawAction.replace(/.+?(\w+)$/g, "$1") : rawAction;
-	}
-
-	function getMethodFromAction(rawAction, action) {
-		var method = action;
-
-		if (self.actionPrefix) {
+		if (controller[action] && controller[action].name === (event.__type || event.type)) {
 			method = action;
-
-			if (self.actionPrefix + method !== rawAction) {
-				method = null;
-			}
-			else if (!self.delegate[method] && self.delegate.handleAction) {
-				method = "handleAction";
-			}
 		}
-		else if (!self.delegate[method] && self.delegate.handleAction) {
+		else if (controller.handleAction) {
 			method = "handleAction";
 		}
 
 		return method;
-	};
+	},
 
-	function stopPropagationPatch() {
-		this._stopPropagation();
-		this.propagationStopped = true;
-	}
+	_getParams: function(event, element) {
+		var attr = element.getAttribute("data-action-params");
 
-	function patchEvent(event) {
-		if (!event._stopPropagation) {
-			event._stopPropagation = event.stopPropagation;
-			event.stopPropagation = stopPropagationPatch;
-			event.propagationStopped = false;
-			event.stop = function() {
-				this.preventDefault();
-				this.stopPropagation();
-			};
+		return (attr) ? JSON.parse(attr) : {};
+	},
 
-			if (!event.actionTarget) {
-				// This event has not been delegated yet. Start the delegation at the target
-				// element for the event. Note that event.target !== self.node. The
-				// event.target object is the element that got clicked, for instance.
-				event.actionTarget = event.target || event.srcElement;
-			}
-		}
-
-		return event;
-	}
-
-	function handleEvent(event) {
-		event = patchEvent(event || window.event);
-		handlePatchedEvent(event, event.actionTarget);
-		event = null;
-	}
-
-	function handleEnterpressEvent(event) {
+	handleEnterpress: function(event) {
 		if (event.keyCode === 13) {
-			handleEvent(event);
+			event.__type = "enterpress";
+			this.handleEvent(event);
+		}
+	},
+
+	_handleError: function(error, controller, controllerId, action, event, element, params) {
+		if (controller && controller.handleActionError) {
+			return controller.handleActionError(error, event, element, params, action, controller, controllerId);
+		}
+		else if (this.errorHandler) {
+			return this.errorHandler.handleActionError(error, controller, event, element, params, action, controllerId);
 		}
 
-		event = null;
-	}
+		return false;
+	},
 
-	function handlePatchedEvent(event, element) {
-		// The default method to call on the delegate is "handleAction". This will only
-		// get called if the delegate has defined a "handleAction" method.
-		var rawAction = null, action = null, method = null, params;
+	handleEvent: function(event) {
+		this._patchEvent(event);
+		this._propagateEvent(event.target, event);
+		this._unpatchEvent(event);
+	},
 
-		rawAction = element.getAttribute("data-action-" + event.type) || element.getAttribute("data-action");
+	_invokeAction: function(controllerId, action, event, element, params) {
+		var controller = this.controllers[controllerId] || null,
+		    method = null;
 
-		if (rawAction) {
-			action = getAction(rawAction);
+		if (!controller) {
+			event.stop();
+			throw new Error("No controller registered for " + controllerId);
+		}
+		else if (method = this._getMethodFromAction(controller, action, event)) {
+			if (this.catchErrors) {
+				try {
+					controller[method](event, element, params, action);
+				}
+				catch (error) {
+					event.stop();
 
-			if (self.actionEventMapping && self.actionEventMapping[ action ] !== event.type) {
-				// An action-to-event mapping was found, but not for this action + event combo. Do nothing.
-				// For instance, the action is "foo", and the event is "click", but eventActionMapping.foo
-				// is either undefined or maps to a different event type.
-				action = null;
+					if (!this._handleError(error, controller, controllerId, action, event, element, params)) {
+						throw error;
+					}
+				}
 			}
 			else {
-				method = getMethodFromAction(rawAction, action);
+				controller[method](event, element, params, action);
+			}
+		}
+	},
+
+	_patchEvent: function(event) {
+		event.__isStopped = false;
+		event.__stopPropagation = event.stopPropagation;
+		event.stopPropagation = function() {
+			event.__stopPropagation();
+			this.__isStopped = true;
+		};
+		event.__stop = event.stop || null;
+		event.stop = function() {
+			if (this.__stop) {
+				this.__stop();
+			}
+
+			this.preventDefault();
+			this.stopPropagation();
+		};
+	},
+
+	_propagateEvent: function(element, event) {
+		var actions = this._getActions(element),
+		    params = this._getParams(event, element),
+		    controllerId, action, actionParams;
+
+		for (var i = 0, length = actions.length; i < length; i += 2) {
+			controllerId = actions[i];
+			action = actions[i + 1];
+			actionParams = params[controllerId + "." + action] || {};
+			this._invokeAction(controllerId, action, event, element, actionParams);
+
+			if (event.__isStopped) {
+				break;
 			}
 		}
 
-		if (method && self.delegate[method]) {
-			// The method exists on the delegate object. Try calling it...
-			try {
-				params = getActionParams(element, event.type);
-				self.delegate[method](event, element, params, action);
-			}
-			catch (error) {
-				event.preventDefault();
-				event.stopPropagation();
-				handleActionError(event, element, params, action, method, error);
-			}
+		if (event.__isStopped || element === this.element) {
+			// do nothing
+		}
+		else if (element.parentNode) {
+			this._propagateEvent(element.parentNode, event);
+		}
+	},
+
+	_registerEvent: function(eventName) {
+		var eventInfo = {
+			name: eventName,
+			handler: this.handleEvent,
+			capture: false
+		};
+
+		if (eventName === "enterpress") {
+			eventInfo.name = "keypress";
+			eventInfo.handler = this.handleEnterpress;
+		}
+		else if (eventName === "focus" || eventName === "blur") {
+			eventInfo.capture = true;
 		}
 
-		if (!event.propagationStopped && element !== self.node && element.parentNode) {
-			// The delegate has not explicitly stopped the event, so keep looking for more data-action
-			// attributes on the next element up in the document tree.
-			event.actionTarget = element.parentNode;
-			handlePatchedEvent(event, event.actionTarget);
+		this._addEvent(this.element, eventName, eventInfo);
+	},
+
+	registerEvents: function() {
+		for (var i = 0, length = arguments.length; i < length; i++) {
+			this._registerEvent(arguments[i]);
+		}
+
+		return this;
+	},
+
+	registerController: function(controller) {
+		var controllerId = controller.controllerId || (controller.controllerId = this._createDelegateId());
+
+		if (this.controllers[controllerId]) {
+			throw new Error("Cannot register duplicate delegate Id: " + controllerId);
+		}
+
+		this.controllers[controllerId] = controller;
+
+		controller.onControllerRegistered(this, controllerId);
+
+		return controllerId;
+	},
+
+	_removeEvent: function(element, eventName, eventInfo) {
+		if (this.events[eventName]) {
+			this._removeEventListener(element, eventInfo.name, eventInfo.handler, eventInfo.capture);
+			this.events[eventName] = this.events[eventName].handler = null;
+		}
+	},
+
+	_removeEventListener: function(element, name, handler, capture) {
+		element.removeEventListener(name, handler, capture);
+	},
+
+	_unpatchEvent: function(event) {
+		event.stopPropagation = event.__stopPropagation;
+		event.stop = event.__stop || null;
+		event.__stop = event.__stopPropagation = event.__isStopped = null;
+	},
+
+	unregisterController: function(controller) {
+		var controllerId = controller.controllerId;
+
+		if (!controllerId || !this.controllers[controller.controllerId]) {
+			return false;
 		}
 		else {
-			// Finished calling actions. Return event object to its normal state. Let
-			// event continue bubbling up the DOM.
-			event.actionTarget = null;
-			event.stopPropagation = event._stopPropagation;
-			event._stopPropagation = null;
-			event.propagationStopped = null;
-		}
-
-		event = element = null;
-	}
- 
-	function handleActionError(event, element, params, action, method, error) {
-		// The delegate method threw an error. Try to recover gracefully...
-
-		if (self.delegate.handleActionError) {
-			// The delegate has a generic error handler, call that, passing in the error object.
-			self.delegate.handleActionError(event, element, {error: error, params: params, method: method}, action);
-		}
-		else if (self.constructor.errorDelegate) {
-			// A master error delegate was found (for instance, and application object). Call "handleActionError"
-			// so this one object can try handling errors gracefully.
-			self.constructor.errorDelegate.handleActionError(event, element, {error: error, params: params, method: method}, action);
-		}
-		else if (self.constructor.logger) {
-			// A class level logger was found, so log an error level message.
-			self.constructor.logger.warn("An error was thrown while executing method \"" + method + "\", action \"" + action + "\", during a \"" + event.type + "\" event on element " + self.node.nodeName + "." + self.node.className.split(/\s+/g).join(".") + "#" + self.node.id + ".");
-			self.constructor.logger.error(error);
-		}
-		else {
-			// Give up. Throw the error and let the developer fix this.
-			throw error;
+			this.controllers[controller.controllerId] = null;
+			controller.onControllerUnregistered(this);
+			return true;
 		}
 	}
 
-	this.constructor = dom.events.Delegator;
-	this.getActionParams = getActionParams;
-	this.getMethodFromAction = getMethodFromAction;
-	this.handleActionError = handleActionError;
-	this.handleEvent = handleEvent;
-	this.handlePatchedEvent = handlePatchedEvent;
-	this.initialize.apply(this, arguments);
 };
-
-dom.events.Delegator.logger = window.console || null;
-dom.events.Delegator.errorDelegate = null;
-
 function ElementStore() {
 }
 ElementStore.prototype = {
@@ -1705,1058 +1293,1000 @@ Beacon = (function(Beacon) {
 
 })(window.Beacon || {});
 
-/**
- * class Hash < Object
- *
- * This class represents a managed key-value pair store.
- **/
-function Hash(data) {
-	if (data) {
-		this.merge(data);
+this.Hypodermic = {};
+
+(function(global) {
+
+var globals = [
+	"applicationCache",
+	"console",
+	"document",
+	"localStorage",
+	"location",
+	"navigator",
+	"screen",
+	"sessionStorage"
+], globalSingletons = { global: global };
+
+for (var i = 0, key, length = globals.length; i < length; i++) {
+	key = globals[i];
+
+	if (key in global) {
+		globalSingletons[key] = global[key];
 	}
 }
-Hash.prototype = {
 
-	constructor: Hash,
+function Container(_configs) {
+
+	if (!_configs) {
+		throw new Error("Missing required argument: configs");
+	}
+
+	var _dependencyResolver = new Hypodermic.DependencyResolver(this),
+	    _objectFactory = new Hypodermic.ObjectFactory(this, _dependencyResolver),
+	    _singletons = Object.create(globalSingletons);
+
+	_singletons.container = this;
+
+	this.resolve = function(name, unsafe) {
+		var instance = null,
+		    config = _configs[name],
+		    propertiesSet = {};
+
+		if (_singletons[name]) {
+			instance = _singletons[name];
+		}
+		else if (!config) {
+			if (unsafe) {
+				throw new Error("No configuration found for " + name);
+			}
+		}
+		else if (config.abstract) {
+			throw new Error("Cannot create resolve abstract config: " + name);
+		}
+		else {
+			if (config.factory) {
+				instance = _objectFactory.createInstanceFromFactory(config);
+			}
+			else {
+				instance = _objectFactory.createInstance(config, config.constructorArgs);
+			}
+
+			if (config.singleton) {
+				_singletons[name] = instance;
+			}
+
+			_dependencyResolver.injectDependencies(instance, config, propertiesSet);
+
+			while (config = _configs[config.parent]) {
+				_dependencyResolver.injectDependencies(instance, config, propertiesSet);
+			}
+		}
+
+		return instance;
+	};
+}
+
+global.Hypodermic.Container = Container;
+
+})(this);
+
+(function (global) {
+
+function DependencyResolver(container) {
+	this.container = container;
+}
+
+DependencyResolver.prototype = {
+
+	container: null,
+
+	constructor: DependencyResolver,
+
+	findDependency: function(info) {
+		var instance = null, factory;
+
+		if (isString(info)) {
+			instance = this.container.resolve(info, true);
+		}
+		else if ("value" in info) {
+			instance = info.value;
+		}
+		else {
+			throw new Error("No dependency value found. Missing one of 'id', 'value' or 'factory'");
+		}
+
+		return instance;
+	},
+
+	injectDependencies: function(instance, config, propertiesSet) {
+		if (!config.properties) {
+			return;
+		}
+
+		var properties = config.properties,
+		    key, dependency, setter;
+
+		for (key in properties) {
+			if (properties.hasOwnProperty(key) && !propertiesSet[key]) {
+				setter = "set" + capitalize(key);
+				dependency = this.findDependency(properties[key]);
+
+				if (isFunction(instance[setter])) {
+					instance[setter](dependency);
+				}
+				else {
+					instance[key] = dependency;
+				}
+
+				propertiesSet[key] = true;
+			}
+		}
+	}
+
+};
+
+global.Hypodermic.DependencyResolver = DependencyResolver;
+
+// utils
+
+var toString = Object.prototype.toString;
+
+function capitalize(str) {
+	return str.charAt(0).toUpperCase() + str.substring(1, str.length);
+}
+
+function isFunction(x) {
+	return toString.call(x) === "[object Function]";
+}
+
+function isString(x) {
+	return toString.call(x) === "[object String]";
+}
+
+})(this);
+
+(function(global) {
+
+function ObjectFactory(container, dependencyResolver) {
+	this.container = container;
+	this.dependencyResolver = dependencyResolver;
+}
+
+ObjectFactory.prototype = {
+
+	container: null,
+
+	dependencyResolver: null,
+
+	constructor: ObjectFactory,
+
+	createInstance: function(config, constructorDependencies) {
+		if (!config.type) {
+			throw new Error("Missing required argument: config.type");
+		}
+
+		var Klass = this._getClassReference(config.type),
+		    instance = null,
+		    args = null;
+
+		if (!Klass) {
+			throw new Error("Class " + config.type + " not found.");
+		}
+		else if (Klass.constructor === Function) {
+			instance = Object.create(Klass.prototype);
+
+			if (constructorDependencies) {
+				args = this._getConstructorArgs(constructorDependencies);
+				Klass.apply(instance, args);
+			}
+			else {
+				Klass.call(instance);
+			}
+		}
+		else {
+			// object singleton/static class
+			instance = Klass;
+		}
+
+		return instance;
+	},
+
+	createInstanceFromFactory: function(config) {
+		if (!config.factory.id) {
+			throw new Error("Missing required argument: config.factory.id");
+		}
+
+		var factoryInfo = config.factory,
+		    factory = this.container.resolve(factoryInfo.id, true),
+		    method = factoryInfo.method || "createInstance",
+		    args = [], dependency, i, length;
+
+		if (factoryInfo.args && factoryInfo.args.length) {
+			for (i = 0, length = factoryInfo.args.length; i < length; i++) {
+				args.push(this.dependencyResolver.findDependency(factoryInfo.args[i]));
+			}
+		}
+		else {
+			args.push(factoryInfo.type);
+		}
+
+		if (!factory[method]) {
+			throw new Error("No method called " + method + " exists on the factory object registered as " + factoryInfo.id);
+		}
+
+		dependency = factory[method].apply(factory, args);
+
+		return dependency;
+	},
+
+	_getClassReference: function(className) {
+		var Klass = _classCache[className] || null;
+
+		if (!Klass && /^[a-zA-Z][\w.$]+$/.test(className)) {
+			try {
+				Klass = global.eval(className);
+			}
+			catch (error) {
+				Klass = null;
+			}
+		}
+
+		if (Klass) {
+			_classCache[className] = Klass;
+		}
+
+		return Klass;
+	},
+
+	_getConstructorArgs: function(dependencies) {
+		var args = [];
+
+		for (var i = 0, length = dependencies.length; i < length; i++) {
+			args.push(this.dependencyResolver.findDependency(dependencies[i]));
+		}
+
+		return args;
+	}
+
+};
+
+global.Hypodermic.ObjectFactory = ObjectFactory;
+
+// Seed the class cache with some defaults
+var _classCache = {};
+
+var conditionalClasses = [
+	"Array",
+	"Boolean",
+	"Date",
+	"document",
+	"DocumentFragment",
+	"DOMParser",
+	"Error",
+	"FileReader",
+	"Function",
+	"location",
+	"navigator",
+	"Number",
+	"Object",
+	"RegExp",
+	"String",
+	"XMLHttpRequest"
+];
+
+var i, length, x;
+
+for (i = 0, length = conditionalClasses.length; i < length; i++) {
+	x = conditionalClasses[i];
+
+	if (global[x] !== undefined) {
+		_classCache[x] = global[x];
+	}
+}
+
+})(this);
+
+(function(g, Module) {
+
+Module.manager = null;
+
+// Make globally available
+g.Module = Module;
+
+})(this, this.Module || {});
+(function() {
+
+function Factory() {};
+
+Factory.prototype = {
+
+	objectFactory: null,
+
+	constructor: Module.Factory,
 
 	destructor: function destructor() {
-		for (var key in this) {
-			if (this.exists(key)) {
-				this[key] = null;
+		this.objectFactory = null;
+	},
+
+	getInstance: function getInstance(type) {
+		var instance = null, Klass = null;
+
+		if (this.objectFactory) {
+			instance = this.objectFactory.getInstance(type);
+
+			if (!instance) {
+				throw new Error("The object factory failed to get a new instance for type: " + type);
 			}
+		}
+		else if (/^[a-zA-Z][a-zA-Z0-9.]+[a-zA-Z0-9]$/.test(type)) {
+			try {
+				Klass = eval(type);
+			}
+			catch (error) {
+				throw new Error("Class name " + type + " does not exist");
+			}
+
+			if (!Klass) {
+				throw new Error("Class name " + type + " does not exist");
+			}
+			else if (typeof Klass !== "function") {
+				throw new Error("Class name " + type + " is not a constructor function");
+			}
+
+			instance = new Klass();
+		}
+		else {
+			throw new Error("Cannot instantiate invalid type: " + type);
+		}
+
+		return instance;
+	}
+
+};
+
+Module.Factory = Factory;
+
+})();
+
+Module.FrontControllerModuleObserver = function FrontControllerModuleObserver(frontController) {
+	this.frontController = frontController || null;
+};
+
+Module.FrontControllerModuleObserver.prototype = {
+
+	frontController: null,
+
+	constructor: Module.FrontControllerModuleObserver,
+
+	onModuleCreated: function(module, element, type) {
+		module.controllerId = module.controllerId
+		                   || module.options.controllerId
+		                   || module.guid;
+	},
+
+	onModuleRegistered: function(module, type) {
+		this.frontController.registerController(module);
+	},
+
+	onModuleUnregistered: function(module) {
+		this.frontController.unregisterController(module);
+	}
+
+};
+(function() {
+
+function LazyLoader() {
+
+	// Public Methods
+
+	this.init = init;
+	this.destructor = destructor;
+	this.setElement = setElement;
+	this.setManager = setManager;
+	this.setOptions = setOptions;
+
+	// Private Properties
+
+	var self = this,
+	    _initialized = false,
+	    _options = {
+	    	resizeTimeout: 250,
+	    	scrollTimeout: 250
+	    },
+	    _scrollElement =
+	    _scrollTimer =
+	    _manager =
+	    _element =
+	    _document =
+	    _window =
+	    _resizeTimer = null,
+	    _scrollLeft =
+	    _scrollTop =
+	    _viewportHeight =
+	    _viewportWidth = 0;
+
+	// Private Methods
+
+	function init() {
+		if (_initialized) {
+			throw new Error("Cannot re-initialize Module.LazyLoader.");
+		}
+		else if (!_manager) {
+			throw new Error("Missing required property: manager. lazyLoader.setManager(...) to fix this error");
+		}
+		else if (!_element) {
+			throw new Error("Missing required property: element. lazyLoader.setElement(...) to fix this error");
+		}
+
+		addEvents();
+
+		initModulesInsideViewport();
+
+		if (!_scrollElement.scrollTop && !_scrollElement.scrollLeft) {
+			// Not all browsers agree on the _scrollElement. We are at the
+			// top of the page so we don't know whether the browser is
+			// scrolling the <html> or <body> tag. Defer judgement until
+			// the user has scrolled.
+			_scrollElement = null;
+		}
+
+		_initialized = true;
+
+		return self;
+	}
+
+	function initModulesInsideViewport() {
+		var elements = _element.getElementsByTagName("*"), i, element;
+		var viewport = Viewport.create(getScrollElement());
+
+		for (i = 0; i < elements.length; i++) {
+			element = elements[i];
+
+			if (element.getAttribute("data-module-lazyload") && viewport.isVisible(element)) {
+				lazyLoadModules(element, "scrollto");
+			}
+		}
+	}
+
+	function lazyLoadModules(element, value) {
+		var attr = element.getAttribute("data-module-lazyload");
+
+		if (attr === "any" || new RegExp(value).test(attr)) {
+
+			if (_manager.createModules(element).length) {
+				element.removeAttribute("data-module-lazyload");
+				element.setAttribute("data-module-lazyloaded", attr);
+			}
+		}
+
+		element = null;
+	}
+
+	function destructor() {
+		if (_element) {
+			removeEvents();
+			_element = _document = _scrollElement = _window = null;
+		}
+
+		if (_scrollTimer) {
+			clearTimeout(_scrollTimer);
+			_scrollTimer = null;
+		}
+
+		if (_resizeTimer) {
+			clearTimeout(_resizeTimer);
+			_resizeTimer = null;
+		}
+
+		_manager = _options.scrollElement = _options = self = null;
+	}
+
+	function addEvent(element, name, listener) {
+		if (name === "resize") {
+			listener.oldresize = element.onresize || null;
+			element.onresize = listener;
+		}
+		else if (element.addEventListener) {
+			element.addEventListener(name, listener, true);
+		}
+		else if (name === "scroll") {
+			element.onscroll = listener;
+		}
+		else {
+			element.attachEvent("on" + name, listener);
+		}
+	}
+
+	function addEvents() {
+		addEvent(_element, "mouseover", handleMouseOverEvent);
+		addEvent(_document, "scroll", handleScrollEvent);
+		addEvent(_window, "resize", handleResizeEvent);
+	}
+
+	function getScrollElement() {
+		if (_scrollElement === null) {
+			if (_document.body.scrollTop || _document.body.scrollLeft) {
+				_scrollElement = _document.body;
+			}
+			else {
+				_scrollElement = _document.documentElement;
+			}
+		}
+
+		return _scrollElement;
+	}
+
+	function handleMouseOverEvent(event) {
+		event = event || window.event;
+		event.target = event.target || event.srcElement;
+
+		if (event.target.getAttribute("data-module-lazyload")) {
+			lazyLoadModules(event.target, event.type);
+		}
+	}
+
+	function handleScrollEvent(event) {
+		removeEvent(_document, "scroll", handleScrollEvent);
+
+		if (_scrollTimer) {
+			clearInterval(_scrollTimer);
+		}
+
+		_scrollTimer = setInterval(checkScrollPosition, _options.scrollTimeout);
+	}
+
+	function checkScrollPosition() {
+		var scrollElement = getScrollElement(),
+		    newScrollLeft = scrollElement.scrollLeft,
+		    newScrollTop = scrollElement.scrollTop;
+
+		if (newScrollLeft != _scrollLeft || newScrollTop != _scrollTop) {
+			clearInterval(_scrollTimer);
+			addEvent(_document, "scroll", handleScrollEvent);
+			_scrollLeft = newScrollLeft;
+			_scrollTop = newScrollTop;
+			initModulesInsideViewport();
+		}
+	}
+
+	function handleResizeEvent(event) {
+		removeEvent(_window, "resize", handleResizeEvent);
+
+		if (_resizeTimer) {
+			clearInterval(_resizeTimer);
+		}
+
+		_resizeTimer = setInterval(checkViewportSize, _options.resizeTimeout);
+	}
+
+	function checkViewportSize() {
+		var newHeight = _document.documentElement.clientHeight,
+		    newWidth = _document.documentElement.clientWidth;
+
+		if (newWidth !== _viewportWidth || newHeight !== _viewportHeight) {
+			clearInterval(_resizeTimer);
+			addEvent(_window, "resize", handleResizeEvent);
+			_viewportHeight = newHeight;
+			_viewportWidth = newWidth;
+			initModulesInsideViewport();
+		}
+	}
+
+	function removeEvent(element, name, listener) {
+		if (name === "resize") {
+			element.onresize = listener.oldresize || null;
+			listener.oldresize = null;
+		}
+		else if (element.removeEventListener) {
+			element.removeEventListener(name, listener, true);
+		}
+		else if (name === "scroll") {
+			element.onscroll = null;
+		}
+		else {
+			element.detachEvent("on" + name, listener);
+		}
+	}
+
+	function removeEvents() {
+		removeEvent(_element, "mouseover", handleMouseOverEvent);
+		removeEvent(_document, "scroll", handleScrollEvent);
+		removeEvent(_window, "resize", handleResizeEvent);
+	}
+
+	function setElement(element) {
+		_element = element;
+		_document = _element.ownerDocument;
+	    _window = _document.defaultView;
+
+		element = null;
+
+		return self;
+	}
+
+	function setManager(manager) {
+		_manager = manager;
+		manager = null;
+		return self;
+	}
+
+	function setOptions(overrides) {
+		if (overrides) {
+			for (var key in overrides) {
+				if (overrides.hasOwnProperty(key)) {
+					_options[key] = overrides[key];
+				}
+			}
+		}
+
+		overrides = null;
+
+		return self;
+	}
+
+}
+
+// Internal class for viewport calculations
+function Viewport() {}
+
+Viewport.prototype = {
+	bottom: 0,
+	height: 0,
+	left: 0,
+	right: 0,
+	top: 0,
+	width: 0,
+
+	constructor: Viewport,
+
+	isBottomInBounds: function isBottomInBounds(position) {
+		return (position.top + position.height <= this.top + this.height && position.top + position.height > this.top) ? true : false;
+	},
+
+	isLeftInBounds: function isLeftInBounds(position) {
+		return (position.left >= this.left && position.left < this.left + this.width) ? true : false;
+	},
+
+	isRightInBounds: function isRightInBounds(position) {
+		return (position.left + position.width <= this.left + this.width && position.left + position.width > this.left) ? true : false;
+	},
+
+	isTopInBounds: function isTopInBounds(position) {
+		return (position.top >= this.top && position.top < this.top + this.height) ? true : false;
+	},
+
+	isVisible: function isVisible(element) {
+		var visible = false;
+		var position = this._getPosition(element);
+
+		if ((this.isRightInBounds(position) || this.isLeftInBounds(position)) && (this.isTopInBounds(position) || this.isBottomInBounds(position))) {
+			visible = true;
+		}
+
+		return visible;
+	},
+
+	_getPosition: function _getPosition(element) {
+		var parent = element.offsetParent;
+		var position = {
+			top: element.offsetTop,
+			left: element.offsetLeft,
+			width: element.offsetWidth,
+			height: element.offsetHeight
+		};
+
+		while(parent = parent.offsetParent) {
+			position.top += parent.offsetTop;
+			position.left += parent.offsetLeft;
+		}
+
+		return position;
+	}
+};
+
+Viewport.create = function create(element) {
+	var viewport = new this();
+
+	viewport.top = element.scrollTop;
+	viewport.left = element.scrollLeft;
+	viewport.width = element.clientWidth;
+	viewport.height = element.clientHeight;
+	viewport.right = element.offsetWidth - (viewport.left + viewport.width);
+	viewport.bottom = element.offsetHeight - viewport.top - viewport.height;
+
+	return viewport;
+};
+
+Module.LazyLoader = LazyLoader;
+
+})();
+
+(function() {
+
+function Manager() {};
+
+Manager.prototype = {
+
+	baseClassName: "module",
+
+	defaultModule: null,
+
+	defaultModuleFocused: false,
+
+	moduleObserver: {
+		onModuleCreated: function(module, element, type) {},
+		onModuleRegistered: function(module, type) {},
+		onModuleUnregistered: function(module) {}
+	},
+
+	provider: null,
+
+	registry: null,
+
+	groups: null,
+
+	constructor: Module.Manager,
+
+	destructor: function destructor(cascadeDestroy) {
+		if (Module.manager === this) {
+			Module.manager = null;
+		}
+
+		if (this.registry) {
+			this._destroyRegistry(cascadeDestroy);
+		}
+
+		if (this.groups) {
+			this._destroyGroups();
+		}
+
+		if (this.provider) {
+			if (cascadeDestroy) {
+				this.provider.destructor();
+			}
+
+			this.provider = null;
+		}
+
+		if (this.lazyLoader) {
+			this.lazyLoader.destructor();
+			this.lazyLoader = null;
 		}
 	},
 
-	empty: function empty() {
-		var keys = this.keys(), i = 0, length = keys.length, key;
+	_destroyGroups: function _destroyGroups() {
+		var key, group, i, length;
 
-		for (i; i < length; i++) {
-			key = keys[i];
-			this[key] = null;
-			delete this[key];
+		for (key in this.groups) {
+			if (this.groups.hasOwnProperty(key)) {
+				group = this.groups[key];
+
+				for (i = 0, length = group.length; i < length; i++) {
+					group[i] = null;
+				}
+
+				this.groups[key] = null;
+			}
 		}
+
+		this.groups = null;
+	},
+
+	_destroyRegistry: function _destroyRegistry(cascadeDestroy) {
+		var key, entry;
+
+		for (key in this.registry) {
+			if (this.registry.hasOwnProperty(key)) {
+				entry = this.registry[key];
+				this.moduleObserver.onModuleUnregistered(entry.module);
+
+				if (cascadeDestroy) {
+					entry.module.destructor(true);
+				}
+
+				entry.module = null;
+				this.registry[key] = null;
+			}
+		}
+
+		this.registry = null;
+	},
+
+	init: function init() {
+		this.provider = this.provider || new Module.Provider();
+		this.provider.factory = this.provider.factory || new Module.Factory();
+		this.provider.manager = this;
+		this.provider.moduleObserver = this.moduleObserver;
+		this.registry = this.registry || {};
+		this.groups = this.groups || {};
+
+		Module.manager = this;
 
 		return this;
 	},
 
-	exists: function exists(key) {
-		return (!this.isReserved(key) && this.hasOwnProperty(key)) ? true : false;
-	},
+	eagerLoadModules: function eagerLoadModules(element) {
+		var els = element.getElementsByTagName("*"), i = 0, length = els.length, el;
 
-	filter: function filter(callback, context) {
-		context = context || this;
-		var filteredHash = new Hash();
+		for (i; i < els.length; i++) {
+			el = els[i];
 
-		for (var key in this) {
-			if (this.exists(key) && callback.call(context, key, this[key])) {
-				filteredHash.set(key, this[key]);
+			if (el.getAttribute("data-modules") && !el.getAttribute("data-module-lazyload")) {
+				this.createModules(el);
 			}
 		}
 
-		return filteredHash;
+		els = null;
+
+		return this;
 	},
 
-	forEach: function forEach(callback, context) {
-		context = context || this;
+	lazyLoadModules: function lazyLoadModules(element, options) {
+		this.lazyLoader = (this.lazyLoader || new Module.LazyLoader())
+			.setManager(this)
+			.setElement(element)
+			.setOptions(options)
+			.init();
 
-		for (var key in this) {
-			if (this.exists(key)) {
-				if (callback.call(context, key, this[key]) === false) {
+		element = options = null;
+
+		return this;
+	},
+
+	createModule: function createModule(element, type, options, register) {
+		var module = this.provider.createModule(element, type, options);
+
+		if (register) {
+			this.registerModule(type, module);
+		}
+
+		element = options = null;
+
+		return module;
+	},
+
+	createModules: function createModules(element) {
+		if (!element) {
+			throw new Error("Missing required argument: element");
+		}
+
+		var metaData = new Module.MetaData(element),
+		    modules = [];
+
+		if (metaData.mediaMatches()) {
+			this.provider.createModules(metaData, function(module, element, type, options) {
+				modules.push(module);
+				this.registerModule(type, module);
+				module.init();
+			}, this);
+
+			this.markModulesCreated(element, metaData);
+		}
+
+		metaData = element = null;
+
+		return modules;
+	},
+
+	focusDefaultModule: function focusDefaultModule(anything) {
+		if (this.defaultModule && !this.defaultModuleFocused) {
+			this.defaultModuleFocused = true;
+			this.defaultModule.focus(anything);
+		}
+	},
+
+	initModuleInContainer: function initModuleInContainer(element, container, config, template, type, module) {
+		var createdAt = new Date();
+		var renderData = {
+			guid: module.guid,
+			createdAt: createdAt,
+			timestamp: createdAt.getTime(),
+			controllerId: module.controllerId
+		}, key;
+
+		if (config.renderData) {
+			for (key in config.renderData) {
+				if (config.renderData.hasOwnProperty(key)) {
+					renderData[key] = config.renderData[key];
+				}
+			}
+		}
+
+		var html = template.innerHTML.replace(/#\{([-.\w]+)\}/g, function(match, key) {
+			return renderData[key] || "";
+		});
+
+		element.className += (" " + this.baseClassName + " " + config.className).replace(/\s{2,}/g, " ");
+		element.innerHTML = html;
+
+		if (config.insert === "top" && container.firstChild) {
+			container.insertBefore(element, container.firstChild);
+		}
+		else {
+			container.appendChild(element);
+		}
+
+		this.registerModule(type, module);
+		module.init();
+
+		if (config.autoFocus) {
+			module.focus(!!config.autoFocusAnything);
+		}
+	},
+
+	markModulesCreated: function markModulesCreated(element, metaData) {
+		element.setAttribute("data-modules-created", metaData.types.join(" "));
+		element.removeAttribute("data-modules");
+		element = metaData = null;
+	},
+
+	registerModule: function registerModule(type, module) {
+		if (module.guid === undefined || module.guid === null) {
+			throw new Error("Cannot register module " + type + " without a guid property");
+		}
+		else if (this.registry[module.guid]) {
+			throw new Error("Module " + module.guid + " has already been registered");
+		}
+
+		this.registry[module.guid] = {module: module, type: type};
+
+		if (!this.groups[type]) {
+			this.groups[type] = [];
+		}
+
+		this.groups[type].push(module);
+		this.moduleObserver.onModuleRegistered(module, type);
+
+		module = null;
+	},
+
+	unregisterModule: function unregisterModule(module) {
+		if (!module.guid || !this.registry[module.guid]) {
+			module = null;
+			return false;
+		}
+
+		var guid = module.guid,
+		    type = this.registry[guid].type,
+		    group = this.groups[type],
+		    unregistered = false;
+
+		this.registry[guid].module = null;
+		this.registry[guid] = null;
+		delete this.registry[guid];
+
+		if (group) {
+			for (var i = 0, length = group.length; i < length; i++) {
+				if (group[i] === module) {
+					group.splice(i, 1);
+					unregistered = true;
+					this.moduleObserver.onModuleUnregistered(module);
 					break;
 				}
 			}
 		}
 
-		callback = context = null;
+		module = group = null;
 
-		return this;
+		return unregistered;
 	},
 
-	get: function get(key) {
-		if (this.isReserved(key)) {
-			throw new Error("Cannot get reserved property: " + key);
-		}
-		else {
-			return this.hasOwnProperty(key) ? this[key] : null;
-		}
-	},
-
-	isEmpty: function isEmpty() {
-		return this.size() === 0;
-	},
-
-	isReserved: function isReserved(key) {
-		return this.constructor.prototype.hasOwnProperty(key);
-	},
-
-	keys: function keys() {
-		var keys = [];
-
-		for (var key in this) {
-			if (this.exists(key)) {
-				keys.push(key);
-			}
+	setDefaultModule: function setDefaultModule(module) {
+		if (!this.defaultModule) {
+			this.defaultModule = module;
 		}
 
-		return keys;
-	},
-
-	merge: function merge(overrides, safe) {
-		if (!overrides) {
-			throw new Error("Missing required argument: overrides");
-		}
-
-		var key, newValue, oldValue, i, length;
-
-		for (key in overrides) {
-			if (overrides.hasOwnProperty(key)) {
-				oldValue = this[key];
-				newValue = overrides[key];
-
-				if (!newValue) {
-					if (!this.exists(key) || !safe) {
-						this.set(key, newValue);
-					}
-				}
-				else if (newValue.constructor === Array && oldValue && oldValue.constructor === Array && !this.isReserved(key)) {
-					for (i = 0, length = newValue.length; i < length; i++) {
-						oldValue.push(newValue[i]);
-					}
-				}
-				else if (oldValue && oldValue.constructor === Hash && !this.isReserved(key)) {
-					oldValue.merge(newValue);
-				}
-				else if (!this.exists(key) || !safe) {
-					this.set(key, overrides[key]);
-				}
-			}
-		}
-
-		return this;
-	},
-
-	safeMerge: function safeMerge(overrides) {
-		this.merge(overrides, true);
-	},
-
-	set: function set(key, value) {
-		if (this.isReserved(key)) {
-			throw new Error("Cannot set reserved property: " + key);
-		}
-
-		this[key] = value;
-
-		return this;
-	},
-
-	size: function size() {
-		return this.keys().length;
-	},
-
-	toString: function toString() {
-		return "[object Hash]";
+		module = null;
 	}
 
 };
 
-(function(g) {
+Module.Manager = Manager;
 
-	/**
-	 * class Hypodermic < Object
-	 *
-	 * This class provides basic dependency injection for JavaScript and is a
-	 * light weight object factory as well.
-	 *
-	 * new Hypodermic([configs])
-	 * - configs (Object): Optional configs for this object factory.
-	 **/
-	function Hypodermic(configs) {
-		configs = configs || {};
-
-		configs[this.constructor.me] = {
-			className: this.constructor.className,
-			singleton: true
-		};
-
-		this._configs = configs;
-		this._singletons = {};
-		this._singletons[this.constructor.me] = this;
-		configs = null;
-	}
-
-	/**
-	 * Hypodermic.me -> String
-	 *
-	 * The name of the singleton config Id so objects can be injected with a
-	 * reference to this object factory.
-	 **/
-	Hypodermic.me = "objectFactory";
-
-	/**
-	 * Hypodermic.className -> String
-	 *
-	 * The name of this class.
-	 **/
-	Hypodermic.className = "Hypodermic";
-
-	Hypodermic.prototype = {
-
-		/**
-		 * Hypodermic#_configs -> Object
-		 *
-		 * The configs defining the objects this factory can generate, and their
-		 * dependencies.
-		 **/
-		_configs: null,
-
-		/**
-		 * Hypodermic#_singletons -> Object
-		 *
-		 * References to objects that are singletons in this object factory.
-		 **/
-		_singletons: null,
-
-		/**
-		 * Hypodermic#destructor()
-		 *
-		 * Ready this object factory for garbage collection.
-		 **/
-		destructor: function() {
-			this._destroySingletons();
-			this.configs = this.classReferenceCache = null;
-		},
-
-		_destroySingletons: function() {
-			for (var id in this.singletons) {
-				if (!this.singletons.hasOwnProperty(id)) { continue; }
-				this.singletons[ id ] = null;
-			}
-
-			this.singletons = null;
-		},
-
-		_capitalize: function(str) {
-			return str.charAt(0).toUpperCase() + str.substring(1, str.length);
-		},
-
-		_createInstanceFromConfig: function(config) {
-			if (!config.className) {
-				throw new Error("Missing required className for instance configuration");
-			}
-
-			var instance = null;
-			var Klass = this._getClassReference(config.className);
-			var ProxyClass = null;
-			var constructorArgs = null;
-			var parentConf = null;
-
-			if (!Klass) {
-				throw new Error("Failed to create instance. Class \"" + config.className + "\" was not found");
-			}
-
-			if (Object.prototype.toString.call(Klass) === "[object Function]") {
-				// instance is to be created from constructor function
-
-				if (config.constructorArgs) {
-					ProxyClass = function() {};
-					ProxyClass.prototype = Klass.prototype;
-
-					instance = new ProxyClass();
-					constructorArgs = this._getConstructorArgs(config.constructorArgs);
-					Klass.apply(instance, constructorArgs);
-				}
-				else {
-					instance = new Klass();
-				}
-			}
-			else {
-				// instance is already an object
-				instance = Klass;
-			}
-
-			// inject properties from parent configs
-			if (config.parent) {
-				parentConf = this._configs[config.parent];
-
-				while (parentConf) {
-					if (parentConf.properties) {
-						this._injectDependencies(instance, parentConf.properties);
-					}
-
-					parentConf = this._configs[parentConf.parent] || null;
-				}
-			}
-
-			// inject properties for this instance as overrides
-			if (config.properties) {
-				this._injectDependencies(instance, config.properties);
-			}
-
-			ProxyClass = null;
-			Klass = null;
-			config = null;
-			parentConf = null;
-
-			return instance;
-		},
-
-		_getClassReference: function(className) {
-			var Klass = _classCache[className] || null;
-
-			if (!Klass && /^[a-zA-Z][\w.$]+$/.test(className)) {
-				try {
-					Klass = eval(className);
-				}
-				catch (error) {
-					Klass = null;
-				}
-			}
-
-			if (Klass) {
-				_classCache[className] = Klass;
-			}
-
-			return Klass;
-		},
-
-		_getConstructorArgs: function(constructorArgsConfig) {
-			var constructorArgs = [];
-
-			for (var i = 0, length = constructorArgsConfig.length; i < length; i++) {
-				constructorArgs.push(this._getDependencyValue(constructorArgsConfig[i]));
-			}
-
-			return constructorArgs;
-		},
-
-		_getDependencyValue: function(propertyConfig) {
-			var value = null;
-
-			if (propertyConfig.id) {
-				value = this.getInstance(propertyConfig.id);
-			}
-			else if ( typeof propertyConfig.value !== "undefined" ) {
-				value = propertyConfig.value;
-			}
-			else {
-				throw new Error("Cannot extract dependency value. Property config missing one of \"id\" or \"value\"");
-			}
-
-			propertyConfig = null;
-
-			return value;
-		},
-
-		/**
-		 * Hypodermic#getInstance(id) -> Object | null
-		 * - id (String): The Id of the config to use to generate this new object
-		 *
-		 * Get an instance of an object from this object factory. If the id is not
-		 * found, then null is returned;
-		 **/
-		getInstance: function(id) {
-			var config = this._configs[id];
-			var instance = null;
-
-			if (!config) {
-				instance = null;
-			}
-			else if (config.singleton) {
-				instance = this._getSingletonInstance(id, config);
-			}
-			else if (!config.abstract) {
-				instance = this._createInstanceFromConfig(config);
-			}
-			else {
-				throw new Error("Cannot instantiate an object from abstract config \"" + id + "\"");
-			}
-
-			return instance;
-		},
-
-		_getSingletonInstance: function(id, config) {
-			var instance = null;
-
-			if (this._singletons[id]) {
-				instance = this._singletons[id];
-			}
-			else {
-				instance = this._createInstanceFromConfig(config);
-				this._singletons[id] = instance;
-			}
-
-			return instance;
-		},
-
-		_injectDependencies: function(instance, properties) {
-			var setterName = "";
-			var adderName = "";
-			var name = "";
-			var value = null;
-
-			for (name in properties) {
-				if (!properties.hasOwnProperty(name)) { continue; }
-
-				value = this._getDependencyValue(properties[name]);
-				setterName = "set" + this._capitalize(name);
-				adderName = "add" + this._capitalize(name);
-
-				if (this._isFunction(instance[setterName])) {
-					// inject foo property via setFoo()
-					instance[setterName](value);
-				}
-				else if (this._isFunction(instance[adderName])) {
-					// inject foo property via addFoo()
-					instance[adderName](value);
-				}
-				else {
-					// inject foo via property name
-					instance[name] = value;
-				}
-			}
-
-			properties = instance = value = null;
-		},
-
-		_isArray: function(x) {
-			return (x instanceof Array) ? true : false;
-		},
-
-		_isFunction: function(x) {
-			return (Object.prototype.toString.call(x) === "[object Function]") ? true : false;
-		},
-
-		_isObject: function(x) {
-			return (x instanceof Object) ? true : false;
-		},
-
-		/**
-		 * Hypodermic#setConfigs(configs)
-		 * - configs (Object): New object configs to add
-		 *
-		 * Add object configs to this factory.
-		 **/
-		setConfigs: function(configs) {
-			for (var id in configs) {
-				if (!configs.hasOwnProperty(id)) { continue; }
-
-				this._configs[id] = configs[id];
-			}
-
-			configs = null;
-		}
-
-	};
-
-	Hypodermic.prototype.constructor = Hypodermic;
-
-	Hypodermic.precacheClasses = function(classNames) {
-		for (var name in classNames) {
-			if (classNames.hasOwnProperty(name) && !_classCache.hasOwnProperty(name)) {
-				_classCache[name] = classNames[name];
-			}
-		}
-	};
-
-	// Seed the class cache with some defaults
-	var _classCache = {
-		Array: g.Array,
-		Boolean: g.Boolean,
-		Date: g.Date,
-		Error: g.Error,
-		Function: g.Function,
-		Hypodermic: Hypodermic,
-		Number: g.Number,
-		Object: g.Object,
-		RegExp: g.RegExp,
-		String: g.String
-	};
-
-	(function() {
-		var conditionalClasses = ["XMLHttpRequest", "FileReader", "DOMParser", "DocumentFragment"], x;
-
-		for (var i = 0, length = conditionalClasses.length; i < length; i++) {
-			x = conditionalClasses[i];
-
-			if (g[x] !== undefined) {
-				_classCache[x] = g[x];
-			}
-		}
-	})();
-
-	// make this global
-	g.Hypodermic = Hypodermic;
-
-})(typeof global != "undefined" ? global : window);
-
-function Reaper() {
-}
-
-Reaper.prototype = {
-
-	allowNulls: false,
-
-	flat: true,
-
-	nestedKeysRegex: /[.\[\]]+/g,
-
-	constructor: Reaper,
-
-	_extractFieldValues: function _extractFieldValues(fields, data) {
-		var value, name, i = 0, length = fields.length;
-
-		for (i; i < length; i++) {
-			value = this._extractValue(fields[i]);
-			name = fields[i].name;
-			this._setValue(data, name, value);
-		}
-	},
-
-	_extractValue: function _extractValue(field) {
-		var nodeName = field.nodeName.toLowerCase(),
-		    value = null, i, length;
-
-		if (!field.disabled) {
-			if (nodeName === "input") {
-				if (field.type === "checkbox" || field.type === "radio") {
-					if (field.checked) {
-						value = field.value;
-					}
-				}
-				else {
-					value = field.value;
-				}
-			}
-			else if (nodeName === "select") {
-				if (field.multiple) {
-					value = [];
-
-					for (i = 0, length = field.options.length; i < length; ++i) {
-						if (!field.options[i].disabled && field.options[i].selected && field.options[i].value) {
-							value.push(field.options[i].value);
-						}
-					}
-				}
-				else {
-					value = field.value;
-				}
-			}
-			else {
-				value = field.value;
-			}
-		}
-
-		field = null;
-
-		return (value === "") ? null : value;
-	},
-
-	getData: function getData(element, data) {
-		if (!element) {
-			throw new Error("Missing required argument: element");
-		}
-
-		data = data || {};
-
-		var inputs = element.getElementsByTagName("input"),
-		    selects = element.getElementsByTagName("select"),
-		    textareas = element.getElementsByTagName("textarea");
-
-		this._extractFieldValues(inputs, data);
-		this._extractFieldValues(selects, data);
-		this._extractFieldValues(textareas, data);
-
-		element = inputs = selects = textareas = null;
-
-		return data;
-	},
-
-	_setNestedValue: function _setNestedValue(data, keys, value) {
-		var currData = data,
-		    key, i = 0,
-		    length = keys.length - 1,
-		    lastKey = keys[ length ];
-
-		// Find the object we want to set the value on
-		for (i; i < length; i++) {
-			key = keys[i];
-
-			if (!currData.hasOwnProperty(key)) {
-				currData[key] = {};
-			}
-
-			currData = currData[key];
-		}
-
-		currData[lastKey] = value;
-
-		currData = keys = null;
-	},
-
-	_setValue: function _setValue(data, name, value) {
-		if (this.flat) {
-			if (value !== null || this.allowNulls) {
-				data[name] = value;
-			}
-		}
-		else if (value !== null || this.allowNulls) {
-			var keys = name
-				.replace(/\]$/, "")
-				.split(this.nestedKeysRegex);
-
-			this._setNestedValue(data, keys, value);
-		}
-	}
-
-};
-
-// @import Injerit.js
-// @import ElementStore
-// @import ElementStore.Utils
-// @import callbacks
-// @import hash
-// @import dom_event_delegator
-// @import events
+})();
 
 (function(g) {
-
-var _guid = 0;
-
-var Module = Object.extend({
-
-	includes: [
-		Callbacks.Utils,
-		Beacon.ApplicationEvents,
-		Beacon.Notifications,
-		ElementStore.Utils
-	],
-
-	self: {
-		manager: null,
-
-		getManager: function getManager() {
-			return Module.manager;
-		},
-
-		unregister: function unregister(module) {
-			if (Module.manager) {
-				Module.manager.unregisterModule(module);
-			}
-		}
-	},
-
-	prototype: {
-
-		actions: {
-			click: [
-				"cancel"
-			]
-		},
-
-		callbacks: {
-			afterReady: [
-				"_loaded"
-			]
-		},
-
-		delegator: null,
-
-		document: null,
-
-		element: null,
-
-		elementStore: {},
-
-		guid: null,
-
-		options: {
-			actionPrefix: null,
-			defaultModule: false,
-		},
-
-		window: null,
-
-		initialize: function initialize() {
-			this.guid = _guid++;
-		},
-
-		init: function init(elementOrId, options) {
-			if (elementOrId) {
-				this.setElement(elementOrId);
-			}
-
-			this.document = this.element.ownerDocument;
-			this.window = this.document.defaultView || this.document.parentWindow;
-
-			if (!this.hasOwnProperty("options")) {
-				this.options = new Hash();
-			}
-
-			this._initOptions(this.options);
-
-			if (options) {
-				this.options.merge(options);
-			}
-
-			if (!this.delegator) {
-				this.delegator = new dom.events.Delegator();
-			}
-
-			this.delegator.delegate = this;
-			this.delegator.node = this.element;
-
-			if (this.options.actionPrefix) {
-				this.delegator.setActionPrefix(this.options.actionPrefix);
-			}
-
-			this.delegator.init();
-
-			this._initActions();
-			this._initCallbacks();
-			this._initNotifications();
-			this.initElementStore(this.element);
-			this.callbacks.execute("beforeReady");
-			this._ready();
-			this.callbacks.execute("afterReady");
-
-			if (this.options.defaultModule) {
-				this.constructor.getManager().setDefaultModule(this);
-			}
-
-			return this;
-		},
-
-		destructor: function destructor(keepElement) {
-			this.callbacks.execute("beforeDestroy");
-
-			this.constructor.unregister(this);
-			this.destroyElementStore();
-			this.destroyCallbacks();
-
-			if (this.delegator) {
-				this.delegator.destructor();
-			}
-
-			if (!keepElement && this.element) {
-				this.element.parentNode.removeChild(this.element);
-			}
-
-			if (this.options) {
-				this.options.destructor();
-			}
-
-			this.actions = this.element = this.delegator = this.options = this.document = this.window = null;
-		},
-
-		cancel: function cancel(event, element, params) {
-			event.stop();
-			this.destructor();
-			event = element = params = null;
-		},
-
-		focus: function focus(anything) {
-			var els = this.element.getElementsByTagName("*");
-			var i = 0, length = els.length, el;
-
-			if (anything) {
-				for (i; i < length; i++) {
-					el = els[i];
-
-					if (el.tagName === "A" || el.tagName === "BUTTON" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || (el.tagName === "INPUT" && el.type !== "hidden")) {
-						if (el.focus) {
-							el.focus();
-						}
-
-						if (el.select) {
-							el.select();
-						}
-
-						break;
-					}
-				}
-			}
-			else {
-				for (i; i < length; i++) {
-					el = els[i];
-
-					if (el.tagName === "TEXTAREA" || el.tagName === "SELECT" || (el.tagName === "INPUT" && el.type !== "hidden")) {
-						if (el.focus) {
-							el.focus();
-						}
-
-						if (el.select) {
-							el.select();
-						}
-
-						break;
-					}
-				}
-			}
-		},
-
-		_ready: function _ready() {
-
-		},
-
-		_initActions: function _initActions() {
-			// TODO: Actions appear to be merging incorrectly here and making delegator double up on events
-			var actions = new Hash(), proto = this.__proto__;
-
-			while (proto) {
-				if (proto.hasOwnProperty("actions")) {
-					actions.safeMerge(proto.actions);
-				}
-
-				proto = proto.__proto__;
-			}
-
-			this.delegator.setEventActionMapping(actions);
-		},
-
-		_initCallbacks: function _initCallbacks() {
-			var types = new Hash(), proto = this.__proto__;
-
-			while (proto) {
-				if (proto.hasOwnProperty("callbacks")) {
-					types.safeMerge(proto.callbacks);
-				}
-
-				proto = proto.__proto__;
-			}
-
-			this.initCallbacks(types);
-		},
-
-		_initOptions: function _initOptions() {
-			var proto = this.__proto__;
-
-			while (proto) {
-				if (proto.hasOwnProperty("options")) {
-					this.options.safeMerge(proto.options);
-				}
-
-				proto = proto.__proto__;
-			}
-		},
-
-		_loading: function _loading(element) {
-			element = element || this.element;
-			element.className += " loading";
-			element = null;
-		},
-
-		_loaded: function _loaded(element) {
-			element = element || this.element;
-			element.className = element.className.replace(/(^|\s+)(loading)(\s+|$)/, "$1$3").replace(/[\s]{2,}/g, " ");
-			element = null;
-		},
-
-		setElement: function setElement(elementOrId) {
-			this.element = typeof elementOrId === "string" ? document.getElementById(elementOrId) : elementOrId;
-
-			if (!this.element) {
-				throw new Error("Could not find element: " + elementOrId);
-			}
-		},
-
-		setOptions: function setOptions(overrides) {
-			if (!this.hasOwnProperty("options")) {
-				this.options = new Hash(overrides);
-			}
-			else {
-				this.options.merge(overrides);
-			}
-		}
-
-	}
-
-});
-
-// Make globally available
-g.Module = Module;
-
-})(window);
-Module.FormModule = Module.extend({
-
-	prototype: {
-
-		actions: {
-			enterpress: [
-				"submit"
-			],
-			submit: [
-				"submit"
-			]
-		},
-
-		callbacks: {
-			beforeReady: [
-				"initExtractor",
-				"initSerializerFactory"
-			]
-		},
-
-		extractor: null,
-
-		options: {
-			"extractor.allowNulls": false,
-			"extractor.flat": false
-		},
-
-		serializerFactory: null,
-
-		initExtractor: function initExtractor() {
-			this.extractor = this.extractor || new Reaper();
-			this.extractor.allowNulls = this.options["extractor.allowNulls"];
-			this.extractor.flat = this.options["extractor.flat"];
-		},
-
-		initSerializerFactory: function initSerializerFactory() {
-			this.serializerFactory = this.serializerFactory || Cerealizer;
-		},
-
-		_afterSubmit: function _afterSubmit(xhr) {
-			xhr = null;
-		},
-
-		_beforeSubmit: function _beforeSubmit(data, event, element, params) {
-			data = event = element = params = null;
-			return true;
-		},
-
-		_getData: function _getData() {
-			return this.extractor.getData(this.element);
-		},
-
-		_getTransport: function _getTransport() {
-			return new XMLHttpRequest();
-		},
-
-		_sendRequest: function _sendRequest(data) {
-			var xhr = this._getTransport(),
-			    form = this.element.getElementsByTagName("form")[0] || this.element,
-			    method      = (form.getAttribute("method") || form.getAttribute("data-form-method") || "POST").toUpperCase(),
-			    url         = form.getAttribute("action")  || form.getAttribute("data-form-action"),
-			    contentType = form.getAttribute("enctype") || form.getAttribute("data-form-enctype") || "queryString",
-			    module = this,
-			    serializer = this.serializerFactory.getInstance(contentType),
-			    params = serializer.serialize(data);
-
-			if (!url) {
-				throw new Error("Missing required attribute: action or data-form-action");
-			}
-
-			var onreadystatechange = function() {
-				if (this.readyState !== 4) {
-					return;
-				}
-
-				if (this.status < 300 || this.status > 399) {
-					module.element.innerHTML = this.responseText;
-					complete();
-				}
-			};
-
-			var complete = function() {
-				module._loaded();
-				module._afterSubmit(xhr);
-				module = data = event = element = params = xhr = xhr.onreadystatechange = form = null;
-			};
-
-			if (method === "GET") {
-				url += /\?/.test(url) ? params : "?" + params;
-				params = null;
-			}
-
-			xhr.open(method, url, true);
-			xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-
-			if (contentType) {
-				xhr.setRequestHeader("Content-Type", contentType);
-			}
-
-			this._loading();
-			xhr.onreadystatechange = onreadystatechange;
-			xhr.send(params);
-		},
-
-		submit: function submit(event, element, params) {
-			event.stop();
-
-			var data = this._getData();
-
-			if (this._beforeSubmit(data, event, element, params)) {
-				this._sendRequest(data);
-			}
-		}
-
-	}
-
-});
-
-(function(Module) {
-
-	function Factory() {};
-
-	Factory.prototype = {
-
-		objectFactory: null,
-
-		constructor: Module.Factory,
-
-		destructor: function destructor() {
-			this.objectFactory = null;
-		},
-
-		createInstance: function createInstance(element, type, options) {
-			var module = this.getInstance(type);
-
-			module.init(element, options);
-
-			return module;
-		},
-
-		getInstance: function getInstance(type) {
-			var instance = null, Klass = null;
-
-			if (this.objectFactory) {
-				instance = this.objectFactory.getInstance(type);
-
-				if (!instance) {
-					throw new Error("The object factory failed to get a new instance for type: " + type);
-				}
-			}
-			else if (/^[a-zA-Z][a-zA-Z0-9.]+[a-zA-Z0-9]$/.test(type)) {
-				try {
-					Klass = eval(type);
-				}
-				catch (error) {
-					throw new Error("Class name " + type + " does not exist");
-				}
-
-				if (!Klass) {
-					throw new Error("Class name " + type + " does not exist");
-				}
-				else if (typeof Klass !== "function") {
-					throw new Error("Class name " + type + " is not a constructor function");
-				}
-
-				instance = new Klass();
-			}
-			else {
-				throw new Error("Cannot instantiate invalid type: " + type);
-			}
-
-			return instance;
-		}
-
-	};
-
-	Module.Factory = Factory;
-
-})(window.Module || {});
-
-(function() {
 
 	function MetaData(element) {
 		this.options = null;
@@ -2770,6 +2300,8 @@ Module.FormModule = Module.extend({
 	MetaData.prototype = {
 
 		element: null,
+
+		media: null,
 
 		options: null,
 
@@ -2797,12 +2329,22 @@ Module.FormModule = Module.extend({
 			}
 		},
 
+		mediaMatches: function mediaMatches() {
+			if (!g.matchMedia) {
+				throw new Error("This browser does not support JavaScript media queries. Please include a polyfill (https://github.com/paulirish/matchMedia.js)");
+			}
+
+			if (this.media)
+				console.info("Match media: " + this.media, g.matchMedia(this.media).matches);
+
+			return this.media === null || g.matchMedia(this.media).matches;
+		},
+
 		setElement: function setElement(element) {
 			this.element = element;
 
 			var types = element.getAttribute("data-modules"),
-			    options = element.getAttribute("data-module-options"),
-			    length;
+			    options = element.getAttribute("data-module-options");
 
 			if (!types) {
 				throw new Error("Missing required attribute data-modules on " + element.nodeName + "." + element.className.split(/\s+/g).join(".") + "#" + element.id);
@@ -2813,942 +2355,999 @@ Module.FormModule = Module.extend({
 				.split(/\s+/g);
 
 			this.options = options ? JSON.parse(options) : {};
+			this.media = element.getAttribute("data-module-media");
 		}
 
 	};
 
-	Module.MetaData = MetaData;
+	g.Module.MetaData = MetaData;
 
-})(window.Module || {});
+})(this);
 
-(function(Module) {
+(function() {
 
-	function Provider() {}
+function Provider() {}
 
-	Provider.prototype = {
+Provider.prototype = {
 
-		factory: null,
+	factory: null,
 
-		manager: null,
+	manager: null,
 
-		constructor: Provider,
+	moduleObserver: null,
 
-		destructor: function destructor(cascadeDestroy) {
-			if (cascadeDestroy && this.factory) {
-				this.factory.destructor();
-			}
+	subModulesEnabled: true,
 
-			this.factory = this.manager = null;
-		},
+	constructor: Provider,
 
-		_createModuleClass: function _createModuleClass(type) {
-			return "module " + type.charAt(0).toLowerCase() + type.slice(1, type.length)
-				.replace(/(\.[A-Z])/g, function(match, $1) {
-					return "-" + $1.replace(/\./g, "").toLowerCase();
-				})
-				.replace(/Module$/, "")
-				.replace(/^\s+|\s+$/g, "");
-		},
-
-		createModule: function createModule(element, type, options) {
-			var module = this.factory.getInstance(type);
-			var className = this._createModuleClass(type);
-
-			element.className += element.className ? " " + className : className;
-
-			module.setElement(element);
-			module.setOptions(options);
-
-			if (options.defaultModule) {
-				this.manager.setDefaultModule(module);
-			}
-
-			return module;
-		},
-
-		createModules: function createModule(metaData, callback, context) {
-			var modules = [],
-			    module,
-			    callback = callback || function() {};
-
-			metaData.forEach(function(element, type, options) {
-				module = this.createModule(element, type, options);
-				modules.push(module);
-				callback.call(context, module, element, type, options);
-			}, this);
-
-			callback = context = module = null;
-
-			return modules;
+	destructor: function destructor(cascadeDestroy) {
+		if (cascadeDestroy && this.factory) {
+			this.factory.destructor();
 		}
 
-	};
-
-	Module.Provider = Provider;
-
-})(window.Module || {});
-
-(function(Module) {
-
-	function Manager() {};
-
-	Manager.prototype = {
-
-		baseClassName: "module",
-
-		defaultModule: null,
-
-		defaultModuleFocused: false,
-
-		provider: null,
-
-		registry: null,
-
-		groups: null,
-
-		constructor: Module.Manager,
-
-		destructor: function destructor(cascadeDestroy) {
-			if (Module.manager === this) {
-				Module.manager = null;
-			}
-
-			if (this.registry) {
-				this._destroyRegistry(cascadeDestroy);
-			}
-
-			if (this.groups) {
-				this._destroyGroups();
-			}
-
-			if (this.provider) {
-				if (cascadeDestroy) {
-					this.provider.destructor();
-				}
-
-				this.provider = null;
-			}
-		},
-
-		_destroyGroups: function _destroyGroups() {
-			var key, group, i, length;
-
-			for (key in this.groups) {
-				if (this.groups.hasOwnProperty(key)) {
-					group = this.groups[key];
-
-					for (i = 0, length = group.length; i < length; i++) {
-						group[i] = null;
-					}
-
-					this.groups[key] = null;
-				}
-			}
-
-			this.groups = null;
-		},
-
-		_destroyRegistry: function _destroyRegistry(cascadeDestroy) {
-			var key, entry;
-
-			for (key in this.registry) {
-				if (this.registry.hasOwnProperty(key)) {
-					entry = this.registry[key];
-
-					if (cascadeDestroy) {
-						entry.module.destructor(true);
-					}
-
-					entry.module = null;
-					this.registry[key] = null;
-				}
-			}
-
-			this.registry = null;
-		},
-
-		init: function init() {
-			this.provider = this.provider || new Module.Provider();
-			this.provider.factory = this.provider.factory || new Module.Factory();
-			this.provider.manager = this;
-			this.registry = this.registry || {};
-			this.groups = this.groups || {};
-
-			Module.manager = this;
-
-			return this;
-		},
-
-		eagerLoadModules: function eagerLoadModules(element) {
-			var els = element.getElementsByTagName("*"), i = 0, length = els.length, el;
-
-			for (i; i < length; i++) {
-				el = els[i];
-
-				if (el.getAttribute("data-modules") && !el.getAttribute("data-module-lazyload")) {
-					this.createModules(el);
-				}
-			}
-
-			els = null;
-
-			return this;
-		},
-
-		createModule: function createModule(element, type, options, register) {
-			var module = this.provider.createModule(element, type, options);
-
-			if (register) {
-				this.registerModule(type, module);
-			}
-
-			element = options = null;
-
-			return module;
-		},
-
-		createModules: function createModules(element) {
-			if (!element) {
-				throw new Error("Missing required argument: element");
-			}
-
-			var metaData = new Module.MetaData(element);
-
-			this.provider.createModules(metaData, function(module, element, type, options) {
-				this.registerModule(type, module);
-				module.init();
-			}, this);
-
-			this.markModulesCreated(element, metaData);
-
-			metaData = element = null;
-		},
-
-		focusDefaultModule: function focusDefaultModule(anything) {
-			if (this.defaultModule && !this.defaultModuleFocused) {
-				this.defaultModuleFocused = true;
-				this.defaultModule.focus(anything);
-			}
-		},
-
-		initModuleInContainer: function initModuleInContainer(element, container, config, template, type, module) {
-			var createdAt = new Date();
-			var renderData = new Hash({
-				guid: module.guid,
-				createdAt: createdAt,
-				timestamp: createdAt.getTime()
-			});
-
-			if (config.renderData) {
-				renderData.merge(config.renderData);
-			}
-
-			var html = template.innerHTML.replace(/#\{([-.\w]+)\}/g, function(match, key) {
-				return renderData[key] || "";
-			});
-
-			element.className += (" " + this.baseClassName + " " + config.className).replace(/\s{2,}/g, " ");
-			element.innerHTML = html;
-
-			if (config.insert === "top" && container.firstChild) {
-				container.insertBefore(element, container.firstChild);
-			}
-			else {
-				container.appendChild(element);
-			}
-
-			this.registerModule(type, module);
-			module.init();
-		},
-
-		markModulesCreated: function markModulesCreated(element, metaData) {
-			element.setAttribute("data-modules-created", metaData.types.join(" "));
-			element.removeAttribute("data-modules");
-			element = metaData = null;
-		},
-
-		registerModule: function registerModule(type, module) {
-			if (module.guid === undefined || module.guid === null) {
-				throw new Error("Cannot register module " + type + " without a guid property");
-			}
-			else if (this.registry[module.guid]) {
-				throw new Error("Module " + module.guid + " has already been registered");
-			}
-
-			this.registry[module.guid] = {module: module, type: type};
-
-			if (!this.groups[type]) {
-				this.groups[type] = [];
-			}
-
-			this.groups[type].push(module);
-
-			module = null;
-		},
-
-		unregisterModule: function unregisterModule(module) {
-			if (!module.guid || !this.registry[module.guid]) {
-				module = null;
-				return;
-			}
-
-			var guid = module.guid;
-			var type = this.registry[guid].type;
-			var group = this.groups[type];
-
-			this.registry[guid].module = null;
-			this.registry[guid] = null;
-			delete this.registry[guid];
-
-			if (group) {
-				for (var i = 0, length = group.length; i < length; i++) {
-					if (group[i] === module) {
-						group.splice(i, 1);
-						break;
-					}
-				}
-			}
-
-			module = group = null;
-		},
-
-		setDefaultModule: function setDefaultModule(module) {
-			if (!this.defaultModule) {
-				this.defaultModule = module;
-			}
-
-			module = null;
+		this.factory = this.manager = null;
+	},
+
+	_createModuleClass: function _createModuleClass(type) {
+		return "module " + type.charAt(0).toLowerCase() + type.slice(1, type.length)
+			.replace(/(\.[A-Z])/g, function(match, $1) {
+				return "-" + $1.replace(/\./g, "").toLowerCase();
+			})
+			.replace(/Module$/, "")
+			.replace(/^\s+|\s+$/g, "");
+	},
+
+	createModule: function createModule(element, type, options) {
+		var module = this.factory.getInstance(type);
+		var className = this._createModuleClass(type);
+
+		element.className += element.className ? " " + className : className;
+
+		module.setElement(element);
+		module.setOptions(options);
+
+		if (options.defaultModule) {
+			this.manager.setDefaultModule(module);
 		}
 
-	};
+		this.moduleObserver.onModuleCreated(module, element, type);
 
-	Module.Manager = Manager;
-
-})(window.Module || {});
-
-// @import Hash
-// @requires module/manager.js
-
-Module.Manager.LazyLoader = {
-
-	prototype: {
-
-		lazyLoadModules: function lazyLoadModules(element, overrides) {
-
-			var _options = new Hash({
-				scrollElement: null,
-				scrollStopDelay: 400,
-				scrollTimeout: 250
-			});
-
-			var _manager = this;
-			var _scrollTimer = null;
-			var _scrollElement = _options.scrollElement || null;
-			var _element = element;
-			var _document = _element.ownerDocument;
-			var _scrollLeft = 0;
-			var _scrollTop = 0;
-
-			function init() {
-				if (_manager.stopLazyLoadingModules) {
-					_manager.stopLazyLoadingModules();
-				}
-
-				if (overrides) {
-					_options.merge(overrides);
-				}
-
-				addEvents();
-
-				initModulesInsideViewport();
-
-				if (!_scrollElement.scrollTop && !_scrollElement.scrollLeft) {
-					// Not all browsers agree on the _scrollElement. We are at the
-					// top of the page so we don't know whether the browser is
-					// scrolling the <html> or <body> tag. Defer judgement until
-					// the user has scrolled.
-					_scrollElement = null;
-				}
-			}
-
-			function destructor() {
-				if (_element) {
-					removeEvents();
-					_element = _document = _scrollElement = null;
-				}
-
-				if (_scrollTimer) {
-					clearTimeout(_scrollTimer);
-					_scrollTimer = null;
-				}
-
-				if (_options) {
-					_options.destructor();
-					_options = null;
-				}
-
-				_manager.stopLazyLoadingModules = _manager = null;
-
-				return this;
-			}
-
-			function addEvent(element, name, listener) {
-				if (element.addEventListener) {
-					element.addEventListener(name, listener, true);
-				}
-				else if (name === "scroll") {
-					element.onscroll = listener;
-				}
-				else {
-					element.attachEvent("on" + name, listener);
-				}
-			}
-
-			function addEvents() {
-				addEvent(_element, "mouseover", handleMouseOverEvent);
-				addEvent(_document, "scroll", handleScrollEvent);
-			}
-
-			function initModulesInsideViewport() {
-				var elements = _element.getElementsByTagName("*"), i, element;
-				var viewport = Viewport.create(getScrollElement());
-
-				for (i = 0; i < elements.length; i++) {
-					element = elements[i];
-
-					if (element.getAttribute("data-module-lazyload") && viewport.isVisible(element)) {
-						lazyLoadModules(element, "scrollto");
-					}
-				}
-			}
-
-			function getScrollElement() {
-				if (_scrollElement === null) {
-					if (_document.body.scrollTop || _document.body.scrollLeft) {
-						_scrollElement = _document.body;
-					}
-					else {
-						_scrollElement = _document.documentElement;
-					}
-				}
-
-				return _scrollElement;
-			}
-
-			function handleMouseOverEvent(event) {
-				event = event || window.event;
-				event.target = event.target || event.srcElement;
-
-				if (event.target.getAttribute("data-module-lazyload")) {
-					lazyLoadModules(event.target, event.type);
-				}
-			}
-
-			function handleScrollEvent(event) {
-				removeEvent(_document, "scroll", handleScrollEvent);
-
-				if (_scrollTimer) {
-					clearInterval(_scrollTimer);
-				}
-
-				_scrollTimer = setInterval(checkScrollPosition, _options.scrollTimeout);
-			}
-
-			function checkScrollPosition() {
-				var scrollElement = getScrollElement(),
-				    newScrollLeft = scrollElement.scrollLeft,
-				    newScrollTop = scrollElement.scrollTop;
-
-				if (newScrollLeft != _scrollLeft || newScrollTop != _scrollTop) {
-					clearInterval(_scrollTimer);
-					addEvent(_document, "scroll", handleScrollEvent);
-					_scrollLeft = newScrollLeft;
-					_scrollTop = newScrollTop;
-					initModulesInsideViewport();
-				}
-			}
-
-			function lazyLoadModules(element, value) {
-				var attr = element.getAttribute("data-module-lazyload");
-
-				if (attr === "any" || new RegExp(value).test(attr)) {
-					element.removeAttribute("data-module-lazyload");
-					_manager.createModules(element);
-					element.setAttribute("data-module-lazyloaded", attr);
-				}
-
-				element = null;
-			}
-
-			function removeEvent(element, name, listener) {
-				if (element.removeEventListener) {
-					element.removeEventListener(name, listener, true);
-				}
-				else if (name === "scroll") {
-					element.onscroll = null;
-				}
-				else {
-					element.detachEvent("on" + name, listener);
-				}
-			}
-
-			function removeEvents() {
-				removeEvent(_element, "mouseover", handleMouseOverEvent);
-				removeEvent(_document, "scroll", handleScrollEvent);
-			}
-
-			// internal class for viewport logic
-			function Viewport() {}
-			Viewport.prototype = {
-				bottom: 0,
-				height: 0,
-				left: 0,
-				right: 0,
-				top: 0,
-				width: 0,
-
-				constructor: Viewport,
-
-				isBottomInBounds: function isBottomInBounds(position) {
-					return (position.top + position.height <= this.top + this.height && position.top + position.height > this.top) ? true : false;
-				},
-
-				isLeftInBounds: function isLeftInBounds(position) {
-					return (position.left >= this.left && position.left < this.left + this.width) ? true : false;
-				},
-
-				isRightInBounds: function isRightInBounds(position) {
-					return (position.left + position.width <= this.left + this.width && position.left + position.width > this.left) ? true : false;
-				},
-
-				isTopInBounds: function isTopInBounds(position) {
-					return (position.top >= this.top && position.top < this.top + this.height) ? true : false;
-				},
-
-				isVisible: function isVisible(element) {
-					var visible = false;
-					var position = this._getPosition(element);
-
-					if ((this.isRightInBounds(position) || this.isLeftInBounds(position)) && (this.isTopInBounds(position) || this.isBottomInBounds(position))) {
-						visible = true;
-					}
-
-					return visible;
-				},
-
-				_getPosition: function _getPosition(element) {
-					var parent = element.offsetParent;
-					var position = {
-						top: element.offsetTop,
-						left: element.offsetLeft,
-						width: element.offsetWidth,
-						height: element.offsetHeight
-					};
-
-					while(parent = parent.offsetParent) {
-						position.top += parent.offsetTop;
-						position.left += parent.offsetLeft;
-					}
-
-					return position;
-				}
-			};
-			Viewport.create = function create(element) {
-				var viewport = new this();
-
-				viewport.top = element.scrollTop;
-				viewport.left = element.scrollLeft;
-				viewport.width = element.clientWidth;
-				viewport.height = element.clientHeight;
-				viewport.right = element.offsetWidth - (viewport.left + viewport.width);
-				viewport.bottom = element.offsetHeight - viewport.top - viewport.height;
-
-				return viewport;
-			};
-
-			// start lazy loading modules
-			init();
-
-			// expose public method to clean up this function closure
-			this.stopLazyLoadingModules = destructor;
-
-			return this;
+		if (this.subModulesEnabled && !options.subModulesDisabled) {
+			this._createSubModules(module);
 		}
 
+		return module;
+	},
+
+	createModules: function createModule(metaData, callback, context) {
+		var modules = [],
+		    module,
+		    callback = callback || function() {};
+
+		metaData.forEach(function(element, type, options) {
+			module = this.createModule(element, type, options);
+			modules.push(module);
+			callback.call(context, module, element, type, options);
+		}, this);
+
+		callback = context = module = null;
+
+		return modules;
+	},
+
+	_createSubModules: function _createSubModules(module) {
+		var els = module.element.getElementsByTagName("*"),
+		    length = els.length,
+		    i = 0, element, name;
+
+		for (i; i < length; i++) {
+			element = els[i];
+			name = element.getAttribute("data-module-property");
+
+			if (name) {
+				this._createSubModuleProperty(module, name, element);
+			}
+		}
+	},
+
+	_createSubModuleProperty: function _createSubModuleProperty(parentModule, name, element) {
+		var metaData = new Module.MetaData(element),
+		   subModule;
+
+		if (metaData.types.length > 1) {
+			throw new Error("Sub module elements cannot have more than one type specified in data-modules");
+		}
+
+		subModule = this.createModule(element, metaData.types[0], metaData.options);
+		subModule.init();
+
+		if (parentModule[name] === null) {
+			parentModule[name] = subModule;
+		}
+		else if (parentModule[name] instanceof Array) {
+			if (!parentModule.hasOwnProperty(name)) {
+				parentModule[name] = [];
+			}
+
+			parentModule[name].push(subModule);
+		}
+		else {
+			throw new Error("Cannot create sub module property '" + name + "'. Property is neither null nor an Array on the parent module.");
+		}
+
+		this.manager.markModulesCreated(element, metaData);
+
+		subModule = metaData = element = null;
 	}
 
 };
 
-Module.Manager.include(Module.Manager.LazyLoader);
+Module.Provider = Provider;
 
-Module.Manager.SubModuleProperties = {
+})();
 
-	included: function included(Klass) {
-		if (Klass.addCallback) {
-			Klass.addCallback("beforeReady", "initSubModules");
+(function(g, Module) {
+
+var _guid = 0;
+
+function Base() {
+	this.initialize();
+}
+
+Base.setDefaultModule = function(module) {
+	Module.manager.setDefaultModule(module);
+};
+
+Base.unregister = function(module) {
+	if (!Module.manager) {
+		return;
+	}
+
+	Module.manager.unregisterModule(module);
+};
+
+Base.prototype = {
+
+	controllerId: null,
+
+	document: null,
+
+	element: null,
+
+	guid: null,
+
+	_isLoading: false,
+
+	window: null,
+
+	constructor: Base,
+
+	initialize: function() {
+		this.guid = ++_guid;
+		this.options = {};
+	},
+
+	init: function(elementOrId, options) {
+		if (elementOrId) {
+			this.setElement(elementOrId);
 		}
+
+		if (options) {
+			this.setOptions(options);
+		}
+
+		if (this.options.defaultModule) {
+			Base.setDefaultModule(this);
+		}
+
+		return this;
+	},
+
+	destructor: function(keepElement) {
+		Base.unregister(this);
+
+		if (!keepElement && this.element && this.element.parentNode) {
+			this.element.parentNode.removeChild(this.element);
+		}
+
+		this.element = this.options = this.document = this.window = null;
+	},
+
+	focus: function(anything) {
+		var element,
+			typeRegex = /checkbox|radio|submit|button|image|reset/,
+		    selector = [
+		    	"textarea",
+		    	"select",
+		    	"input[type=text]",
+		    	"input[type=password]",
+		    	"input[type=checkbox]",
+		    	"input[type=radio]",
+		    	"input[type=email]",
+		    	"input[type=number]",
+		    	"input[type=search]",
+		    	"input[type=url]"
+		    ];
+
+		if (anything) {
+			selector.push(
+				"a",
+				"button",
+				"input[type=submit]",
+				"input[type=button]",
+				"input[type=image]",
+				"input[type=reset]"
+			);
+		}
+
+		element = this.element.querySelector(selector.join(", "));
+
+		if (element && element.focus) {
+			element.focus();
+
+			if (element.select && !typeRegex.test(element.type)) {
+				element.select();
+			}
+		}
+
+		element = null;
+	},
+
+	_loading: function(element) {
+		(element || this.element).classList.add("loading");
+		this._isLoading = true;
+		element = null;
+	},
+
+	_loaded: function(element) {
+		(element || this.element).classList.remove("loading");
+		this._isLoading = false;
+		element = null;
+	},
+
+	onControllerRegistered: function(frontController, controllerId) {
+	},
+
+	onControllerUnregistered: function(frontController) {
+	},
+
+	setElement: function(elementOrId) {
+		this.element = typeof elementOrId === "string"
+		             ? document.getElementById(elementOrId)
+		             : elementOrId;
+
+		if (!this.element) {
+			throw new Error("Could not find element: " + elementOrId);
+		}
+
+		this.document = this.element.ownerDocument;
+		this.window = this.document.defaultView || this.document.parentWindow;
+	},
+
+	setOptions: function(overrides) {
+		for (var key in overrides) {
+			if (overrides.hasOwnProperty(key)) {
+				this.options[key] = overrides[key];
+			}
+		}
+
+		overrides = null;
+	}
+
+};
+
+Module.Base = Base;
+
+// Make globally available
+g.Module = Module;
+
+})(this, this.Module || {});
+Module.Utils = {
+	include: function(mixin) {
+		if (Module.Base)
+			Module.Base.include(mixin);
+	}
+};
+
+Module.Utils.PropertyCache = {
+
+	self: {
+
+		cache: null,
+
+		fromCache: function() {
+			var toString = Object.prototype.toString,
+			    isArray = function(x) { return toString.call(x) === "[object Array]"; };
+
+			function defaultMerge(destination, source, key, klass) {
+				var name, value, i, length;
+
+				for (name in source) {
+					if (source.hasOwnProperty(name)) {
+						value = source[name];
+
+						if (isArray(value)) {
+							if (!destination[name]) {
+								destination[name] = value;
+							}
+							else {
+								destination[name] = destination[name] || [];
+
+								for (i = 0, length = value.length; i < length; i++) {
+									if (destination[name].indexOf(value[i]) < 0) {
+										destination[name].unshift(value[i]);
+									}
+								}
+							}
+						}
+						else if (!destination.hasOwnProperty(name)) {
+							destination[name] = source[name];
+						}
+					}
+				}
+			}
+
+			return function fromCache(key, name, callback, context) {
+				this.cache = this.cache || {};
+
+				if (this.cache[key]) {
+					return this.cache[key];
+				}
+
+				if (!callback) {
+					callback = defaultMerge;
+					context = this;
+				}
+				else {
+					context = context || null;
+				}
+
+				var proto = this.prototype, value = {};
+
+				while (proto) {
+					if (proto.hasOwnProperty(name) && proto[name]) {
+						callback.call(context, value, proto[name], key, this);
+					}
+
+					proto = proto.__proto__;
+				}
+
+				return (this.cache[key] = value);
+			};
+		}()
+
 	},
 
 	prototype: {
 
-		initSubModules: function initSubModules() {
-			if (this.options.subModulesDisabled) {
-				return;
-			}
-
-			this.elementStore.setConfig({
-				collections: {
-					subModules: { selector: "[data-module-property]", nocache: true }
-				}
-			});
-
-			var elements = this.elementStore.getCollection("subModules"),
-			    i = 0, length = elements.length, name;
-
-			for (i; i < length; i++) {
-				name = elements[i].getAttribute("data-module-property");
-				this._createSubModuleProperty(name, elements[i]);
-			}
-		},
-
-		_createSubModuleProperty: function _createSubModuleProperty(name, element) {
-			if (!name) {
-				throw new Error("Missing required argument: name");
-			}
-			else if (!element) {
-				throw new Error("Missing required argument: element");
-			}
-
-			var manager = this.constructor.getManager();
-			var metaData = new Module.MetaData(element);
-			var module, proto = this.constructor.prototype;
-
-			if (metaData.types.length > 1) {
-				throw new Error("Sub module elements cannot have more than one type specified in data-modules");
-			}
-
-			module = manager.createModule(element, metaData.types[0], metaData.options);
-			module.setElement(element);
-			module.init();
-
-			if (proto[name] === null) {
-				if (this.hasOwnProperty(name)) {
-					throw new Error("Error creating sub module. Property " + name + " already exists.");
-				}
-
-				this[name] = module;
-			}
-			else if (proto[name] instanceof Array) {
-				if (!this.hasOwnProperty(name)) {
-					this[name] = [];
-				}
-
-				this[name].push(module);
-			}
-			else {
-				throw new Error("Cannot create module property " + name + ". Property is neither null nor an Array in the class Prototype.");
-			}
-
-			manager.markModulesCreated(element, metaData);
-
-			manager = module = metaData = proto = element = null;
+		mergeProperty: function mergeProperty(name, callback, context) {
+			var key = this.guid ? this.guid + "." + name : name;
+			return this.constructor.fromCache(key, name, callback, context);
 		}
 
 	}
 
 };
 
-Module.include(Module.Manager.SubModuleProperties);
+Module.Utils.include(Module.Utils.PropertyCache);
 
-var Foundry = {
-	version: "0.0.6"
-};
+Module.Utils.Bootstrap = {
+	includes: [
+		Callbacks.Utils
+	],
 
-/*
-Lifecycle:
+	included: function(Klass) {
+		// Forcefully override methods
+		var proto = Klass.prototype;
 
-	1) Executed by outside code
-		new Application() -> (Acquire dependencies via dependency injection)
+		if (proto.initialize !== Module.Utils.Bootstrap.prototype.initialize) {
+			proto._originalInitialize = proto.initialize || function emptyInitialize() {};
+			proto.initialize = Module.Utils.Bootstrap.prototype.initialize;
+		}
+		else {
+			proto.initialize = function emptyInitialize() {};
+		}
 
-	2) Executed by outside code
-		configure()
+		if (proto.init !== Module.Utils.Bootstrap.prototype.init) {
+			proto._originalInit = proto.init || function emptyInit() {};
+			proto.init = Module.Utils.Bootstrap.prototype.init;
+		}
+		else {
+			proto.init = function emptyInit() {};
+		}
 
-	3) Executed by outside code
-		init() -> (execute "beforeReady" callback) -> _ready() -> (publish "application.ready") -> (execute "afterReady" callback)
+		if (proto.destructor !== Module.Utils.Bootstrap.prototype.destructor) {
+			proto._originalDestructor = proto.destructor || function emptyDestructor() {};
+			proto.destructor = Module.Utils.Bootstrap.prototype.destructor;
+		}
+		else {
+			proto.destructor = function emptyDestructor() {};
+		}
 
-Example:
+		proto = null;
+	},
 
-	1)
-		a) Using dependency injection:
-			var app = objectFactory.getInstance("application");
-		b) No dependency injection:
-			var app = new Application();
-			app.moduleManager = new Module.Manager();
-			app.config = new Hash();
-			app.eventDispatcher = ...
-			...
-
-	2) app.configure(function(config) {
-	       config.foo = "bar";
-	   });
-
-	3) window.onload = function() {
-	       app.init(document);
-	   };
-*/
-Foundry.Application = Module.extend({
 	prototype: {
 
-		actions: {
-			click: [
-				"createModule",
-				"publishEvent"
-			]
+		initialize: function() {
+			this._originalInitialize.call(this);
+			this.setOptions(this.mergeProperty("options"));
 		},
 
-		config: null,
+		init: function(elementOrId, options) {
+			this._originalInit.call(this, elementOrId, options);
+			this.initCallbacks(this.mergeProperty("callbacks"));
+			this.callbacks.execute("beforeReady");
+			this._ready();
+			this.callbacks.execute("afterReady");
 
-		logger: window.console || null,
-
-		moduleManager: null,
-
-		objectFactory: null,
-
-		options: {
-			actionPrefix: "app",
-			subModulesDisabled: true,
-			focusAnythingInDefaultModule: true
-		},
-
-		destructor: function destructor() {
-			if (this.moduleManager) {
-				this.moduleManager.destructor(true);
-				this.moduleManager = null;
+			if (!this._isLoading) {
+				this._loaded();
 			}
 
-			if (this.objectFactory) {
-				this.objectFactory.destructor();
-				this.objectFactory = null;
-			}
-
-			if (this.config.handleApplicationErrors) {
-				this.window.onerror = null;
-			}
-
-			this.logger = this.config = null;
-
-			Module.prototype.destructor.call(this, true);
-		},
-
-		_ready: function _ready() {
-			Module.prototype._ready.call(this);
-
-			if (this.delegator.constructor.errorDelegate === null && this.config.handleActionErrors) {
-				this.delegator.constructor.errorDelegate = this;
-			}
-
-			if (this.config.handleApplicationErrors) {
-				this.window.onerror = this.handleError.bind(this);
-			}
-
-			try {
-				this.moduleManager.init();
-
-				if (this.config.eagerLoadModules) {
-					this.moduleManager.eagerLoadModules(this.element);
-				}
-
-				if (this.config.lazyLoadModules) {
-					this.moduleManager.lazyLoadModules(this.element);
-				}
-
-				this.subscribe("application.createModule", this, "handleCreateModule");
-
-				this.moduleManager.focusDefaultModule(this.options.focusAnythingInDefaultModule);
-
-				// Tell the world: "I'm Here!"
-				this.publish("application.ready");
-			}
-			catch (error) {
-				if (!this.handleError(error)) {
-					throw error;
-				}
-			}
-		},
-
-		configure: function configure(callback, context) {
-			callback.call(context || this, this.config, this);
+			opts = null;
 
 			return this;
 		},
 
-		/**
-		 * Application#createModule(event, element, params)
-		 * - event (Event): The browser event object
-		 * - element (HTMLElement): The HTML element with the data-action attribute on it.
-		 * - params (Object): Action params used to create the new module.
-		 *
-		 * Creates a new module on the page triggered by a user event. The
-		 * new module is created, including its root element, and appended
-		 * to a container on the page.
-		 **/
-		createModule: function createModule(event, element, params) {
+		destructor: function(keepElement) {
+			this.callbacks.execute("destroy", keepElement);
+			this.destroyCallbacks();
+			this._originalDestructor.call(this, keepElement);
+		},
+
+		_ready: function() {
+		},
+
+		cancel: function(event, element, params) {
 			event.stop();
-			this._createModuleFromConfig(params);
+			this.destructor();
 			event = element = params = null;
-		},
+		}
 
-		/**
-		 * Application#_createModuleFromConfig(config) -> Module
-		 * - config (Object): New module config.
-		 * - config.module (Object): Required meta data about the new module to create.
-		 * - config.module.type (String): Type or class name of the new module.
-		 * - config.module.options (Object): Optional options hash to pass in to the new module's init() method.
-		 * - config.module.template (String): Name of the client side template used to render this new module.
-		 *
-		 * - config.container (Object): Optional meta data about the HTML element that will contain this new module.
-		 * - config.container.selector (String): The optional CSS selector identifying the container. Defaults to the <body> tag.
-		 * - config.container.insert (String): Values (top|bottom). Determines where the new root element for this module will
-		 *                                     be inserted into the container.
-		 *
-		 * - config.element (Object): Optional meta data about the root element for this new module.
-		 * - config.element.tag (String): Optional name of the HTML tag to create. Defaults to "div".
-		 * - config.element.className (String): The optional class name for the new root element. Multiple class names are
-		 *                                      separated by a space character.
-		 *
-		 * Create a new module on the page and append it to a container.
-		 **/
-		_createModuleFromConfig: function _createModuleFromConfig(config) {
-			if (!config.module) {
-				throw new Error("Missing required config.module");
-			}
-			else if (!config.module.type) {
-				throw new Error("Missing required config.module.type");
-			}
-			else if (!config.module.template) {
-				throw new Error("Missing required config.module.template for type: " + config.module.type);
-			}
+	}
 
-			config.module.options = config.module.options || {};
-			config.container = config.container || {};
-			config.container.insert = config.container.insert || "top";
-			config.element = config.element || {};
-			config.element.tag = config.element.tag || "div";
+};
 
-			var module = null;
-			var container = null;
-			var selector = "script[data-template=" + config.module.template + "]";
-			var template = this.elementStore.querySelector(selector);
-			var element = this.document.createElement(config.element.tag);
+Module.Utils.include(Module.Utils.Bootstrap);
 
-			if (!template) {
-				throw new Error("Failed to find new module template using selector: " + selector);
-			}
+Module.Utils.ElementStore = {
 
-			if (config.container.selector) {
-				container = this.elementStore.querySelector(config.container.selector);
-			}
-			else {
-				container = this.document.getElementsByTagName("body")[0];
-			}
+	includes: [
+		ElementStore.Utils
+	],
 
-			if (!container) {
-				throw new Error("Failed to find module container with selector: " + (config.container.selector || "body"));
-			}
+	included: function(Klass) {
+		Klass.addCallback("beforeReady", "_initElementStore");
+		Klass.addCallback("destroy", "destroyElementStore");
+	},
 
-			module = this.moduleManager.createModule(element, config.module.type, config.module.options || {});
-			this.moduleManager.initModuleInContainer(element, container, config.container, template, config.module.type, module);
-			module.focus();
-
-			event = element = config = container = rootElement = null;
-
-			return module;
-		},
-
-		_getErrorObject: function _getErrorObject(errorMessage) {
-			var info = errorMessage.match(/^(([A-Za-z_][A-Za-z0-9._]*):)?(.+$)/),
-			    error = null, className, message, Klass;
-
-			if (!info) {
-				error = new Error(message);
-			}
-			else {
-				className = info[2] || "Error";
-				message = (info[3] || errorMessage).replace(/^\s+|\s+$/g, "");
-
-				if (/^[A-Za-z_][A-Za-z0-9._]*$/.test(className)) {
-					try {
-						Klass = eval(className);
-						error = new Klass(message);
-					}
-					catch (error) {
-						throw new Error("Class '" + className + "' is either not found or not an object constructor function");
-					}
-				}
-				else {
-					error = new Error(message);
-				}
-			}
-
-			return error;
-		},
-
-		handleActionError: function handleActionError(event, element, params) {
-			if (this.logger) {
-				this.logger.debug({
-					event: event,
-					element: element,
-					params: params
-				});
-
-				this.logger.error(params.error);
-			}
-			else {
-				throw params.error;
-			}
-		},
-
-		handleCreateModule: function handleCreateModule(event) {
-			this._createModuleFromConfig(event.data);
-
-			return false;
-		},
-
-		handleError: function handleError(errorMessage) {
-			var error = typeof errorMessage === "string" ? this._getErrorObject(errorMessage) : errorMessage;
-
-			this._handleError(error);
-		},
-
-		_handleError: function _handleError(error) {
-			if (this.logger) {
-				this.logger.error(error);
-
-				return true;
-			}
-
-			return false;
-		},
-
-		/**
-		 * Application#publishEvent(event, element, params)
-		 * - event (Event): The browser event object.
-		 * - element (HTMLElement): The HTML element with the data-action attribute.
-		 * - params (Object): Action params.
-		 * - params.event (String): Required name of the application event to publish.
-		 * - params.data (Object): Optional data to pass along in the event.
-		 *
-		 * Publish an event on the global event dispatcher, triggered by a user action,
-		 * such as a click. The element is passed along as the publisher of the event,
-		 * and arbitrary data is passed along via the params.data property.
-		 **/
-		publishEvent: function publishEvent(event, element, params) {
-			if (!params.event) {
-				throw new Error("Missing required argument params.event");
-			}
-
-			event.stop();
-			this.constructor.publish(params.event, element, params.data || {});
+	prototype: {
+		_initElementStore: function _initElementStore() {
+			this.initElementStore(this.element);
 		}
 	}
-});
+
+};
+
+Module.Utils.include(Module.Utils.ElementStore);
+
+Module.Utils.Events = {
+	included: function(Klass) {
+		Beacon.setup(Klass);
+		Klass.addCallback("beforeReady", "_initApplicationEvents");
+	}
+};
+
+Module.Utils.include(Module.Utils.Events);
+
+Module.Utils.Rendering = {
+
+	included: function(Klass) {
+		Klass.addCallback("destroy", "_destroyRenderingEngine");
+	},
+
+	prototype: {
+
+		renderingEngine: null,
+
+		_destroyRenderingEngine: function _destroyRenderingEngine() {
+			this.renderingEngine = null;
+		},
+
+		render: function render(name, data, elementOrId) {
+			return this.renderingEngine.render(name, data, elementOrId);
+		}
+
+	}
+
+};
+
+Module.Utils.include(Module.Utils.Rendering);
+
+var Foundry = {
+	version: "0.0.7"
+};
+
+Foundry.Application = function() {
+	this.options = {
+		eagerLoadModules: true,
+		focusAnythingInDefaultModule: false,
+		handleActionErrors: true,
+		handleApplicationErrors: true,
+		lazyLoadModules: true,
+		subModulesDisabled: true
+	};
+};
+
+Foundry.Application.prototype = {
+
+	dispatcher: null,
+
+	document: null,
+
+	element: null,
+
+	errorHandler: null,
+
+	eventsController: null,
+
+	frontController: null,
+
+	moduleManager: null,
+
+	newModuleController: null,
+
+	objectFactory: null,
+
+	options: null,
+
+	window: null,
+
+	constructor: Foundry.Application,
+
+	init: function(element, options) {
+		if (element) {
+			this.setElement(element);
+		}
+
+		if (options) {
+			this.setOptions(options);
+		}
+
+		this._initErrorHandling();
+
+		try {
+			this.frontController.init(this.element);
+			this._initEventsController();
+			this._initNewModuleController();
+			this._initModuleManager();
+			this.dispatcher.publish("application.ready", this);
+		}
+		catch (error) {
+			if (!this.errorHandler || !this.errorHandler.handleError(error)) {
+				throw error;
+			}
+		}
+
+		return this;
+	},
+
+	_initErrorHandling: function() {
+		if (this.options.handleApplicationErrors) {
+			this.errorHandler = this.errorHandler || new Foundry.ErrorHandler();
+			this.errorHandler.init(this, this.window);
+
+			if (!this.frontController.errorHandler && this.options.handleActionErrors) {
+				this.frontController.errorHandler = this.errorHandler;
+			}
+		}
+	},
+
+	_initEventsController: function() {
+		this.eventsController = this.eventsController || new Foundry.ApplicationEventsController(this.dispatcher);
+		this.frontController.registerController(this.eventsController);
+	},
+
+	_initModuleManager: function() {
+		this.moduleManager.init();
+
+		if (this.options.eagerLoadModules) {
+			this.moduleManager.eagerLoadModules(this.element);
+		}
+
+		if (this.options.lazyLoadModules) {
+			this.moduleManager.lazyLoadModules(this.element);
+		}
+
+		this.moduleManager.focusDefaultModule(this.options.focusAnythingInDefaultModule);
+	},
+
+	_initNewModuleController: function() {
+		var newModuleController = this.newModuleController || new Foundry.NewModuleController();
+		newModuleController.dispatcher = this.dispatcher;
+		newModuleController.document = this.document;
+		newModuleController.frontController = this.frontController;
+		newModuleController.moduleManager = this.moduleManager;
+		newModuleController.init();
+		this.newModuleController = newModuleController
+	},
+
+	destructor: function() {
+		if (this.dispatcher) {
+			this.dispatcher.publish("application.destroy", this);
+			this.dispatcher.destructor();
+		}
+		if (this.frontController) {
+			this.frontController.destructor();
+		}
+
+		if (this.moduleManager) {
+			this.moduleManager.destructor(true);
+		}
+
+		if (this.objectFactory) {
+			this.objectFactory.destructor();
+		}
+
+		if (this.errorHandler) {
+			this.errorHandler.destructor();
+		}
+
+		if (this.eventsController) {
+			this.eventsController.destructor();
+		}
+
+		if (this.newModuleController) {
+			this.newModuleController.destructor();
+		}
+
+		this.newModuleController =
+		this.eventsController =
+		this.dispatcher =
+		this.frontController =
+		this.moduleManager =
+		this.errorHandler =
+		this.objectFactory =
+		this.element =
+		this.document =
+		this.window =
+		this.logger =
+		this.options = null;
+	},
+
+	setElement: function(element) {
+		this.element = element;
+		this.document = element.ownerDocument;
+		this.window = this.document.defaultView;
+	},
+
+	setOptions: function(options) {
+		for (var key in options) {
+			if (options.hasOwnProperty(key)) {
+				this.options[key] = options[key];
+			}
+		}
+	}
+
+};
+
+Foundry.ApplicationEventsController = function(dispatcher) {
+	this.dispatcher = dispatcher;
+};
+
+Foundry.ApplicationEventsController.prototype = {
+
+	controllerId: "events",
+
+	dispatcher: null,
+
+	frontController: null,
+
+	constructor: Foundry.ApplicationEventsController,
+
+	destructor: function() {
+		if (this.frontController) {
+			this.frontController.unregisterController(this);
+		}
+
+		this.dispatcher = this.frontController = null;
+	},
+
+	onControllerRegistered: function(frontController, controllerId) {
+		this.frontController = frontController;
+	},
+
+	onControllerUnregistered: function(frontController) {
+	},
+
+	/**
+	 * Application#publishEvent(event, element, params)
+	 * - event (Event): The browser event object.
+	 * - element (HTMLElement): The HTML element with the data-action attribute.
+	 * - params (Object): Action params.
+	 * - params.event (String): Required name of the application event to publish.
+	 * - params.data (Object): Optional data to pass along in the event.
+	 *
+	 * Publish an event on the global event dispatcher, triggered by a user action,
+	 * such as a click. The element is passed along as the publisher of the event,
+	 * and arbitrary data is passed along via the params.data property.
+	 **/
+	publishEvent: function click(event, element, params) {
+		if (!params.event) {
+			throw new Error("Missing required argument params.event");
+		}
+
+		event.stop();
+		this.dispatcher.publish(params.event, element, params.data || {});
+	}
+
+};
+Foundry.ErrorHandler = function() {
+};
+
+Foundry.ErrorHandler.prototype = {
+
+	application: null,
+
+	logger: window.console || null,
+
+	window: null,
+
+	constructor: Foundry.ErrorHandler,
+
+	destructor: function() {
+		if (this.window) {
+			this.window.onerror = null;
+		}
+
+		this.application = this.logger = this.window = null;
+	},
+
+	init: function(application, window) {
+		this.application = application;
+		this.window = window;
+		this.window.onerror = this.handleError.bind(this);
+	},
+
+	_getErrorObject: function(errorMessage) {
+		var info = errorMessage.match(/^(([A-Za-z_][A-Za-z0-9._]*):)?(.+$)/),
+		    error = null, className, message, Klass;
+
+		if (!info) {
+			error = new Error(message);
+		}
+		else {
+			className = info[2] || "Error";
+			message = (info[3] || errorMessage).replace(/^\s+|\s+$/g, "");
+
+			if (/^[A-Za-z_][A-Za-z0-9._]*$/.test(className)) {
+				try {
+					Klass = eval(className);
+					error = new Klass(message);
+				}
+				catch (error) {
+					throw new Error("Class '" + className + "' is either not found or not an object constructor function");
+				}
+			}
+			else {
+				error = new Error(message);
+			}
+		}
+
+		return error;
+	},
+
+	handleActionError: function(error, event, element, params, action, controller, controllerId) {
+		if (this.logger) {
+			this.logger.error(error);
+
+			this.logger.debug({
+				error: error,
+				event: event,
+				element: element,
+				params: params,
+				action: action,
+				controller: controller,
+				controllerId: controllerId
+			});
+		}
+		else {
+			throw error;
+		}
+	},
+
+	handleError: function(errorMessage) {
+		var error = typeof errorMessage === "string" ? this._getErrorObject(errorMessage) : errorMessage;
+
+		return this._handleError(error);
+	},
+
+	_handleError: function(error) {
+		if (this.logger) {
+			this.logger.error(error);
+
+			return true;
+		}
+
+		return false;
+	}
+
+};
+
+Foundry.ModuleFactory = function ModuleFactory() {
+}
+
+Foundry.ModuleFactory.prototype = {
+
+	container: null,
+
+	constructor: Foundry.ModuleFactory,
+
+	destructor: function() {
+		this.container = null;
+	},
+
+	getInstance: function(type) {
+		return this.container.resolve(type);
+	}
+
+};
+
+Foundry.ModuleObserver = function(frontController) {
+	this.frontController = frontController || null;
+};
+
+Foundry.ModuleObserver.prototype = {
+
+	frontController: null,
+
+	constructor: Foundry.ModuleObserver,
+
+	destructor: function() {
+		this.frontController = null;
+	},
+
+	onModuleCreated: function(module, element, type) {
+		module.controllerId = module.options.controllerId || module.guid;
+	},
+
+	onModuleRegistered: function(module, type) {
+		this.frontController.registerController(module);
+	},
+
+	onModuleUnregistered: function(module) {
+		this.frontController.unregisterController(module);
+	}
+
+};
+
+Foundry.NewModuleController = function() {};
+
+Foundry.NewModuleController.prototype = {
+
+	controllerId: "newModules",
+
+	dispatcher: null,
+
+	document: null,
+
+	frontController: null,
+
+	moduleManager: null,
+
+	constructor: Foundry.NewModuleController,
+
+	destructor: function() {
+		if (this.dispatcher) {
+			this.dispatcher.unsubscribe(this);
+		}
+
+		if (this.frontController) {
+			this.frontController.unregisterController(this);
+		}
+
+		this.dispatcher = this.document = this.moduleManager = this.frontController = null;
+	},
+
+	init: function() {
+		this.dispatcher.subscribe(this.controllerId + ".createModule", this, "handleCreateModule");
+		this.frontController.registerController(this);
+	},
+
+	/**
+	 * Application#createModule(event, element, params)
+	 * - event (Event): The browser event object
+	 * - element (HTMLElement): The HTML element with the data-action attribute on it.
+	 * - params (Object): Action params used to create the new module.
+	 *
+	 * Creates a new module on the page triggered by a user event. The
+	 * new module is created, including its root element, and appended
+	 * to a container on the page.
+	 **/
+	createModule: function click(event, element, params) {
+		event.stop();
+		this._createModuleFromConfig(params);
+		event = element = params = null;
+	},
+
+	/**
+	 * Application#_createModuleFromConfig(config) -> Module
+	 * - config (Object): New module config.
+	 * - config.module (Object): Required meta data about the new module to create.
+	 * - config.module.type (String): Type or class name of the new module.
+	 * - config.module.options (Object): Optional options hash to pass in to the new module's init() method.
+	 * - config.module.template (String): Name of the client side template used to render this new module.
+	 *
+	 * - config.container (Object): Optional meta data about the HTML element that will contain this new module.
+	 * - config.container.selector (String): The optional CSS selector identifying the container. Defaults to the <body> tag.
+	 * - config.container.insert (String): Values (top|bottom). Determines where the new root element for this module will
+	 *                                     be inserted into the container.
+	 *
+	 * - config.element (Object): Optional meta data about the root element for this new module.
+	 * - config.element.tag (String): Optional name of the HTML tag to create. Defaults to "div".
+	 * - config.element.className (String): The optional class name for the new root element. Multiple class names are
+	 *                                      separated by a space character.
+	 *
+	 * Create a new module on the page and append it to a container.
+	 **/
+	_createModuleFromConfig: function(config) {
+		if (!config.module) {
+			throw new Error("Missing required config.module");
+		}
+		else if (!config.module.type) {
+			throw new Error("Missing required config.module.type");
+		}
+		else if (!config.module.template) {
+			throw new Error("Missing required config.module.template for type: " + config.module.type);
+		}
+
+		config.module.options = config.module.options || {};
+		config.container = config.container || {};
+		config.container.insert = config.container.insert || "top";
+		config.element = config.element || {};
+		config.element.tag = config.element.tag || "div";
+
+		var module = null;
+		var container = null;
+		var selector = "script[data-template=" + config.module.template + "]";
+		var template = this.document.querySelector(selector);
+		var element = this.document.createElement(config.element.tag);
+
+		if (!template) {
+			throw new Error("Failed to find new module template using selector: " + selector);
+		}
+
+		if (config.container.selector) {
+			container = this.document.querySelector(config.container.selector);
+		}
+		else {
+			container = this.document.getElementsByTagName("body")[0];
+		}
+
+		if (!container) {
+			throw new Error("Failed to find module container with selector: " + (config.container.selector || "body"));
+		}
+
+		module = this.moduleManager.createModule(element, config.module.type, config.module.options || {});
+		this.moduleManager.initModuleInContainer(element, container, config.container, template, config.module.type, module);
+		module.focus();
+
+		element = template = config = container = null;
+
+		return module;
+	},
+
+	handleCreateModule: function(event) {
+		this._createModuleFromConfig(event.data);
+
+		return false;
+	},
+
+	onControllerRegistered: function(frontController, controllerId) {
+	},
+
+	onControllerUnregistered: function(frontController) {
+	}
+
+};

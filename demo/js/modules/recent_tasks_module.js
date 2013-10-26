@@ -1,4 +1,4 @@
-var RecentTasksModule = Module.extend({
+var RecentTasksModule = Module.Base.extend({
 
 	prototype: {
 

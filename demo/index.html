@@ -22,41 +22,47 @@
 			<p>Dynamically create new modules!</p>
 			<ul>
 				<li><button type="button"
-				        data-action="app.createModule"
-				        data-actionparams='{
-				            "module": {
-				                "type": "dynamicModule",
-				                "template": "dynamicModule"
-				            },
-				            "container": {
-				                "selector": ".main"
-				            }
-				        }'
+				        data-actions="newModules.createModule"
+				        data-action-params='{
+							"newModules.createModule": {
+								"module": {
+									"type": "dynamicModule",
+									"template": "dynamicModule"
+								},
+								"container": {
+									"selector": ".main"
+								}
+							}
+						}'
 				    >New Module (Middle)</button></li>
 				<li><button type="button"
-				        data-action="app.createModule"
-				        data-actionparams='{
-				            "module": {
-				                "type": "dynamicModule",
-				                "template": "dynamicModule"
-				            },
-				            "container": {
-				                "insert": "bottom",
-				                "selector": ".side"
-				            }
-				        }'
+				        data-actions="newModules.createModule"
+				        data-action-params='{
+							"newModules.createModule": {
+								"module": {
+									"type": "dynamicModule",
+									"template": "dynamicModule"
+								},
+								"container": {
+									"insert": "bottom",
+									"selector": ".side"
+								}
+							}
+						}'
 				    >New Module (Left)</button></li>
 				<li><button type="button"
-				        data-action="app.createModule"
-				        data-actionparams='{
-				            "module": {
-				                "type": "dynamicModule",
-				                "template": "dynamicModule"
-				            },
-				            "container": {
-				                "selector": "footer"
-				            }
-				        }'
+				        data-actions="newModules.createModule"
+				        data-action-params='{
+				        	"newModules.createModule": {
+								"module": {
+									"type": "dynamicModule",
+									"template": "dynamicModule"
+								},
+								"container": {
+									"selector": "footer"
+								}
+							}
+						}'
 				    >New Module (Footer)</button></li>
 			</ul>
 		</nav>
@@ -126,9 +132,9 @@ app.objectFactory
 
 <section class="main">
 
-	<div class="module loading" data-module-lazyload="any" data-modules="tasks" data-module-options='{"actionPrefix":"tasks", "defaultModule": true}'>
+	<div class="module loading" data-module-lazyload="any" data-modules="tasks" data-module-options='{"controllerId":"tasks", "defaultModule": true}'>
 		<h2 class="module-title">Tasks</h2>
-		<form class="module-body" action="#" method="get" data-action="tasks.add">
+		<form class="module-body" action="#" method="get" data-actions="tasks.add">
 			<p>Add and complete tasks here to see how the page reacts.</p>
 			<p>
 				<label>New task: <input type="text" size="50" name="task_text"></label>
@@ -136,30 +142,30 @@ app.objectFactory
 			</p>
 			<p>
 				Items:
-				<button type="button" data-action="tasks.removeDone">Remove Finished Tasks</button>
+				<button type="button" data-actions="tasks.removeDone">Remove Finished Tasks</button>
 			</p>
 		</form>
-		<div data-module-property="selection" data-modules="selection" data-module-options='{"actionPrefix":"tasks.selection"}'>
+		<div data-module-property="selection" data-modules="selection" data-module-options='{"controllerId":"tasks-selection"}'>
 			<ol></ol>
 			<script type="text/html" class="item-template">
-				<li data-action="tasks.selection.toggleSelection">
-					<button type="button" data-action="tasks.remove">X</button>
-					<input type="checkbox" data-action="tasks.toggleDone">
+				<li data-actions="tasks-selection.toggleSelection">
+					<button type="button" data-actions="tasks.remove">X</button>
+					<input type="checkbox" data-actions="tasks.toggleDone">
 					<span>#{text}</span>
 				</li>
 			</script>
 		</div>
 	</div>
 
-	<div class="module loading" data-module-lazyload="any" data-modules="selection" data-module-options='{"actionPrefix":"sel"}'>
+	<div class="module loading" data-module-lazyload="any" data-modules="selection" data-module-options='{"controllerId":"sel"}'>
 		<h2 class="module-title">Fruits</h2>
 		<div class="module-body">
 			<p>Click the items below to toggle their selected state.</p>
 		</div>
 		<ol>
-			<li data-action="sel.toggleSelection">Apples</li>
-			<li data-action="sel.toggleSelection">Oranges</li>
-			<li data-action="sel.toggleSelection">Bananas</li>
+			<li data-actions="sel.toggleSelection">Apples</li>
+			<li data-actions="sel.toggleSelection">Oranges</li>
+			<li data-actions="sel.toggleSelection">Bananas</li>
 		</ol>
 	</div>
 
@@ -187,7 +193,7 @@ app.objectFactory
 		<p>This module was created on #{createdAt}</p>
 		<p>GUID: #{guid}</p>
 		<p>Timestamp: #{timestamp}</p>
-		<p><button type="button" data-action="cancel">Cancel</button></p>
+		<p><button type="button" data-actions="#{controllerId}.cancel">Cancel</button></p>
 	</div>
 </script>
 
@@ -204,113 +210,98 @@ app.objectFactory
 <!-- Bootstrapping Code -->
 <script type="text/javascript">
 
-(function(window, document) {
-
-	var DependencyConfig = {
+	var container = new Hypodermic.Container({
 		application: {
-			className: "Foundry.Application",
+			type: "Foundry.Application",
 			singleton: true,
 			properties: {
-				config: { id: "applicationConfig" },
-				delegator: { id: "delegator" },
-				elementStore: { id: "elementStore" },
-				eventDispatcher: { id: "globalEventDispatcher" },
-				moduleManager: { id: "moduleManager" },
-				objectFactory: { id: "objectFactory" }
+				dispatcher: "eventDispatcher",
+				frontController: "frontController",
+				moduleManager: "moduleManager",
+				container: "container"
 			}
 		},
-		applicationConfig: {
-			className: "Hash",
-			singleton: true,
-			constructorArgs: [{
-				value: {
-					// Error handling:
-					handleActionErrors: true,
-					handleApplicationErrors: false,
-
-					// Modules
-					eagerLoadModules: true,
-					lazyLoadModules: true
-				}
-			}]
-		},
-		delegator: {
-			className: "dom.events.Delegator"
-		},
 		elementStore: {
-			className: "ElementStore"
+			type: "ElementStore"
 		},
-		globalEventDispatcher: {
-			className: "Beacon.Dispatcher",
+		frontController: {
+			type: "Oxydizr.FrontController",
 			singleton: true
+		},
+		eventDispatcher: {
+			type: "Beacon.Dispatcher",
+			singleton: true
+		},
+		moduleFactory: {
+			type: "Foundry.ModuleFactory",
+			singleton: true,
+			properties: {
+				container: "container"
+			}
+		},
+		moduleProvider: {
+			type: "Module.Provider",
+			singleton: true,
+			properties: {
+				factory: "moduleFactory"
+			}
+		},
+		moduleManager: {
+			type: "Module.Manager",
+			singleton: true,
+			properties: {
+				provider: "moduleProvider",
+				moduleObserver: "moduleObserver"
+			}
+		},
+		moduleObserver: {
+			type: "Module.FrontControllerModuleObserver",
+			properties: {
+				frontController: "frontController"
+			}
+		},
+
+		// Modules for your application
+		moduleOptions: {
+			type: "Object",
+			properties: {
+				// Global default module options go here
+			}
 		},
 		module: {
 			abstract: true,
 			properties: {
-				delegator: { id: "delegator" },
-				elementStore: { id: "elementStore" },
-				eventDispatcher: { id: "globalEventDispatcher" },
-				options: { id: "moduleOptions" }
+				elementStore: "elementStore",
+				eventDispatcher: "eventDispatcher",
+				options: "moduleOptions"
 			}
 		},
-		moduleProvider: {
-			className: "Module.Provider",
-			singleton: true,
-			properties: {
-				factory: { id: "objectFactory" }
-			}
-		},
-		moduleManager: {
-			className: "Module.Manager",
-			singleton: true,
-			properties: {
-				provider: { id: "moduleProvider" }
-			}
-		},
-		moduleOptions: {
-			className: "Hash",
-			constructorArgs: [{
-				value: {
-					// Global default module options go here
-				}
-			}]
-		},
-
-		// Modules for your application
 		dynamicModule: {
-			className: "DateCreatedModule",
+			type: "DateCreatedModule",
 			parent: "module"
 		},
 		lazyLoaded: {
-			className: "ShowDateModule",
+			type: "ShowDateModule",
 			parent: "module"
 		},
 		recentTasks: {
-			className: "RecentTasksModule",
+			type: "RecentTasksModule",
 			parent: "module"
 		},
 		selection: {
-			className: "SelectionModule",
+			type: "SelectionModule",
 			parent: "module"
 		},
 		tasks: {
-			className: "TaskListModule",
+			type: "TaskListModule",
 			parent: "module"
 		}
-	};
-
-	var objectFactory = new Hypodermic(DependencyConfig);
-	window.app = objectFactory.getInstance("application");
-
-	app.configure(function(config) {
-		// Custom config settings go here
-		config.myCustomSetting = "something";
-		config.eagerLoadModules = false;
 	});
 
-	app.init(document.documentElement);
-
-})(window, document);
+	var app = container.resolve("application")
+	app.init(document.documentElement, {
+		eagerLoadModules: false
+	});
 
 </script>
 </body>

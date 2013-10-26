@@ -1,16 +1,6 @@
-var TaskListModule = Module.extend({
+var TaskListModule = Module.Base.extend({
 
 	prototype: {
-
-		actions: {
-			click: [
-				"remove",
-				"toggleComplete"
-			],
-			submit: [
-				"add"
-			]
-		},
 
 		elementStore: {
 			elements: {
@@ -24,7 +14,7 @@ var TaskListModule = Module.extend({
 			doneClass: "done"
 		},
 
-		add: function add(event, element, params) {
+		add: function submit(event, element, params) {
 			event.stop();
 
 			var form = this.form();
@@ -52,7 +42,11 @@ var TaskListModule = Module.extend({
 			event = element = params = item = taskTextField = null;
 		},
 
-		remove: function remove(event, element, params) {
+		onControllerRegistered: function(frontController, controllerId) {
+			frontController.registerEvents("click", "submit");
+		},
+
+		remove: function click(event, element, params) {
 			event.stop();
 			var item;
 
@@ -64,7 +58,7 @@ var TaskListModule = Module.extend({
 			event = element = params = item = null;
 		},
 
-		toggleComplete: function toggleComplete(event, element, params) {
+		toggleComplete: function click(event, element, params) {
 			event.stopPropagation();
 
 			var regex = new RegExp("(^|\\s+)(" + this.options.doneClass + ")(\\s+|$)");

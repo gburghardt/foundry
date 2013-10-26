@@ -12,10 +12,10 @@
 		</style>
 	</head>
 	<body>
-		<div data-modules="TaskListModule">
+		<div data-modules="TaskListModule" data-module-options='{"controllerId": "tasks"}'>
 			<h2>My Todo List</h2>
 
-			<form method="get" action="#" data-action="add">
+			<form method="get" action="#" data-actions="tasks.add">
 				<p>
 					<label>Task: <input type="text" name="task" size="60"></label>
 					<button type="submit">Add</button>
@@ -26,9 +26,9 @@
 
 			<script type="text/html" class="template">
 				<li>
-					<input type="checkbox" data-action="toggleComplete">
+					<input type="checkbox" data-actions="tasks.toggleComplete">
 					<span></span>
-					<button type="button" data-action="remove">X</button>
+					<button type="button" data-actions="tasks.remove">X</button>
 				</li>
 			</script>
 		</div>
@@ -50,7 +50,7 @@
 		</div>
 
 		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../dist/foundry.min.js"></script>
+		<script type="text/javascript" src="../../../dist/foundry.concat.js"></script>
 
 		<!-- Your Application Files -->
 		<script type="text/javascript" src="./modules/task_list_module.js"></script>
@@ -60,16 +60,15 @@
 
 			var app = new Foundry.Application();
 
-			app.config = new Hash();
+			app.frontController = new Oxydizr.FrontController();
 			app.moduleManager = new Module.Manager();
+			app.moduleManager.moduleObserver = new Module.FrontControllerModuleObserver();
+			app.moduleManager.moduleObserver.frontController = app.frontController;
+			app.dispatcher = new Beacon.Dispatcher();
 
-			app.configure(function(config) {
-				config.eagerLoadModules = true;
+			app.init(document.documentElement, {
+				eagerLoadModules: true
 			});
-
-			window.onload = function() {
-				app.init(document.getElementsByTagName("html")[0]);
-			};
 
 			window.onunload = function() {
 				app.destructor();

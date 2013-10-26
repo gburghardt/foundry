@@ -1,288 +1,162 @@
-/*
-Lifecycle:
+Foundry.Application = function() {
+	this.options = {
+		eagerLoadModules: true,
+		focusAnythingInDefaultModule: false,
+		handleActionErrors: true,
+		handleApplicationErrors: true,
+		lazyLoadModules: true,
+		subModulesDisabled: true
+	};
+};
 
-	1) Executed by outside code
-		new Application() -> (Acquire dependencies via dependency injection)
+Foundry.Application.prototype = {
 
-	2) Executed by outside code
-		configure()
+	dispatcher: null,
 
-	3) Executed by outside code
-		init() -> (execute "beforeReady" callback) -> _ready() -> (publish "application.ready") -> (execute "afterReady" callback)
+	document: null,
 
-Example:
+	element: null,
 
-	1)
-		a) Using dependency injection:
-			var app = objectFactory.getInstance("application");
-		b) No dependency injection:
-			var app = new Application();
-			app.moduleManager = new Module.Manager();
-			app.config = new Hash();
-			app.eventDispatcher = ...
-			...
+	errorHandler: null,
 
-	2) app.configure(function(config) {
-	       config.foo = "bar";
-	   });
+	eventsController: null,
 
-	3) window.onload = function() {
-	       app.init(document);
-	   };
-*/
-Foundry.Application = Module.extend({
-	prototype: {
+	frontController: null,
 
-		actions: {
-			click: [
-				"createModule",
-				"publishEvent"
-			]
-		},
+	moduleManager: null,
 
-		config: null,
+	newModuleController: null,
 
-		logger: window.console || null,
+	objectFactory: null,
 
-		moduleManager: null,
+	options: null,
 
-		objectFactory: null,
+	window: null,
 
-		options: {
-			actionPrefix: "app",
-			subModulesDisabled: true,
-			focusAnythingInDefaultModule: true
-		},
+	constructor: Foundry.Application,
 
-		destructor: function destructor() {
-			if (this.moduleManager) {
-				this.moduleManager.destructor(true);
-				this.moduleManager = null;
+	init: function(element, options) {
+		if (element) {
+			this.setElement(element);
+		}
+
+		if (options) {
+			this.setOptions(options);
+		}
+
+		this._initErrorHandling();
+
+		try {
+			this.frontController.init(this.element);
+			this._initEventsController();
+			this._initNewModuleController();
+			this._initModuleManager();
+			this.dispatcher.publish("application.ready", this);
+		}
+		catch (error) {
+			if (!this.errorHandler || !this.errorHandler.handleError(error)) {
+				throw error;
 			}
+		}
 
-			if (this.objectFactory) {
-				this.objectFactory.destructor();
-				this.objectFactory = null;
+		return this;
+	},
+
+	_initErrorHandling: function() {
+		if (this.options.handleApplicationErrors) {
+			this.errorHandler = this.errorHandler || new Foundry.ErrorHandler();
+			this.errorHandler.init(this, this.window);
+
+			if (!this.frontController.errorHandler && this.options.handleActionErrors) {
+				this.frontController.errorHandler = this.errorHandler;
 			}
+		}
+	},
 
-			if (this.config.handleApplicationErrors) {
-				this.window.onerror = null;
+	_initEventsController: function() {
+		this.eventsController = this.eventsController || new Foundry.ApplicationEventsController(this.dispatcher);
+		this.frontController.registerController(this.eventsController);
+	},
+
+	_initModuleManager: function() {
+		this.moduleManager.init();
+
+		if (this.options.eagerLoadModules) {
+			this.moduleManager.eagerLoadModules(this.element);
+		}
+
+		if (this.options.lazyLoadModules) {
+			this.moduleManager.lazyLoadModules(this.element);
+		}
+
+		this.moduleManager.focusDefaultModule(this.options.focusAnythingInDefaultModule);
+	},
+
+	_initNewModuleController: function() {
+		var newModuleController = this.newModuleController || new Foundry.NewModuleController();
+		newModuleController.dispatcher = this.dispatcher;
+		newModuleController.document = this.document;
+		newModuleController.frontController = this.frontController;
+		newModuleController.moduleManager = this.moduleManager;
+		newModuleController.init();
+		this.newModuleController = newModuleController
+	},
+
+	destructor: function() {
+		if (this.dispatcher) {
+			this.dispatcher.publish("application.destroy", this);
+			this.dispatcher.destructor();
+		}
+		if (this.frontController) {
+			this.frontController.destructor();
+		}
+
+		if (this.moduleManager) {
+			this.moduleManager.destructor(true);
+		}
+
+		if (this.objectFactory) {
+			this.objectFactory.destructor();
+		}
+
+		if (this.errorHandler) {
+			this.errorHandler.destructor();
+		}
+
+		if (this.eventsController) {
+			this.eventsController.destructor();
+		}
+
+		if (this.newModuleController) {
+			this.newModuleController.destructor();
+		}
+
+		this.newModuleController =
+		this.eventsController =
+		this.dispatcher =
+		this.frontController =
+		this.moduleManager =
+		this.errorHandler =
+		this.objectFactory =
+		this.element =
+		this.document =
+		this.window =
+		this.logger =
+		this.options = null;
+	},
+
+	setElement: function(element) {
+		this.element = element;
+		this.document = element.ownerDocument;
+		this.window = this.document.defaultView;
+	},
+
+	setOptions: function(options) {
+		for (var key in options) {
+			if (options.hasOwnProperty(key)) {
+				this.options[key] = options[key];
 			}
-
-			this.logger = this.config = null;
-
-			Module.prototype.destructor.call(this, true);
-		},
-
-		_ready: function _ready() {
-			Module.prototype._ready.call(this);
-
-			if (this.delegator.constructor.errorDelegate === null && this.config.handleActionErrors) {
-				this.delegator.constructor.errorDelegate = this;
-			}
-
-			if (this.config.handleApplicationErrors) {
-				this.window.onerror = this.handleError.bind(this);
-			}
-
-			try {
-				this.moduleManager.init();
-
-				if (this.config.eagerLoadModules) {
-					this.moduleManager.eagerLoadModules(this.element);
-				}
-
-				if (this.config.lazyLoadModules) {
-					this.moduleManager.lazyLoadModules(this.element);
-				}
-
-				this.subscribe("application.createModule", this, "handleCreateModule");
-
-				this.moduleManager.focusDefaultModule(this.options.focusAnythingInDefaultModule);
-
-				// Tell the world: "I'm Here!"
-				this.publish("application.ready");
-			}
-			catch (error) {
-				if (!this.handleError(error)) {
-					throw error;
-				}
-			}
-		},
-
-		configure: function configure(callback, context) {
-			callback.call(context || this, this.config, this);
-
-			return this;
-		},
-
-		/**
-		 * Application#createModule(event, element, params)
-		 * - event (Event): The browser event object
-		 * - element (HTMLElement): The HTML element with the data-action attribute on it.
-		 * - params (Object): Action params used to create the new module.
-		 *
-		 * Creates a new module on the page triggered by a user event. The
-		 * new module is created, including its root element, and appended
-		 * to a container on the page.
-		 **/
-		createModule: function createModule(event, element, params) {
-			event.stop();
-			this._createModuleFromConfig(params);
-			event = element = params = null;
-		},
-
-		/**
-		 * Application#_createModuleFromConfig(config) -> Module
-		 * - config (Object): New module config.
-		 * - config.module (Object): Required meta data about the new module to create.
-		 * - config.module.type (String): Type or class name of the new module.
-		 * - config.module.options (Object): Optional options hash to pass in to the new module's init() method.
-		 * - config.module.template (String): Name of the client side template used to render this new module.
-		 *
-		 * - config.container (Object): Optional meta data about the HTML element that will contain this new module.
-		 * - config.container.selector (String): The optional CSS selector identifying the container. Defaults to the <body> tag.
-		 * - config.container.insert (String): Values (top|bottom). Determines where the new root element for this module will
-		 *                                     be inserted into the container.
-		 *
-		 * - config.element (Object): Optional meta data about the root element for this new module.
-		 * - config.element.tag (String): Optional name of the HTML tag to create. Defaults to "div".
-		 * - config.element.className (String): The optional class name for the new root element. Multiple class names are
-		 *                                      separated by a space character.
-		 *
-		 * Create a new module on the page and append it to a container.
-		 **/
-		_createModuleFromConfig: function _createModuleFromConfig(config) {
-			if (!config.module) {
-				throw new Error("Missing required config.module");
-			}
-			else if (!config.module.type) {
-				throw new Error("Missing required config.module.type");
-			}
-			else if (!config.module.template) {
-				throw new Error("Missing required config.module.template for type: " + config.module.type);
-			}
-
-			config.module.options = config.module.options || {};
-			config.container = config.container || {};
-			config.container.insert = config.container.insert || "top";
-			config.element = config.element || {};
-			config.element.tag = config.element.tag || "div";
-
-			var module = null;
-			var container = null;
-			var selector = "script[data-template=" + config.module.template + "]";
-			var template = this.elementStore.querySelector(selector);
-			var element = this.document.createElement(config.element.tag);
-
-			if (!template) {
-				throw new Error("Failed to find new module template using selector: " + selector);
-			}
-
-			if (config.container.selector) {
-				container = this.elementStore.querySelector(config.container.selector);
-			}
-			else {
-				container = this.document.getElementsByTagName("body")[0];
-			}
-
-			if (!container) {
-				throw new Error("Failed to find module container with selector: " + (config.container.selector || "body"));
-			}
-
-			module = this.moduleManager.createModule(element, config.module.type, config.module.options || {});
-			this.moduleManager.initModuleInContainer(element, container, config.container, template, config.module.type, module);
-			module.focus();
-
-			event = element = config = container = rootElement = null;
-
-			return module;
-		},
-
-		_getErrorObject: function _getErrorObject(errorMessage) {
-			var info = errorMessage.match(/^(([A-Za-z_][A-Za-z0-9._]*):)?(.+$)/),
-			    error = null, className, message, Klass;
-
-			if (!info) {
-				error = new Error(message);
-			}
-			else {
-				className = info[2] || "Error";
-				message = (info[3] || errorMessage).replace(/^\s+|\s+$/g, "");
-
-				if (/^[A-Za-z_][A-Za-z0-9._]*$/.test(className)) {
-					try {
-						Klass = eval(className);
-						error = new Klass(message);
-					}
-					catch (error) {
-						throw new Error("Class '" + className + "' is either not found or not an object constructor function");
-					}
-				}
-				else {
-					error = new Error(message);
-				}
-			}
-
-			return error;
-		},
-
-		handleActionError: function handleActionError(event, element, params) {
-			if (this.logger) {
-				this.logger.debug({
-					event: event,
-					element: element,
-					params: params
-				});
-
-				this.logger.error(params.error);
-			}
-			else {
-				throw params.error;
-			}
-		},
-
-		handleCreateModule: function handleCreateModule(event) {
-			this._createModuleFromConfig(event.data);
-
-			return false;
-		},
-
-		handleError: function handleError(errorMessage) {
-			var error = typeof errorMessage === "string" ? this._getErrorObject(errorMessage) : errorMessage;
-
-			this._handleError(error);
-		},
-
-		_handleError: function _handleError(error) {
-			if (this.logger) {
-				this.logger.error(error);
-
-				return true;
-			}
-
-			return false;
-		},
-
-		/**
-		 * Application#publishEvent(event, element, params)
-		 * - event (Event): The browser event object.
-		 * - element (HTMLElement): The HTML element with the data-action attribute.
-		 * - params (Object): Action params.
-		 * - params.event (String): Required name of the application event to publish.
-		 * - params.data (Object): Optional data to pass along in the event.
-		 *
-		 * Publish an event on the global event dispatcher, triggered by a user action,
-		 * such as a click. The element is passed along as the publisher of the event,
-		 * and arbitrary data is passed along via the params.data property.
-		 **/
-		publishEvent: function publishEvent(event, element, params) {
-			if (!params.event) {
-				throw new Error("Missing required argument params.event");
-			}
-
-			event.stop();
-			this.constructor.publish(params.event, element, params.data || {});
 		}
 	}
-});
+
+};

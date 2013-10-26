@@ -11,7 +11,7 @@
 		<div data-modules="WelcomeModule" data-module-options='{"backgroundColor": "#f0f0f0"}'></div>
 
 		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../dist/foundry.min.js"></script>
+		<script type="text/javascript" src="../../../dist/foundry.concat.js"></script>
 
 		<!-- Your Application Files -->
 		<script type="text/javascript" src="./modules/welcome_module.js"></script>
@@ -21,18 +21,17 @@
 			// Phase 1: Instantiation
 			var app = new Foundry.Application();
 
-			// Phase 2: Configuration
-			app.config = new Hash();
+			// Phase 2: Acquire Dependencies
 			app.moduleManager = new Module.Manager();
-
-			app.configure(function(config) {
-				config.eagerLoadModules = true;
-			});
+			app.frontController = new Oxydizr.FrontController();
+			app.moduleManager.moduleObserver = new Module.FrontControllerModuleObserver();
+			app.moduleManager.moduleObserver.frontController = app.frontController;
+			app.dispatcher = new Beacon.Dispatcher();
 
 			// Phase 3: Initialization
-			window.onload = function() {
-				app.init(document.getElementsByTagName("html")[0]);
-			};
+			app.init(document.documentElement, {
+				eagerLoadModules: true
+			});
 
 			// Phase 5: Destruction
 			window.onunload = function() {

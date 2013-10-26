@@ -1,17 +1,6 @@
-var TaskListModule = Module.extend({
+var TaskListModule = Module.Base.extend({
 
 	prototype: {
-
-		actions: {
-			click: [
-				"remove",
-				"removeDone",
-				"toggleDone"
-			],
-			submit: [
-				"add"
-			]
-		},
 
 		elementStore: {
 			collections: {
@@ -28,7 +17,7 @@ var TaskListModule = Module.extend({
 
 		selection: null,
 
-		add: function add(event, element, params) {
+		add: function submit(event, element, params) {
 			event.stop();
 			var taskTextField = this.form().elements.task_text;
 			var taskText = taskTextField.value;
@@ -56,7 +45,7 @@ var TaskListModule = Module.extend({
 			}
 		},
 
-		_delay: function _delay(callback, context) {
+		_delay: function(callback, context) {
 			var millis = Math.floor(Math.random() * 1000);
 
 			if (millis > 3000) {
@@ -68,7 +57,11 @@ var TaskListModule = Module.extend({
 			}, millis);
 		},
 
-		remove: function remove(event, element, params) {
+		onControllerRegistered: function(frontController, controllerId) {
+			frontController.registerController(this.selection);
+		},
+
+		remove: function click(event, element, params) {
 			event.stop();
 
 			if (confirm("Are you sure you want to remove this task?")) {
@@ -81,7 +74,7 @@ var TaskListModule = Module.extend({
 
 		},
 
-		removeDone: function removeDone(event, element, params) {
+		removeDone: function click(event, element, params) {
 			event.stop();
 
 			if (confirm("Remove all finished tasks?")) {
@@ -99,7 +92,7 @@ var TaskListModule = Module.extend({
 			}
 		},
 
-		toggleDone: function toggleDone(event, element, params) {
+		toggleDone: function click(event, element, params) {
 			event.stopPropagation();
 			var regex = new RegExp("(^|\\s+)(" + this.options.doneClass + ")(\\s+|$)");
 			var item = element.parentNode;

@@ -1,12 +1,6 @@
-var SelectionModule = Module.extend({
+var SelectionModule = Module.Base.extend({
 
 	prototype: {
-
-		actions: {
-			click: [
-				"toggleSelection"
-			]
-		},
 
 		elementStore: {
 			elements: {
@@ -23,14 +17,14 @@ var SelectionModule = Module.extend({
 
 		selectedCount: 0,
 
-		addNewItem: function addNewItem(newItem) {
+		addNewItem: function(newItem) {
 			if (this.notify("item.add.before", {item: newItem})) {
 				this.itemRoot().appendChild(newItem);
 				this.notify("item.add.after", {item: newItem});
 			}
 		},
 
-		createNewItem: function createNewITem(data) {
+		createNewItem: function(data) {
 			data = data || {};
 			data.guid = data.guid || this.guid;
 
@@ -47,11 +41,11 @@ var SelectionModule = Module.extend({
 			return newItem;
 		},
 
-		isItemSelected: function isItemSelected(item) {
+		isItemSelected: function(item) {
 			return new RegExp(this.options.selectedClass).test(item.className);
 		},
 
-		removeItem: function removeItem(item) {
+		removeItem: function(item) {
 			item.parentNode.removeChild(item);
 
 			if (this.isItemSelected(item)) {
@@ -63,7 +57,7 @@ var SelectionModule = Module.extend({
 			}
 		},
 
-		_toggleElementSelection: function _toggleElementSelection(element) {
+		_toggleElementSelection: function(element) {
 			var regex = new RegExp("(^|\\s+)(" + this.options.selectedClass + ")(\\s+|$)");
 
 			if (regex.test(element.className)) {
@@ -79,7 +73,7 @@ var SelectionModule = Module.extend({
 			element = null;
 		},
 
-		toggleSelection: function toggleSelection(event, element, params) {
+		toggleSelection: function click(event, element, params) {
 			if (params.preventDefault || (event.target.nodeName !== "INPUT" && event.target.nodeName !== "A")) {
 				event.preventDefault();
 			}

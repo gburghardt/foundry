@@ -1,4 +1,4 @@
-    var SelectionModule = Module.extend({
+    var SelectionModule = Module.Base.extend({
         prototype: {
             actions: {
                 click: [
