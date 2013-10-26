@@ -7,7 +7,6 @@
 		"Greg Burghardt <greg_burghardt@yahoo.com>"
 	],
 	"license": "MIT",
-	"private": true,
 	"repository": { "type": "git", "url": "https://github.com/gburghardt/foundry.git" },
 	"main": [
 		"src/application.js"
