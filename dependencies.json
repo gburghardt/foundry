@@ -1,0 +1,53 @@
+{
+  "framework": {
+    "bare": [
+      "vendor/modernizr/modernizr.js",
+      "vendor/inherit.js/lib/function.js",
+      "vendor/cerealizer/src/cerealizer.js",
+      "vendor/cerealizer/src/cerealizer/json.js",
+      "vendor/cerealizer/src/cerealizer/query_string.js",
+      "vendor/cerealizer/src/cerealizer/xml.js",
+      "vendor/callbacks/src/callbacks.js",
+      "vendor/callbacks/src/callbacks/utils.js",
+      "vendor/dom_event_delegator/lib/dom/events/delegator.js",
+      "vendor/element_store/lib/element_store.js",
+      "vendor/element_store/lib/element_store/utils.js",
+      "vendor/events/lib/events.js",
+      "vendor/events/lib/events/events.js",
+      "vendor/events/lib/events/dispatcher.js",
+      "vendor/events/lib/events/application_events.js",
+      "vendor/events/lib/events/notifications.js",
+      "vendor/hash/lib/hash.js",
+      "vendor/reaper/src/reaper.js",
+      "vendor/module_controller/lib/module.js",
+      "vendor/module_controller/lib/module/form_module.js",
+      "vendor/module_controller/lib/module/factory.js",
+      "vendor/module_controller/lib/module/manager.js",
+      "vendor/module_controller/lib/module/manager/lazy_loader.js",
+      "vendor/module_controller/lib/module/manager/sub_module_properties.js",
+      "src/application.js"
+    ]
+  },
+  "extensions": {
+    "dojo": [
+      "vendor/dom_event_delegator/lib/dom/events/delegator/dojo_adaptor.js",
+      "vendor/element_store/lib/element_store/dojo_adapter.js"
+    ],
+    "jquery": [
+      "vendor/dom_event_delegator/lib/dom/events/delegator/jquery_adaptor.js",
+      "vendor/element_store/lib/element_store/jquery_adapter.js"
+    ],
+    "mootools": [
+      "vendor/dom_event_delegator/lib/dom/events/delegator/mootools_adaptor.js",
+      "vendor/element_store/lib/element_store/mootools_adapter.js"
+    ],
+    "yui": [
+      "vendor/dom_event_delegator/lib/dom/events/delegator/yui_adaptor.js",
+      "vendor/element_store/lib/element_store/yui_adapter.js"
+    ],
+    "zepto": [
+      "vendor/dom_event_delegator/lib/dom/events/delegator/zepto_adaptor.js",
+      "vendor/element_store/lib/element_store/zepto_adapter.js"
+    ]
+  }
+}

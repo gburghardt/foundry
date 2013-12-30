@@ -249,7 +249,7 @@ var Application = Module.extend({
 		},
 
 		handleError: function handleError(errorMessage) {
-			var error = this._getErrorObject(errorMessage);
+			var error = typeof errorMessage === "string" ? this._getErrorObject(errorMessage) : errorMessage;
 
 			this._handleError(error);
 		},
