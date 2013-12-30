@@ -65,6 +65,12 @@ var Application = Module.extend({
 				this.objectFactory = null;
 			}
 
+			if (this.config.handleApplicationErrors) {
+				this.window.onerror = null;
+			}
+
+			this.logger = this.config = null;
+
 			Module.prototype.destructor.call(this, true);
 		},
 
@@ -193,6 +199,34 @@ var Application = Module.extend({
 			return module;
 		},
 
+		_getErrorObject: function _getErrorObject(errorMessage) {
+			var info = errorMessage.match(/^(([A-Za-z_][A-Za-z0-9._]*):)?(.+$)/),
+			    error = null, className, message, Klass;
+
+			if (!info) {
+				error = new Error(message);
+			}
+			else {
+				className = info[2] || "Error";
+				message = (info[3] || errorMessage).replace(/^\s+|\s+$/g, "");
+
+				if (/^[A-Za-z_][A-Za-z0-9._]*$/.test(className)) {
+					try {
+						Klass = eval(className);
+						error = new Klass(message);
+					}
+					catch (error) {
+						throw new Error("Class '" + className + "' is either not found or not an object constructor function");
+					}
+				}
+				else {
+					error = new Error(message);
+				}
+			}
+
+			return error;
+		},
+
 		handleActionError: function handleActionError(event, element, params) {
 			if (this.logger) {
 				this.logger.debug({
@@ -214,7 +248,13 @@ var Application = Module.extend({
 			return false;
 		},
 
-		handleError: function handleError(error) {
+		handleError: function handleError(errorMessage) {
+			var error = this._getErrorObject(errorMessage);
+
+			this._handleError(error);
+		},
+
+		_handleError: function _handleError(error) {
 			if (this.logger) {
 				this.logger.error(error);
 
