@@ -17,6 +17,7 @@
       "vendor/events/lib/events/application_events.js",
       "vendor/events/lib/events/notifications.js",
       "vendor/hash/lib/hash.js",
+      "vendor/hypodermic/src/hypodermic.js",
       "vendor/reaper/src/reaper.js",
       "vendor/module_controller/lib/module.js",
       "vendor/module_controller/lib/module/form_module.js",

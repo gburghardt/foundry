@@ -23,11 +23,11 @@ ElementStore.MootoolsAdapter = {
 
 	prototype: {
 
-		querySelector: function querySelector(selector, element) {
+		querySelector: function(selector, element) {
 			return $(element || this._root).getFirst(selector);
 		},
 
-		querySelectorAll: function querySelectorAll(selector, element) {
+		querySelectorAll: function(selector, element) {
 			return $(element || this._root).getChildren(selector);
 		}
 

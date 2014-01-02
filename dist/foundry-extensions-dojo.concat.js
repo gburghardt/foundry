@@ -29,11 +29,11 @@ require(["dojo/dom", "dojo/query"], function(dom, query) {
 
 		prototype: {
 
-			querySelector: function querySelector(selector, element) {
+			querySelector: function(selector, element) {
 				return query(selector, element || this._root)[0];
 			},
 
-			querySelectorAll: function querySelectorAll(selector, element) {
+			querySelectorAll: function(selector, element) {
 				return query(selector, element || this._root);
 			}
 

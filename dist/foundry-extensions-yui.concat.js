@@ -24,11 +24,11 @@ ElementStore.YuiAdapter = {
 
 	prototype: {
 
-		querySelector: function querySelector(selector, element) {
+		querySelector: function(selector, element) {
 			return (element || this._root).one(selector);
 		},
 
-		querySelectorAll: function querySelectorAll(selector, element) {
+		querySelectorAll: function(selector, element) {
 			return (element || this._root).all(selector);
 		}
 

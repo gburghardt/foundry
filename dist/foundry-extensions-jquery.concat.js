@@ -25,15 +25,15 @@ if (Function.prototype.include) {
 
 		prototype: {
 
-			parseHTML: function parseHTML(html) {
+			parseHTML: function(html) {
 				return $(html);
 			},
 
-			querySelector: function querySelector(selector, element) {
+			querySelector: function(selector, element) {
 				return $(element || this._root).find(selector).eq(0);
 			},
 
-			querySelectorAll: function querySelectorAll(selector, element) {
+			querySelectorAll: function(selector, element) {
 				return $(element || this._root).find(selector);
 			}
 
