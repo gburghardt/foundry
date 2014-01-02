@@ -12,7 +12,6 @@
 		"src/application.js"
 	],
 	"dependencies": {
-		"modernizr": "~2.7.1",
         "module_controller": "1.0.3",
 		"hypodermic": "1.0.0"
 	}

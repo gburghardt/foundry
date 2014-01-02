@@ -1,7 +1,6 @@
 {
   "framework": {
     "bare": [
-      "vendor/modernizr/modernizr.js",
       "vendor/inherit.js/lib/function.js",
       "vendor/cerealizer/src/cerealizer.js",
       "vendor/cerealizer/src/cerealizer/json.js",
