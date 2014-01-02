@@ -3,7 +3,7 @@ describe("Application", function() {
 	describe("_getErrorObject", function() {
 
 		beforeEach(function() {
-			this.application = new Application();
+			this.application = new Foundry.Application();
 		});
 
 		it("throws an Error if the error class name cannot be found", function() {

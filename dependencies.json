@@ -12,7 +12,7 @@
       "vendor/element_store/lib/element_store.js",
       "vendor/element_store/lib/element_store/utils.js",
       "vendor/events/lib/events.js",
-      "vendor/events/lib/events/events.js",
+      "vendor/events/lib/events/event.js",
       "vendor/events/lib/events/dispatcher.js",
       "vendor/events/lib/events/application_events.js",
       "vendor/events/lib/events/notifications.js",
@@ -25,7 +25,8 @@
       "vendor/module_controller/lib/module/manager.js",
       "vendor/module_controller/lib/module/manager/lazy_loader.js",
       "vendor/module_controller/lib/module/manager/sub_module_properties.js",
-      "src/application.js"
+      "src/foundry.js",
+      "src/foundry/application.js"
     ]
   },
   "extensions": {

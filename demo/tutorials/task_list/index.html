@@ -49,28 +49,8 @@
 			</script>
 		</div>
 
-		<!-- Class Libraries -->
-		<script type="text/javascript" src="../../../vendor/inherit.js/lib/function.js"></script>
-		<script type="text/javascript" src="../../../vendor/callbacks/src/callbacks.js"></script>
-		<script type="text/javascript" src="../../../vendor/callbacks/src/callbacks/utils.js"></script>
-		<script type="text/javascript" src="../../../vendor/dom_event_delegator/lib/dom/events/delegator.js"></script>
-		<script type="text/javascript" src="../../../vendor/element_store/lib/element_store.js"></script>
-		<script type="text/javascript" src="../../../vendor/element_store/lib/element_store/utils.js"></script>
-		<script type="text/javascript" src="../../../vendor/events/lib/events.js"></script>
-		<script type="text/javascript" src="../../../vendor/events/lib/events/dispatcher.js"></script>
-		<script type="text/javascript" src="../../../vendor/events/lib/events/event.js"></script>
-		<script type="text/javascript" src="../../../vendor/events/lib/events/publisher.js"></script>
-		<script type="text/javascript" src="../../../vendor/events/lib/events/application_events.js"></script>
-		<script type="text/javascript" src="../../../vendor/events/lib/events/notifications.js"></script>
-		<script type="text/javascript" src="../../../vendor/hash/lib/hash.js"></script>
-
 		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../vendor/module_controller/lib/module.js"></script>
-		<script type="text/javascript" src="../../../vendor/module_controller/lib/module/factory.js"></script>
-		<script type="text/javascript" src="../../../vendor/module_controller/lib/module/manager.js"></script>
-		<script type="text/javascript" src="../../../vendor/module_controller/lib/module/manager/lazy_loader.js"></script>
-		<script type="text/javascript" src="../../../vendor/module_controller/lib/module/manager/sub_module_properties.js"></script>
-		<script type="text/javascript" src="../../../src/application.js"></script>
+		<script type="text/javascript" src="../../../dist/foundry.min.js"></script>
 
 		<!-- Your Application Files -->
 		<script type="text/javascript" src="./modules/task_list_module.js"></script>
@@ -78,7 +58,7 @@
 
 		<script type="text/javascript">
 
-			var app = new Application();
+			var app = new Foundry.Application();
 
 			app.config = new Hash();
 			app.moduleManager = new Module.Manager();

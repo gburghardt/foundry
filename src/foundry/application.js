@@ -30,7 +30,7 @@ Example:
 	       app.init(document);
 	   };
 */
-var Application = Module.extend({
+Foundry.Application = Module.extend({
 	prototype: {
 
 		actions: {
