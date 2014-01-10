@@ -1,4 +1,4 @@
-/*! foundry 2014-01-02 */
+/*! foundry 2014-01-10 */
 require(["dojo/dom", "dojo/on"], function(dom, on) {
 	dom.events.Delegator.DojoAdaptor = {
 		prototype: {

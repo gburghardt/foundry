@@ -1,4 +1,4 @@
-/*! foundry 2014-01-02 */
+/*! foundry 2014-01-10 */
 (function() {
 
 	var _isMSIE = (/msie/i).test(navigator.userAgent);
@@ -2315,11 +2315,11 @@ var Module = Object.extend({
 	self: {
 		manager: null,
 
-		getManager: function() {
+		getManager: function getManager() {
 			return Module.manager;
 		},
 
-		unregister: function(module) {
+		unregister: function unregister(module) {
 			if (Module.manager) {
 				Module.manager.unregisterModule(module);
 			}
@@ -2357,11 +2357,11 @@ var Module = Object.extend({
 
 		window: null,
 
-		initialize: function() {
+		initialize: function initialize() {
 			this.guid = _guid++;
 		},
 
-		init: function(elementOrId, options) {
+		init: function init(elementOrId, options) {
 			this.element = typeof elementOrId === "string" ? document.getElementById(elementOrId) : elementOrId;
 
 			if (!this.element) {
@@ -2409,7 +2409,7 @@ var Module = Object.extend({
 			return this;
 		},
 
-		destructor: function(keepElement) {
+		destructor: function destructor(keepElement) {
 			this.callbacks.execute("beforeDestroy");
 
 			this.constructor.unregister(this);
@@ -2431,13 +2431,13 @@ var Module = Object.extend({
 			this.actions = this.element = this.delegator = this.options = this.document = this.window = null;
 		},
 
-		cancel: function(event, element, params) {
+		cancel: function cancel(event, element, params) {
 			event.stop();
 			this.destructor();
 			event = element = params = null;
 		},
 
-		focus: function(anything) {
+		focus: function focus(anything) {
 			var els = this.element.getElementsByTagName("*");
 			var i = 0, length = els.length, el;
 
@@ -2477,11 +2477,11 @@ var Module = Object.extend({
 			}
 		},
 
-		_ready: function() {
+		_ready: function _ready() {
 
 		},
 
-		_initActions: function() {
+		_initActions: function _initActions() {
 			// TODO: Actions appear to be merging incorrectly here and making delegator double up on events
 			var actions = new Hash(), proto = this.__proto__;
 
@@ -2496,7 +2496,7 @@ var Module = Object.extend({
 			this.delegator.setEventActionMapping(actions);
 		},
 
-		_initCallbacks: function() {
+		_initCallbacks: function _initCallbacks() {
 			var types = new Hash(), proto = this.__proto__;
 
 			while (proto) {
@@ -2510,7 +2510,7 @@ var Module = Object.extend({
 			this.initCallbacks(types);
 		},
 
-		_initOptions: function() {
+		_initOptions: function _initOptions() {
 			var proto = this.__proto__;
 
 			while (proto) {
@@ -2522,19 +2522,19 @@ var Module = Object.extend({
 			}
 		},
 
-		_loading: function(element) {
+		_loading: function _loading(element) {
 			element = element || this.element;
 			element.className += " loading";
 			element = null;
 		},
 
-		_loaded: function(element) {
+		_loaded: function _loaded(element) {
 			element = element || this.element;
 			element.className = element.className.replace(/(^|\s+)(loading)(\s+|$)/, "$1$3").replace(/[\s]{2,}/g, " ");
 			element = null;
 		},
 
-		setOptions: function(overrides) {
+		setOptions: function setOptions(overrides) {
 			if (!this.hasOwnProperty("options")) {
 				this.options = new Hash(overrides);
 			}
@@ -2580,34 +2580,34 @@ Module.FormModule = Module.extend({
 
 		serializerFactory: null,
 
-		initExtractor: function() {
+		initExtractor: function initExtractor() {
 			this.extractor = this.extractor || new Reaper();
 			this.extractor.allowNulls = this.options["extractor.allowNulls"];
 			this.extractor.flat = this.options["extractor.flat"];
 		},
 
-		initSerializerFactory: function() {
+		initSerializerFactory: function initSerializerFactory() {
 			this.serializerFactory = this.serializerFactory || Cerealizer;
 		},
 
-		_afterSubmit: function(xhr) {
+		_afterSubmit: function _afterSubmit(xhr) {
 			xhr = null;
 		},
 
-		_beforeSubmit: function(data, event, element, params) {
+		_beforeSubmit: function _beforeSubmit(data, event, element, params) {
 			data = event = element = params = null;
 			return true;
 		},
 
-		_getData: function() {
+		_getData: function _getData() {
 			return this.extractor.getData(this.element);
 		},
 
-		_getTransport: function() {
+		_getTransport: function _getTransport() {
 			return new XMLHttpRequest();
 		},
 
-		_sendRequest: function(data) {
+		_sendRequest: function _sendRequest(data) {
 			var xhr = this._getTransport(),
 			    form = this.element.getElementsByTagName("form")[0] || this.element,
 			    method      = (form.getAttribute("method") || form.getAttribute("data-form-method") || "POST").toUpperCase(),
@@ -2655,7 +2655,7 @@ Module.FormModule = Module.extend({
 			xhr.send(params);
 		},
 
-		submit: function(event, element, params) {
+		submit: function submit(event, element, params) {
 			event.stop();
 
 			var data = this._getData();
@@ -2679,11 +2679,11 @@ Module.Factory.prototype = {
 
 	constructor: Module.Factory,
 
-	destructor: function() {
+	destructor: function destructor() {
 		this.objectFactory = null;
 	},
 
-	createInstance: function(element, type, options) {
+	createInstance: function createInstance(element, type, options) {
 		var module = this.getInstance(type);
 
 		module.init(element, options);
@@ -2691,7 +2691,7 @@ Module.Factory.prototype = {
 		return module;
 	},
 
-	getInstance: function(type) {
+	getInstance: function getInstance(type) {
 		var instance = null, Klass = null;
 
 		if (this.objectFactory) {
@@ -2749,7 +2749,7 @@ Module.Manager.prototype = {
 
 	constructor: Module.Manager,
 
-	destructor: function(cascadeDestroy) {
+	destructor: function destructor(cascadeDestroy) {
 		if (Module.manager === this) {
 			Module.manager = null;
 		}
@@ -2771,7 +2771,7 @@ Module.Manager.prototype = {
 		}
 	},
 
-	_destroyGroups: function() {
+	_destroyGroups: function _destroyGroups() {
 		var key, group, i, length;
 
 		for (key in this.groups) {
@@ -2789,7 +2789,7 @@ Module.Manager.prototype = {
 		this.groups = null;
 	},
 
-	_destroyRegistry: function(cascadeDestroy) {
+	_destroyRegistry: function _destroyRegistry(cascadeDestroy) {
 		var key, entry;
 
 		for (key in this.registry) {
@@ -2808,7 +2808,7 @@ Module.Manager.prototype = {
 		this.registry = null;
 	},
 
-	init: function() {
+	init: function init() {
 		this.factory = (this.hasOwnProperty("factory")) ? this.factory : new Module.Factory();
 		this.registry = (this.hasOwnProperty("registry")) ? this.registry : {};
 		this.groups = (this.hasOwnProperty("groups")) ? this.groups : {};
@@ -2818,12 +2818,14 @@ Module.Manager.prototype = {
 		return this;
 	},
 
-	eagerLoadModules: function(element) {
-		var els = element.getElementsByTagName("*"), i = 0, length = els.length;
+	eagerLoadModules: function eagerLoadModules(element) {
+		var els = element.getElementsByTagName("*"), i = 0, length = els.length, el;
 
 		for (i; i < length; i++) {
-			if (els[i].getAttribute("data-modules")) {
-				this.createModules(els[i]);
+			el = els[i];
+
+			if (el.getAttribute("data-modules") && !el.getAttribute("data-module-lazyload")) {
+				this.createModules(el);
 			}
 		}
 
@@ -2832,7 +2834,7 @@ Module.Manager.prototype = {
 		return this;
 	},
 
-	createModule: function(element, type, options, register) {
+	createModule: function createModule(element, type, options, register) {
 		var className = element.className + " module " + type.charAt(0).toLowerCase() + type.slice(1, type.length).replace(/([.A-Z]+)/g, function(match, $1) {
 			return "-" + $1.replace(/\./g, "").toLowerCase();
 		});
@@ -2852,7 +2854,7 @@ Module.Manager.prototype = {
 		return module;
 	},
 
-	createModules: function(element) {
+	createModules: function createModules(element) {
 		if (!element) {
 			throw new Error("Missing required argument: element");
 		}
@@ -2877,14 +2879,14 @@ Module.Manager.prototype = {
 		metaData = element = module = opts = options = null;
 	},
 
-	focusDefaultModule: function(anything) {
+	focusDefaultModule: function focusDefaultModule(anything) {
 		if (this.defaultModule && !this.defaultModuleFocused) {
 			this.defaultModuleFocused = true;
 			this.defaultModule.focus(anything);
 		}
 	},
 
-	getModuleMetaData: function(element) {
+	getModuleMetaData: function getModuleMetaData(element) {
 		var length;
 		var types = element.getAttribute("data-modules");
 		var options = element.getAttribute("data-module-options");
@@ -2910,7 +2912,7 @@ Module.Manager.prototype = {
 		return metaData;
 	},
 
-	initModuleInContainer: function(element, container, config, template, type, module) {
+	initModuleInContainer: function initModuleInContainer(element, container, config, template, type, module) {
 		var createdAt = new Date();
 		var renderData = new Hash({
 			guid: module.guid,
@@ -2940,13 +2942,13 @@ Module.Manager.prototype = {
 		this.registerModule(type, module);
 	},
 
-	markModulesCreated: function(element, metaData) {
+	markModulesCreated: function markModulesCreated(element, metaData) {
 		element.setAttribute("data-modules-created", metaData.types.join(" "));
 		element.removeAttribute("data-modules");
 		element = metaData = null;
 	},
 
-	registerModule: function(type, module) {
+	registerModule: function registerModule(type, module) {
 		if (module.guid === undefined || module.guid === null) {
 			throw new Error("Cannot register module " + type + " without a guid property");
 		}
@@ -2965,7 +2967,7 @@ Module.Manager.prototype = {
 		module = null;
 	},
 
-	unregisterModule: function(module) {
+	unregisterModule: function unregisterModule(module) {
 		if (!module.guid || !this.registry[module.guid]) {
 			module = null;
 			return;
@@ -2991,7 +2993,7 @@ Module.Manager.prototype = {
 		module = group = null;
 	},
 
-	setDefaultModule: function(module) {
+	setDefaultModule: function setDefaultModule(module) {
 		if (!this.defaultModule) {
 			this.defaultModule = module;
 		}
@@ -3008,10 +3010,11 @@ Module.Manager.LazyLoader = {
 
 	prototype: {
 
-		lazyLoadModules: function(element, overrides) {
+		lazyLoadModules: function lazyLoadModules(element, overrides) {
 
 			var _options = new Hash({
 				scrollElement: null,
+				scrollStopDelay: 400,
 				scrollTimeout: 250
 			});
 
@@ -3020,6 +3023,8 @@ Module.Manager.LazyLoader = {
 			var _scrollElement = _options.scrollElement || null;
 			var _element = element;
 			var _document = _element.ownerDocument;
+			var _scrollLeft = 0;
+			var _scrollTop = 0;
 
 			function init() {
 				if (_manager.stopLazyLoadingModules) {
@@ -3035,7 +3040,7 @@ Module.Manager.LazyLoader = {
 				initModulesInsideViewport();
 
 				if (!_scrollElement.scrollTop && !_scrollElement.scrollLeft) {
-					// Not all browser agree on the _scrollElement. We are at the
+					// Not all browsers agree on the _scrollElement. We are at the
 					// top of the page so we don't know whether the browser is
 					// scrolling the <html> or <body> tag. Defer judgement until
 					// the user has scrolled.
@@ -3064,15 +3069,21 @@ Module.Manager.LazyLoader = {
 				return this;
 			}
 
-			function addEvents() {
-				if (_element.addEventListener) {
-					_element.addEventListener("mouseover", handleMouseOverEvent, true);
-					_document.addEventListener("scroll", handleScrollEvent, true);
+			function addEvent(element, name, listener) {
+				if (element.addEventListener) {
+					element.addEventListener(name, listener, true);
+				}
+				else if (name === "scroll") {
+					element.onscroll = listener;
 				}
 				else {
-					_element.attachEvent("onmouseover", handleMouseOverEvent);
-					_element.onscroll = handleScrollEvent;
+					element.attachEvent("on" + name, listener);
 				}
+			}
+
+			function addEvents() {
+				addEvent(_element, "mouseover", handleMouseOverEvent);
+				addEvent(_document, "scroll", handleScrollEvent);
 			}
 
 			function initModulesInsideViewport() {
@@ -3111,19 +3122,27 @@ Module.Manager.LazyLoader = {
 			}
 
 			function handleScrollEvent(event) {
-				event = event || window.event;
-				event.target = event.target || event.srcElement;
+				removeEvent(_document, "scroll", handleScrollEvent);
 
 				if (_scrollTimer) {
-					clearTimeout(_scrollTimer);
+					clearInterval(_scrollTimer);
 				}
 
-				_scrollTimer = setTimeout(handleScrollStopped, _options.scrollTimeout);
+				_scrollTimer = setInterval(checkScrollPosition, _options.scrollTimeout);
 			}
 
-			function handleScrollStopped() {
-				_scrollTimer = null;
-				initModulesInsideViewport();
+			function checkScrollPosition() {
+				var scrollElement = getScrollElement(),
+				    newScrollLeft = scrollElement.scrollLeft,
+				    newScrollTop = scrollElement.scrollTop;
+
+				if (newScrollLeft != _scrollLeft || newScrollTop != _scrollTop) {
+					clearInterval(_scrollTimer);
+					addEvent(_document, "scroll", handleScrollEvent);
+					_scrollLeft = newScrollLeft;
+					_scrollTop = newScrollTop;
+					initModulesInsideViewport();
+				}
 			}
 
 			function lazyLoadModules(element, value) {
@@ -3138,15 +3157,21 @@ Module.Manager.LazyLoader = {
 				element = null;
 			}
 
-			function removeEvents() {
-				if (_element.removeEventListener) {
-					_element.removeEventListener("mouseover", handleMouseOverEvent, true);
-					_document.removeEventListener("scroll", handleScrollEvent, true);
+			function removeEvent(element, name, listener) {
+				if (element.removeEventListener) {
+					element.removeEventListener(name, listener, true);
+				}
+				else if (name === "scroll") {
+					element.onscroll = null;
 				}
 				else {
-					_element.detachEvent("onmouseover", handleMouseOverEvent);
-					_document.detachEvent("onscroll", handleScrollEvent);
+					element.detachEvent("on" + name, listener);
 				}
+			}
+
+			function removeEvents() {
+				removeEvent(_element, "mouseover", handleMouseOverEvent);
+				removeEvent(_document, "scroll", handleScrollEvent);
 			}
 
 			// internal class for viewport logic
@@ -3161,23 +3186,23 @@ Module.Manager.LazyLoader = {
 
 				constructor: Viewport,
 
-				isBottomInBounds: function(position) {
+				isBottomInBounds: function isBottomInBounds(position) {
 					return (position.top + position.height <= this.top + this.height && position.top + position.height > this.top) ? true : false;
 				},
 
-				isLeftInBounds: function(position) {
+				isLeftInBounds: function isLeftInBounds(position) {
 					return (position.left >= this.left && position.left < this.left + this.width) ? true : false;
 				},
 
-				isRightInBounds: function(position) {
+				isRightInBounds: function isRightInBounds(position) {
 					return (position.left + position.width <= this.left + this.width && position.left + position.width > this.left) ? true : false;
 				},
 
-				isTopInBounds: function(position) {
+				isTopInBounds: function isTopInBounds(position) {
 					return (position.top >= this.top && position.top < this.top + this.height) ? true : false;
 				},
 
-				isVisible: function(element) {
+				isVisible: function isVisible(element) {
 					var visible = false;
 					var position = this._getPosition(element);
 
@@ -3188,7 +3213,7 @@ Module.Manager.LazyLoader = {
 					return visible;
 				},
 
-				_getPosition: function(element) {
+				_getPosition: function _getPosition(element) {
 					var parent = element.offsetParent;
 					var position = {
 						top: element.offsetTop,
@@ -3235,7 +3260,7 @@ Module.Manager.include(Module.Manager.LazyLoader);
 
 Module.Manager.SubModuleProperties = {
 
-	included: function(Klass) {
+	included: function included(Klass) {
 		if (Klass.addCallback) {
 			Klass.addCallback("beforeReady", "initSubModules");
 		}
@@ -3243,7 +3268,7 @@ Module.Manager.SubModuleProperties = {
 
 	prototype: {
 
-		initSubModules: function() {
+		initSubModules: function initSubModules() {
 			if (this.options.subModulesDisabled) {
 				return;
 			}
@@ -3263,7 +3288,7 @@ Module.Manager.SubModuleProperties = {
 			}
 		},
 
-		_createSubModuleProperty: function(name, element) {
+		_createSubModuleProperty: function _createSubModuleProperty(name, element) {
 			if (!name) {
 				throw new Error("Missing required argument: name");
 			}

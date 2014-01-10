@@ -1,4 +1,4 @@
-/*! foundry 2014-01-02 */
+/*! foundry 2014-01-10 */
 dom.events.Delegator.ZeptoAdaptor = {
 	prototype: {
 		addEventListener: function(element, eventType, callback) {
