@@ -1,4 +1,4 @@
-/*! foundry 2014-01-10 */
+/*! foundry 2014-02-03 */
 dom.events.Delegator.YuiAdaptor = {
 	prototype: {
 		addEventListener: function(element, eventType, callback) {
@@ -24,11 +24,11 @@ ElementStore.YuiAdapter = {
 
 	prototype: {
 
-		querySelector: function(selector, element) {
+		querySelector: function querySelector(selector, element) {
 			return (element || this._root).one(selector);
 		},
 
-		querySelectorAll: function(selector, element) {
+		querySelectorAll: function querySelectorAll(selector, element) {
 			return (element || this._root).all(selector);
 		}
 

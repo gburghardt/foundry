@@ -1,4 +1,4 @@
-/*! foundry 2014-01-10 */
+/*! foundry 2014-02-03 */
 dom.events.Delegator.jQueryAdaptor = {
 	prototype: {
 		addEventListener: function(element, eventType, callback) {
@@ -25,15 +25,17 @@ if (Function.prototype.include) {
 
 		prototype: {
 
-			parseHTML: function(html) {
+			parseHTML: function parseHTML(html) {
 				return $(html);
 			},
 
-			querySelector: function(selector, element) {
-				return $(element || this._root).find(selector).eq(0);
+			querySelector: function querySelector(selector, element) {
+				return this.returnNative
+					? $(element || this._root).find(selector)[0]
+					: $(element || this._root).find(selector).eq(0);
 			},
 
-			querySelectorAll: function(selector, element) {
+			querySelectorAll: function querySelectorAll(selector, element) {
 				return $(element || this._root).find(selector);
 			}
 

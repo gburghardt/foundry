@@ -73,8 +73,8 @@
 			</p>
 <pre>app
 app.moduleManager
-app.moduleManager.factory
-app.moduleManager.factory.objectFactory
+app.moduleManager.provider
+app.moduleManager.provider.factory
 app.moduleManager.groups
 app.moduleManager.groups.tasks[0]
 app.moduleManager.registry
@@ -192,7 +192,7 @@ app.objectFactory
 </script>
 
 <!-- Foundry -->
-<script type="text/javascript" src="../dist/foundry.min.js"></script>
+<script type="text/javascript" src="../dist/foundry.concat.js"></script>
 
 <!-- Application Files -->
 <script type="text/javascript" src="./js/modules/date_created_module.js"></script>
@@ -253,18 +253,18 @@ app.objectFactory
 				options: { id: "moduleOptions" }
 			}
 		},
-		moduleFactory: {
-			className: "Module.Factory",
+		moduleProvider: {
+			className: "Module.Provider",
 			singleton: true,
 			properties: {
-				objectFactory: { id: "objectFactory" }
+				factory: { id: "objectFactory" }
 			}
 		},
 		moduleManager: {
 			className: "Module.Manager",
 			singleton: true,
 			properties: {
-				factory: { id: "moduleFactory" }
+				provider: { id: "moduleProvider" }
 			}
 		},
 		moduleOptions: {

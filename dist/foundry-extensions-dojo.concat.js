@@ -1,4 +1,4 @@
-/*! foundry 2014-01-10 */
+/*! foundry 2014-02-03 */
 require(["dojo/dom", "dojo/on"], function(dom, on) {
 	dom.events.Delegator.DojoAdaptor = {
 		prototype: {
@@ -29,11 +29,11 @@ require(["dojo/dom", "dojo/query"], function(dom, query) {
 
 		prototype: {
 
-			querySelector: function(selector, element) {
+			querySelector: function querySelector(selector, element) {
 				return query(selector, element || this._root)[0];
 			},
 
-			querySelectorAll: function(selector, element) {
+			querySelectorAll: function querySelectorAll(selector, element) {
 				return query(selector, element || this._root);
 			}
 

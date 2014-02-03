@@ -1,4 +1,4 @@
-/*! foundry 2014-01-10 */
+/*! foundry 2014-02-03 */
 (function() {
 
 	var _isMSIE = (/msie/i).test(navigator.userAgent);
@@ -160,7 +160,7 @@ var Cerealizer = {
 
 	_types: {},
 
-	getInstance: function(name) {
+	getInstance: function getInstance(name) {
 		if (this._types[name]) {
 			if (!this._instances[name]) {
 				var instance;
@@ -186,7 +186,7 @@ var Cerealizer = {
 		}
 	},
 
-	registerType: function(klass, names) {
+	registerType: function registerType(klass, names) {
 		for (var i = 0, length = names.length; i < length; i++) {
 			this._types[ names[i] ] = klass;
 		}
@@ -202,19 +202,19 @@ Cerealizer.Json.prototype = {
 
 	regex: /^[{\[]].*[}\]]$/g,
 
-	deserialize: function(str) {
+	deserialize: function deserialize(str) {
 		return JSON.parse(str);
 	},
 
-	serialize: function(data) {
+	serialize: function serialize(data) {
 		return JSON.stringify(data);
 	},
 
-	test: function(str) {
+	test: function test(str) {
 		return this.regex.test(str);
 	},
 
-	toString: function() {
+	toString: function toString() {
 		return "[object Cerealizer.Json]";
 	}
 
@@ -244,7 +244,7 @@ Cerealizer.QueryString.prototype = {
 
 	regex: /([^=&]+)=([^&]+)/,
 
-	_convert: function(s) {
+	_convert: function _convert(s) {
 		s = typeof s === "string" ? unescape(s) : s;
 
 		if (/^[-+0-9.]+$/.test(s) && !isNaN(s)) {
@@ -261,7 +261,7 @@ Cerealizer.QueryString.prototype = {
 		}
 	},
 
-	_convertAndHydrate: function(data, key, value) {
+	_convertAndHydrate: function _convertAndHydrate(data, key, value) {
 		value = this._convert(unescape(value));
 
 		if (this._isValid(value)) {
@@ -273,7 +273,7 @@ Cerealizer.QueryString.prototype = {
 		}
 	},
 
-	deserialize: function(str) {
+	deserialize: function deserialize(str) {
 		var that = this;
 		var data = {};
 		var keys, values;
@@ -289,7 +289,7 @@ Cerealizer.QueryString.prototype = {
 		return data;
 	},
 
-	_hydrate: function(data, keys, value) {
+	_hydrate: function _hydrate(data, keys, value) {
 		var currData = data,
 		    key, i = 0,
 		    length = keys.length - 1,
@@ -312,7 +312,7 @@ Cerealizer.QueryString.prototype = {
 		return data;
 	},
 
-	_isValid: function(value) {
+	_isValid: function _isValid(value) {
 		if (value === null || value === undefined) {
 			return false;
 		}
@@ -328,11 +328,11 @@ Cerealizer.QueryString.prototype = {
 		}
 	},
 
-	_isObject: function(x) {
+	_isObject: function _isObject(x) {
 		return Object.prototype.toString.call(x) === "[object Object]";
 	},
 
-	serialize: function(data) {
+	serialize: function serialize(data) {
 		var keyDelimeterLeft = this.hashNotation ? "[" : ".",
 		    keyDelimeterRight = this.hashNotation ? "]" : "",
 		    arrayKeyDelimeterLeft = "[",
@@ -342,7 +342,7 @@ Cerealizer.QueryString.prototype = {
 		return this._serialize(data, params, "", keyDelimeterLeft, keyDelimeterRight, arrayKeyDelimeterLeft, arrayKeyDelimeterRight).join("&");
 	},
 
-	_serialize: function(data, params, keyPrefix, keyDelimeterLeft, keyDelimeterRight, arrayKeyDelimeterLeft, arrayKeyDelimeterRight) {
+	_serialize: function _serialize(data, params, keyPrefix, keyDelimeterLeft, keyDelimeterRight, arrayKeyDelimeterLeft, arrayKeyDelimeterRight) {
 		var nextKeyPrefix,
 		    arrayKeyRegex = /^[0-9+]$/,
 		    name, value;
@@ -386,11 +386,11 @@ Cerealizer.QueryString.prototype = {
 		return params;
 	},
 
-	test: function(str) {
+	test: function test(str) {
 		return this.regex.test(str);
 	},
 
-	toString: function() {
+	toString: function toString() {
 		return "[object Cerealizer.QueryString]";
 	}
 
@@ -423,7 +423,7 @@ Cerealizer.Xml.prototype = {
 
 	regex: /^\s*<[a-zA-Z][a-zA-Z0-9:]*.*?<\/[a-zA-Z0-9:]+[a-zA-Z]>\s*$/,
 
-	_deserializeMSIE: function(str) {
+	_deserializeMSIE: function _deserializeMSIE(str) {
 		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
 		xmlDoc.async = false;
 		xmlDoc.loadXML(str);
@@ -431,11 +431,11 @@ Cerealizer.Xml.prototype = {
 		return xmlDoc;
 	},
 
-	_deserializeStandard: function(str) {
+	_deserializeStandard: function _deserializeStandard(str) {
 		return this.parser.parseFromString(str, "text/xml");
 	},
 
-	_escape: function(x) {
+	_escape: function _escape(x) {
 		return String(x)
 			.replace(/\&/g, "&amp;")
 			.replace(/"/g, "&quot;")
@@ -443,16 +443,16 @@ Cerealizer.Xml.prototype = {
 			.replace(/>/g, "&gt;");
 	},
 
-	_isObject: function(x) {
+	_isObject: function _isObject(x) {
 		return Object.prototype.toString.call(x) === "[object Object]";
 	},
 
-	serialize: function(data) {
+	serialize: function serialize(data) {
 		var tags = this._serialize(data, []);
 		return tags.join("");
 	},
 
-	_serialize: function(data, tags) {
+	_serialize: function _serialize(data, tags) {
 		for (var key in data) {
 			if (data.hasOwnProperty(key)) {
 				if (this._isObject(data[key])) {
@@ -469,11 +469,11 @@ Cerealizer.Xml.prototype = {
 		return tags;
 	},
 
-	test: function(str) {
+	test: function test(str) {
 		return this.regex.test(str);
 	},
 
-	toString: function() {
+	toString: function toString() {
 		return "[object Cerealizer.Xml]";
 	}
 
@@ -508,11 +508,11 @@ Callbacks.prototype = {
 
 	types: null,
 
-	destructor: function() {
+	destructor: function destructor() {
 		this.context = this.types = null;
 	},
 
-	add: function(name, method) {
+	add: function add(name, method) {
 		if (!this.types[name]) {
 			this.types[name] = [];
 		}
@@ -522,7 +522,7 @@ Callbacks.prototype = {
 		return this;
 	},
 
-	execute: function(name) {
+	execute: function execute(name) {
 		if (!this.types[name]) {
 			return true;
 		}
@@ -547,7 +547,7 @@ Callbacks.prototype = {
 		return success;
 	},
 
-	remove: function(name, method) {
+	remove: function remove(name, method) {
 		if (!this.types[name]) {
 			return;
 		}
@@ -568,7 +568,7 @@ Callbacks.prototype = {
 
 Callbacks.Utils = {
 	self: {
-		addCallback: function(name, method) {
+		addCallback: function addCallback(name, method) {
 			if (!this.prototype.callbacks[name]) {
 				this.prototype.callbacks[name] = [];
 			}
@@ -583,7 +583,7 @@ Callbacks.Utils = {
 	prototype: {
 		callbacks: {},
 
-		initCallbacks: function(types) {
+		initCallbacks: function initCallbacks(types) {
 			if (!this.hasOwnProperty("callbacks")) {
 				this.callbacks = new Callbacks(this);
 			}
@@ -593,7 +593,7 @@ Callbacks.Utils = {
 			}
 		},
 
-		destroyCallbacks: function() {
+		destroyCallbacks: function destroyCallbacks() {
 			if (this.callbacks) {
 				this.callbacks.destructor();
 				this.callbacks = null;
@@ -939,11 +939,13 @@ ElementStore.prototype = {
 
 	_document: null,
 
+	returnNative: false,
+
 	_root: null,
 
 	constructor: ElementStore,
 
-	init: function(root) {
+	init: function init(root) {
 		if (!root) {
 			throw new Error("Missing required argument: root");
 		}
@@ -973,7 +975,7 @@ ElementStore.prototype = {
 		return this;
 	},
 
-	destructor: function() {
+	destructor: function destructor() {
 		if (this._cache) {
 			this.clearCache();
 			this._cache = null;
@@ -982,7 +984,7 @@ ElementStore.prototype = {
 		this.config = this._root = this._document = null;
 	},
 
-	clearCache: function() {
+	clearCache: function clearCache() {
 		var key;
 
 		for (key in this._cache) {
@@ -994,11 +996,11 @@ ElementStore.prototype = {
 		return this;
 	},
 
-	_createElement: function(tagName) {
+	_createElement: function _createElement(tagName) {
 		return this._document.createElement(tagName);
 	},
 
-	eagerLoad: function() {
+	eagerLoad: function eagerLoad() {
 		var key, conf;
 
 		for (key in this.config.elements) {
@@ -1024,11 +1026,11 @@ ElementStore.prototype = {
 		return this;
 	},
 
-	get: function(key) {
+	get: function get(key) {
 		return this.getElement(key) || this.getCollection(key) || null;
 	},
 
-	getCollection: function(key) {
+	getCollection: function getCollection(key) {
 		var collection;
 
 		if (!this.config.collections[key]) {
@@ -1051,7 +1053,7 @@ ElementStore.prototype = {
 		return collection;
 	},
 
-	getElement: function(key) {
+	getElement: function getElement(key) {
 		var element;
 
 		if (!this.config.elements[key]) {
@@ -1074,15 +1076,15 @@ ElementStore.prototype = {
 		return element;
 	},
 
-	isCollection: function(key) {
+	isCollection: function isCollection(key) {
 		return this.config.collections.hasOwnProperty(key);
 	},
 
-	isElement: function(key) {
+	isElement: function isElement(key) {
 		return this.config.elements.hasOwnProperty(key);
 	},
 
-	keys: function() {
+	keys: function keys() {
 		var keys = [], key;
 
 		for (key in this.config.elements) {
@@ -1100,7 +1102,7 @@ ElementStore.prototype = {
 		return keys;
 	},
 
-	_mergeConfigs: function(config, overrides, safe) {
+	_mergeConfigs: function _mergeConfigs(config, overrides, safe) {
 		for (key in overrides) {
 			if (overrides.hasOwnProperty(key) && (config[key] === undefined || !safe)) {
 				config[key] = overrides[key];
@@ -1108,7 +1110,7 @@ ElementStore.prototype = {
 		}
 	},
 
-	_parseHTML: function(html) {
+	_parseHTML: function _parseHTML(html) {
 		html = html.replace(/^\s+|\s+$/g, "");
 		var div = this.createElement("div");
 		div.innerHTML = html;
@@ -1124,7 +1126,7 @@ ElementStore.prototype = {
 		return elements;
 	},
 
-	setConfig: function(overrides, safe) {
+	setConfig: function setConfig(overrides, safe) {
 		this.config = this.config || { elements: {}, collections: {} };
 
 		if (overrides.elements) {
@@ -1138,7 +1140,7 @@ ElementStore.prototype = {
 		return this;
 	},
 
-	setRoot: function(root) {
+	setRoot: function setRoot(root) {
 		this.clearCache();
 		this._root = root;
 		this._document = this._root.nodeName === "#document" ? this._root : this._root.ownerDocument;
@@ -1146,15 +1148,15 @@ ElementStore.prototype = {
 		return this;
 	},
 
-	toString: function() {
+	toString: function toString() {
 		return "[object ElementStore]";
 	},
 
-	_querySelector: function(selector, element) {
+	_querySelector: function _querySelector(selector, element) {
 		return (element || this._root).querySelector(selector);
 	},
 
-	_querySelectorAll: function(selector, element) {
+	_querySelectorAll: function _querySelectorAll(selector, element) {
 		return (element || this._root).querySelectorAll(selector);
 	}
 
@@ -1167,14 +1169,14 @@ ElementStore.Utils = {
 	prototype: {
 		elementStore: {},
 
-		destroyElementStore: function() {
+		destroyElementStore: function destroyElementStore() {
 			if (this.elementStore) {
 				this.elementStore.destructor();
 				this.elementStore = null;
 			}
 		},
 
-		initElementStore: function(root) {
+		initElementStore: function initElementStore(root) {
 			if (!this.hasOwnProperty("elementStore")) {
 				this.elementStore = new ElementStore();
 			}
@@ -1184,7 +1186,7 @@ ElementStore.Utils = {
 			this.elementStore.init(root);
 		},
 
-		_initGetters: function() {
+		_initGetters: function _initGetters() {
 			if (this.__proto__.hasOwnProperty("__elementStoreGettersCreated__")) {
 				return;
 			}
@@ -1238,15 +1240,15 @@ ElementStore.Utils = {
 			elements = collections = proto = null;
 		},
 
-		clearElementStoreCache: function() {
+		clearElementStoreCache: function clearElementStoreCache() {
 			this.elementStore.clearCache();
 		},
 
-		collection: function(key) {
+		collection: function collection(key) {
 			return this.elementStore.getCollection(key);
 		},
 
-		_compileElementStore: function() {
+		_compileElementStore: function _compileElementStore() {
 			if (this.__proto__.hasOwnProperty("_compiledElementStore")) {
 				// Use the cached config
 				this.elementStore.setConfig(this.__proto__._compiledElementStore);
@@ -1268,7 +1270,7 @@ ElementStore.Utils = {
 			this.__proto__._compiledElementStore = this.elementStore.config;
 		},
 
-		_createCollectionGetter: function(key, propertyName) {
+		_createCollectionGetter: function _createCollectionGetter(key, propertyName) {
 			var getter = function collectionGetter() {
 				return this.elementStore.getCollection(key);
 			};
@@ -1276,7 +1278,7 @@ ElementStore.Utils = {
 			this.__proto__[propertyName] = getter;
 		},
 
-		_createElementGetter: function(key, propertyName) {
+		_createElementGetter: function _createElementGetter(key, propertyName) {
 			var getter = function elementGetter() {
 				return this.elementStore.getElement(key);
 			};
@@ -1284,7 +1286,7 @@ ElementStore.Utils = {
 			this.__proto__[propertyName] = getter;
 		},
 
-		element: function(key) {
+		element: function element(key) {
 			return this.elementStore.getElement(key);
 		}
 	}
@@ -1312,11 +1314,11 @@ Events.Event.prototype = {
 	publisher: null,
 	type: null,
 
-	destructor: function() {
+	destructor: function destructor() {
 		this.publisher = this.data = this.dateStarted = null;
 	},
 
-	cancel: function() {
+	cancel: function cancel() {
 		this.cancelled = true;
 	}
 
@@ -1336,7 +1338,7 @@ Events.Dispatcher.prototype = {
 
 	constructor: Events.Dispatcher,
 
-	destructor: function() {
+	destructor: function destructor() {
 		if (!this._subscribers) {
 			return;
 		}
@@ -1357,7 +1359,7 @@ Events.Dispatcher.prototype = {
 		subscriber = _subscribers = this._subscribers = null;
 	},
 
-	_dispatchEvent: function(event, _subscribers) {
+	_dispatchEvent: function _dispatchEvent(event, _subscribers) {
 		var subscriber;
 
 		for (var i = 0, length = _subscribers.length; i < length; i++) {
@@ -1378,7 +1380,7 @@ Events.Dispatcher.prototype = {
 		_subscribers = subscriber = event = null;
 	},
 
-	publish: function(eventType, publisher, data) {
+	publish: function publish(eventType, publisher, data) {
 		if (!this._subscribers[eventType]) {
 			return true;
 		}
@@ -1396,12 +1398,12 @@ Events.Dispatcher.prototype = {
 		return !cancelled;
 	},
 
-	subscribe: function(eventType, context, callback) {
+	subscribe: function subscribe(eventType, context, callback) {
 		var contextType = typeof context;
 		var callbackType = typeof callback;
-
+		
 		this._subscribers[eventType] = this._subscribers[eventType] || [];
-
+		
 		if (contextType === "function") {
 			this._subscribers[eventType].push({
 				context: null,
@@ -1413,7 +1415,7 @@ Events.Dispatcher.prototype = {
 			if (callbackType === "string" && typeof context[ callback ] !== "function") {
 				throw new Error("Cannot subscribe to " + eventType + " because " + callback + " is not a function");
 			}
-
+		
 			this._subscribers[eventType].push({
 				context: context || null,
 				callback: callback,
@@ -1422,7 +1424,7 @@ Events.Dispatcher.prototype = {
 		}
 	},
 
-	unsubscribe: function(eventType, context, callback) {
+	unsubscribe: function unsubscribe(eventType, context, callback) {
 		if (this._subscribers[eventType]) {
 			var contextType = typeof context;
 			var callbackType = typeof callback;
@@ -1454,7 +1456,7 @@ Events.Dispatcher.prototype = {
 		context = callback = _subscribers = subscriber = null;
 	},
 
-	unsubscribeAll: function(context) {
+	unsubscribeAll: function unsubscribeAll(context) {
 		var type, i, _subscribers;
 
 		for (type in this._subscribers) {
@@ -1484,7 +1486,7 @@ Events.ApplicationEvents = {
 
 	self: {
 
-		getEventDispatcher: function() {
+		getEventDispatcher: function getEventDispatcher() {
 			if (!Events.ApplicationEvents.eventDispatcher) {
 				Events.ApplicationEvents.eventDispatcher = new Events.Dispatcher();
 			}
@@ -1492,7 +1494,7 @@ Events.ApplicationEvents = {
 			return Events.ApplicationEvents.eventDispatcher;
 		},
 
-		checkEventDispatcher: function() {
+		checkEventDispatcher: function checkEventDispatcher() {
 			if (!this.getEventDispatcher()) {
 				throw new Error("No application event dispatcher was found. Please set Events.ApplicationEvents.eventDispatcher.");
 			}
@@ -1500,17 +1502,17 @@ Events.ApplicationEvents = {
 			return true;
 		},
 
-		publish: function(eventName, publisher, data) {
+		publish: function publish(eventName, publisher, data) {
 			this.checkEventDispatcher();
 			return this.getEventDispatcher().publish(eventName, publisher, data);
 		},
 
-		subscribe: function(eventName, context, callback) {
+		subscribe: function subscribe(eventName, context, callback) {
 			this.checkEventDispatcher();
 			this.getEventDispatcher().subscribe(eventName, context, callback);
 		},
 
-		unsubscribe: function(eventName, context, callback) {
+		unsubscribe: function unsubscribe(eventName, context, callback) {
 			this.checkEventDispatcher();
 			this.getEventDispatcher().unsubscribe(eventName, context, callback);
 		}
@@ -1521,29 +1523,29 @@ Events.ApplicationEvents = {
 
 		eventDispatcher: null,
 
-		_initApplicationEvents: function() {
+		_initApplicationEvents: function _initApplicationEvents() {
 			if (!this.hasOwnProperty("eventDispatcher")) {
 				this.eventDispatcher = this.constructor.getEventDispatcher();
 			}
 		},
 
-		_destroyApplicationEvents: function() {
+		_destroyApplicationEvents: function _destroyApplicationEvents() {
 			if (this.eventDispatcher) {
 				this.eventDispatcher.unsubscribe(this);
 			}
 		},
 
-		publish: function(eventName, data) {
+		publish: function publish(eventName, data) {
 			return this.eventDispatcher.publish(eventName, this, data);
 		},
 
-		subscribe: function(eventName, context, callback) {
+		subscribe: function subscribe(eventName, context, callback) {
 			this.eventDispatcher.subscribe(eventName, context, callback);
 
 			return this;
 		},
 
-		unsubscribe: function(eventName, context, callback) {
+		unsubscribe: function unsubscribe(eventName, context, callback) {
 			this.eventDispatcher.unsubscribe(eventName, context, callback);
 
 			return this;
@@ -1566,7 +1568,7 @@ Events.Notifications = {
 
 	self: {
 
-		addNotifications: function(newNotifications) {
+		addNotifications: function addNotifications(newNotifications) {
 			var name, notifications = this.prototype.notifications || {};
 
 			for (name in newNotifications) {
@@ -1598,7 +1600,7 @@ Events.Notifications = {
 
 		notifications: null,
 
-		_initNotifications: function() {
+		_initNotifications: function _initNotifications() {
 			if (!this.__proto__.hasOwnProperty("_compiledNotifications")) {
 				this._compileNotifications();
 			}
@@ -1622,7 +1624,7 @@ Events.Notifications = {
 			this._setUpNotifications();
 		},
 
-		_compileNotifications: function() {
+		_compileNotifications: function _compileNotifications() {
 			var _compiledNotifications = {}, name, i, length, notifications, proto = this.__proto__;
 
 			while (proto) {
@@ -1652,31 +1654,31 @@ Events.Notifications = {
 			proto = notifications = _compiledNotifications = null;
 		},
 
-		_destroyNotifications: function() {
+		_destroyNotifications: function _destroyNotifications() {
 			if (this._notificationDispatcher) {
 				this._notificationDispatcher.destructor();
 				this._notificationDispatcher = null;
 			}
 		},
 
-		_setUpNotifications: function() {
+		_setUpNotifications: function _setUpNotifications() {
 			// Child classes may override this to do something special with adding notifications.
 		},
 
-		notify: function(message, data) {
+		notify: function notify(message, data) {
 			var success = this.publish(this._notificationIdPrefix + "." + this._notificationId + "." + message, data);
 			data = null;
 			return success;
 		},
 
-		listen: function(message, context, notification) {
+		listen: function listen(message, context, notification) {
 			this.subscribe(this._notificationIdPrefix + "." + this._notificationId + "." + message, context, notification);
 			context = notification = null;
 
 			return this;
 		},
-
-		ignore: function(message, context, notification) {
+		
+		ignore: function ignore(message, context, notification) {
 			this.unsubscribe(this._notificationIdPrefix + "." + this._notificationId + "." + message, context, notification);
 			context = notification = null;
 
@@ -1701,7 +1703,7 @@ Hash.prototype = {
 
 	constructor: Hash,
 
-	destructor: function() {
+	destructor: function destructor() {
 		for (var key in this) {
 			if (this.exists(key)) {
 				this[key] = null;
@@ -1709,7 +1711,7 @@ Hash.prototype = {
 		}
 	},
 
-	empty: function() {
+	empty: function empty() {
 		var keys = this.keys(), i = 0, length = keys.length, key;
 
 		for (i; i < length; i++) {
@@ -1721,11 +1723,11 @@ Hash.prototype = {
 		return this;
 	},
 
-	exists: function(key) {
+	exists: function exists(key) {
 		return (!this.isReserved(key) && this.hasOwnProperty(key)) ? true : false;
 	},
 
-	filter: function(callback, context) {
+	filter: function filter(callback, context) {
 		context = context || this;
 		var filteredHash = new Hash();
 
@@ -1738,7 +1740,7 @@ Hash.prototype = {
 		return filteredHash;
 	},
 
-	forEach: function(callback, context) {
+	forEach: function forEach(callback, context) {
 		context = context || this;
 
 		for (var key in this) {
@@ -1754,7 +1756,7 @@ Hash.prototype = {
 		return this;
 	},
 
-	get: function(key) {
+	get: function get(key) {
 		if (this.isReserved(key)) {
 			throw new Error("Cannot get reserved property: " + key);
 		}
@@ -1763,15 +1765,15 @@ Hash.prototype = {
 		}
 	},
 
-	isEmpty: function() {
+	isEmpty: function isEmpty() {
 		return this.size() === 0;
 	},
 
-	isReserved: function(key) {
+	isReserved: function isReserved(key) {
 		return this.constructor.prototype.hasOwnProperty(key);
 	},
 
-	keys: function() {
+	keys: function keys() {
 		var keys = [];
 
 		for (var key in this) {
@@ -1783,7 +1785,7 @@ Hash.prototype = {
 		return keys;
 	},
 
-	merge: function(overrides, safe) {
+	merge: function merge(overrides, safe) {
 		if (!overrides) {
 			throw new Error("Missing required argument: overrides");
 		}
@@ -1817,11 +1819,11 @@ Hash.prototype = {
 		return this;
 	},
 
-	safeMerge: function(overrides) {
+	safeMerge: function safeMerge(overrides) {
 		this.merge(overrides, true);
 	},
 
-	set: function(key, value) {
+	set: function set(key, value) {
 		if (this.isReserved(key)) {
 			throw new Error("Cannot set reserved property: " + key);
 		}
@@ -1831,11 +1833,11 @@ Hash.prototype = {
 		return this;
 	},
 
-	size: function() {
+	size: function size() {
 		return this.keys().length;
 	},
 
-	toString: function() {
+	toString: function toString() {
 		return "[object Hash]";
 	}
 
@@ -2184,7 +2186,7 @@ Reaper.prototype = {
 
 	constructor: Reaper,
 
-	_extractFieldValues: function(fields, data) {
+	_extractFieldValues: function _extractFieldValues(fields, data) {
 		var value, name, i = 0, length = fields.length;
 
 		for (i; i < length; i++) {
@@ -2194,7 +2196,7 @@ Reaper.prototype = {
 		}
 	},
 
-	_extractValue: function(field) {
+	_extractValue: function _extractValue(field) {
 		var nodeName = field.nodeName.toLowerCase(),
 		    value = null, i, length;
 
@@ -2233,7 +2235,7 @@ Reaper.prototype = {
 		return (value === "") ? null : value;
 	},
 
-	getData: function(element, data) {
+	getData: function getData(element, data) {
 		if (!element) {
 			throw new Error("Missing required argument: element");
 		}
@@ -2253,7 +2255,7 @@ Reaper.prototype = {
 		return data;
 	},
 
-	_setNestedValue: function(data, keys, value) {
+	_setNestedValue: function _setNestedValue(data, keys, value) {
 		var currData = data,
 		    key, i = 0,
 		    length = keys.length - 1,
@@ -2275,7 +2277,7 @@ Reaper.prototype = {
 		currData = keys = null;
 	},
 
-	_setValue: function(data, name, value) {
+	_setValue: function _setValue(data, name, value) {
 		if (this.flat) {
 			if (value !== null || this.allowNulls) {
 				data[name] = value;
@@ -2362,10 +2364,8 @@ var Module = Object.extend({
 		},
 
 		init: function init(elementOrId, options) {
-			this.element = typeof elementOrId === "string" ? document.getElementById(elementOrId) : elementOrId;
-
-			if (!this.element) {
-				throw new Error("Could not find element: " + elementOrId);
+			if (elementOrId) {
+				this.setElement(elementOrId);
 			}
 
 			this.document = this.element.ownerDocument;
@@ -2534,6 +2534,14 @@ var Module = Object.extend({
 			element = null;
 		},
 
+		setElement: function setElement(elementOrId) {
+			this.element = typeof elementOrId === "string" ? document.getElementById(elementOrId) : elementOrId;
+
+			if (!this.element) {
+				throw new Error("Could not find element: " + elementOrId);
+			}
+		},
+
 		setOptions: function setOptions(overrides) {
 			if (!this.hasOwnProperty("options")) {
 				this.options = new Hash(overrides);
@@ -2669,339 +2677,437 @@ Module.FormModule = Module.extend({
 
 });
 
-Module = window.Module || {};
+(function(Module) {
 
-Module.Factory = function Factory() {};
+	function Factory() {};
 
-Module.Factory.prototype = {
+	Factory.prototype = {
 
-	objectFactory: null,
+		objectFactory: null,
 
-	constructor: Module.Factory,
+		constructor: Module.Factory,
 
-	destructor: function destructor() {
-		this.objectFactory = null;
-	},
+		destructor: function destructor() {
+			this.objectFactory = null;
+		},
 
-	createInstance: function createInstance(element, type, options) {
-		var module = this.getInstance(type);
+		createInstance: function createInstance(element, type, options) {
+			var module = this.getInstance(type);
 
-		module.init(element, options);
+			module.init(element, options);
 
-		return module;
-	},
+			return module;
+		},
 
-	getInstance: function getInstance(type) {
-		var instance = null, Klass = null;
+		getInstance: function getInstance(type) {
+			var instance = null, Klass = null;
 
-		if (this.objectFactory) {
-			instance = this.objectFactory.getInstance(type);
+			if (this.objectFactory) {
+				instance = this.objectFactory.getInstance(type);
 
-			if (!instance) {
-				throw new Error("The object factory failed to get a new instance for type: " + type);
+				if (!instance) {
+					throw new Error("The object factory failed to get a new instance for type: " + type);
+				}
 			}
+			else if (/^[a-zA-Z][a-zA-Z0-9.]+[a-zA-Z0-9]$/.test(type)) {
+				try {
+					Klass = eval(type);
+				}
+				catch (error) {
+					throw new Error("Class name " + type + " does not exist");
+				}
+
+				if (!Klass) {
+					throw new Error("Class name " + type + " does not exist");
+				}
+				else if (typeof Klass !== "function") {
+					throw new Error("Class name " + type + " is not a constructor function");
+				}
+
+				instance = new Klass();
+			}
+			else {
+				throw new Error("Cannot instantiate invalid type: " + type);
+			}
+
+			return instance;
 		}
-		else if (/^[a-zA-Z][a-zA-Z0-9.]+[a-zA-Z0-9]$/.test(type)) {
-			try {
-				Klass = eval(type);
-			}
-			catch (error) {
-				throw new Error("Class name " + type + " does not exist");
-			}
 
-			if (!Klass) {
-				throw new Error("Class name " + type + " does not exist");
-			}
-			else if (typeof Klass !== "function") {
-				throw new Error("Class name " + type + " is not a constructor function");
-			}
+	};
 
-			instance = new Klass();
+	Module.Factory = Factory;
+
+})(window.Module || {});
+
+(function() {
+
+	function MetaData(element) {
+		this.options = null;
+		this.types = [];
+
+		if (element) {
+			this.setElement(element);
 		}
-		else {
-			throw new Error("Cannot instantiate invalid type: " + type);
-		}
-
-		return instance;
 	}
 
-};
+	MetaData.prototype = {
 
-// @requires module/factory.js
+		element: null,
 
-window.Module = window.Module || {};
+		options: null,
 
-Module.Manager = function Manager() {};
+		types: null,
 
-Module.Manager.prototype = {
+		constructor: MetaData,
 
-	baseClassName: "module",
+		forEach: function forEach(callback, context) {
+			var i = 0, length = this.types.length,
+			    result, type, options;
 
-	defaultModule: null,
+			if (length === 1) {
+				callback.call(context, this.element, this.types[0], this.options, 0, this);
+			}
+			else {
+				for (i; i < length; ++i) {
+					type = this.types[i];
+					options = this.options[type] || {};
+					result = callback.call(context, this.element, type, options, i, this);
 
-	defaultModuleFocused: false,
+					if (result === false) {
+						break;
+					}
+				}
+			}
+		},
 
-	factory: null,
+		setElement: function setElement(element) {
+			this.element = element;
 
-	registry: null,
+			var types = element.getAttribute("data-modules"),
+			    options = element.getAttribute("data-module-options"),
+			    length;
 
-	groups: null,
+			if (!types) {
+				throw new Error("Missing required attribute data-modules on " + element.nodeName + "." + element.className.split(/\s+/g).join(".") + "#" + element.id);
+			}
 
-	constructor: Module.Manager,
+			this.types = types
+				.replace(/^\s+|\s+$/g, "")
+				.split(/\s+/g);
 
-	destructor: function destructor(cascadeDestroy) {
-		if (Module.manager === this) {
-			Module.manager = null;
+			this.options = options ? JSON.parse(options) : {};
 		}
 
-		if (this.registry) {
-			this._destroyRegistry(cascadeDestroy);
-		}
+	};
 
-		if (this.groups) {
-			this._destroyGroups();
-		}
+	Module.MetaData = MetaData;
 
-		if (this.factory) {
-			if (cascadeDestroy) {
+})(window.Module || {});
+
+(function(Module) {
+
+	function Provider() {}
+
+	Provider.prototype = {
+
+		factory: null,
+
+		manager: null,
+
+		constructor: Provider,
+
+		destructor: function destructor(cascadeDestroy) {
+			if (cascadeDestroy && this.factory) {
 				this.factory.destructor();
 			}
 
-			this.factory = null;
-		}
-	},
+			this.factory = this.manager = null;
+		},
 
-	_destroyGroups: function _destroyGroups() {
-		var key, group, i, length;
+		_createModuleClass: function _createModuleClass(type) {
+			return "module " + type.charAt(0).toLowerCase() + type.slice(1, type.length)
+				.replace(/(\.[A-Z])/g, function(match, $1) {
+					return "-" + $1.replace(/\./g, "").toLowerCase();
+				})
+				.replace(/Module$/, "")
+				.replace(/^\s+|\s+$/g, "");
+		},
 
-		for (key in this.groups) {
-			if (this.groups.hasOwnProperty(key)) {
-				group = this.groups[key];
+		createModule: function createModule(element, type, options) {
+			var module = this.factory.getInstance(type);
+			var className = this._createModuleClass(type);
 
-				for (i = 0, length = group.length; i < length; i++) {
-					group[i] = null;
-				}
+			element.className += element.className ? " " + className : className;
 
-				this.groups[key] = null;
+			module.setElement(element);
+			module.setOptions(options);
+
+			if (options.defaultModule) {
+				this.manager.setDefaultModule(module);
 			}
+
+			return module;
+		},
+
+		createModules: function createModule(metaData, callback, context) {
+			var modules = [],
+			    module,
+			    callback = callback || function() {};
+
+			metaData.forEach(function(element, type, options) {
+				module = this.createModule(element, type, options);
+				modules.push(module);
+				callback.call(context, module, element, type, options);
+			}, this);
+
+			callback = context = module = null;
+
+			return modules;
 		}
 
-		this.groups = null;
-	},
+	};
 
-	_destroyRegistry: function _destroyRegistry(cascadeDestroy) {
-		var key, entry;
+	Module.Provider = Provider;
 
-		for (key in this.registry) {
-			if (this.registry.hasOwnProperty(key)) {
-				entry = this.registry[key];
+})(window.Module || {});
 
+(function(Module) {
+
+	function Manager() {};
+
+	Manager.prototype = {
+
+		baseClassName: "module",
+
+		defaultModule: null,
+
+		defaultModuleFocused: false,
+
+		provider: null,
+
+		registry: null,
+
+		groups: null,
+
+		constructor: Module.Manager,
+
+		destructor: function destructor(cascadeDestroy) {
+			if (Module.manager === this) {
+				Module.manager = null;
+			}
+
+			if (this.registry) {
+				this._destroyRegistry(cascadeDestroy);
+			}
+
+			if (this.groups) {
+				this._destroyGroups();
+			}
+
+			if (this.provider) {
 				if (cascadeDestroy) {
-					entry.module.destructor(true);
+					this.provider.destructor();
 				}
 
-				entry.module = null;
-				this.registry[key] = null;
+				this.provider = null;
 			}
-		}
+		},
 
-		this.registry = null;
-	},
+		_destroyGroups: function _destroyGroups() {
+			var key, group, i, length;
 
-	init: function init() {
-		this.factory = (this.hasOwnProperty("factory")) ? this.factory : new Module.Factory();
-		this.registry = (this.hasOwnProperty("registry")) ? this.registry : {};
-		this.groups = (this.hasOwnProperty("groups")) ? this.groups : {};
+			for (key in this.groups) {
+				if (this.groups.hasOwnProperty(key)) {
+					group = this.groups[key];
 
-		Module.manager = this;
+					for (i = 0, length = group.length; i < length; i++) {
+						group[i] = null;
+					}
 
-		return this;
-	},
-
-	eagerLoadModules: function eagerLoadModules(element) {
-		var els = element.getElementsByTagName("*"), i = 0, length = els.length, el;
-
-		for (i; i < length; i++) {
-			el = els[i];
-
-			if (el.getAttribute("data-modules") && !el.getAttribute("data-module-lazyload")) {
-				this.createModules(el);
+					this.groups[key] = null;
+				}
 			}
-		}
 
-		els = null;
+			this.groups = null;
+		},
 
-		return this;
-	},
+		_destroyRegistry: function _destroyRegistry(cascadeDestroy) {
+			var key, entry;
 
-	createModule: function createModule(element, type, options, register) {
-		var className = element.className + " module " + type.charAt(0).toLowerCase() + type.slice(1, type.length).replace(/([.A-Z]+)/g, function(match, $1) {
-			return "-" + $1.replace(/\./g, "").toLowerCase();
-		});
+			for (key in this.registry) {
+				if (this.registry.hasOwnProperty(key)) {
+					entry = this.registry[key];
 
-		element.className = className.replace(/^\s+|\s+$/g, "");
+					if (cascadeDestroy) {
+						entry.module.destructor(true);
+					}
 
-		var module = this.factory.getInstance(type);
+					entry.module = null;
+					this.registry[key] = null;
+				}
+			}
 
-		module.setOptions(options);
+			this.registry = null;
+		},
 
-		if (register) {
+		init: function init() {
+			this.provider = this.provider || new Module.Provider();
+			this.provider.factory = this.provider.factory || new Module.Factory();
+			this.provider.manager = this;
+			this.registry = this.registry || {};
+			this.groups = this.groups || {};
+
+			Module.manager = this;
+
+			return this;
+		},
+
+		eagerLoadModules: function eagerLoadModules(element) {
+			var els = element.getElementsByTagName("*"), i = 0, length = els.length, el;
+
+			for (i; i < length; i++) {
+				el = els[i];
+
+				if (el.getAttribute("data-modules") && !el.getAttribute("data-module-lazyload")) {
+					this.createModules(el);
+				}
+			}
+
+			els = null;
+
+			return this;
+		},
+
+		createModule: function createModule(element, type, options, register) {
+			var module = this.provider.createModule(element, type, options);
+
+			if (register) {
+				this.registerModule(type, module);
+			}
+
+			element = options = null;
+
+			return module;
+		},
+
+		createModules: function createModules(element) {
+			if (!element) {
+				throw new Error("Missing required argument: element");
+			}
+
+			var metaData = new Module.MetaData(element);
+
+			this.provider.createModules(metaData, function(module, element, type, options) {
+				this.registerModule(type, module);
+				module.init();
+			}, this);
+
+			this.markModulesCreated(element, metaData);
+
+			metaData = element = null;
+		},
+
+		focusDefaultModule: function focusDefaultModule(anything) {
+			if (this.defaultModule && !this.defaultModuleFocused) {
+				this.defaultModuleFocused = true;
+				this.defaultModule.focus(anything);
+			}
+		},
+
+		initModuleInContainer: function initModuleInContainer(element, container, config, template, type, module) {
+			var createdAt = new Date();
+			var renderData = new Hash({
+				guid: module.guid,
+				createdAt: createdAt,
+				timestamp: createdAt.getTime()
+			});
+
+			if (config.renderData) {
+				renderData.merge(config.renderData);
+			}
+
+			var html = template.innerHTML.replace(/#\{([-.\w]+)\}/g, function(match, key) {
+				return renderData[key] || "";
+			});
+
+			element.className += (" " + this.baseClassName + " " + config.className).replace(/\s{2,}/g, " ");
+			element.innerHTML = html;
+
+			if (config.insert === "top" && container.firstChild) {
+				container.insertBefore(element, container.firstChild);
+			}
+			else {
+				container.appendChild(element);
+			}
+
 			this.registerModule(type, module);
-		}
+			module.init();
+		},
 
-		element = options = null;
+		markModulesCreated: function markModulesCreated(element, metaData) {
+			element.setAttribute("data-modules-created", metaData.types.join(" "));
+			element.removeAttribute("data-modules");
+			element = metaData = null;
+		},
 
-		return module;
-	},
-
-	createModules: function createModules(element) {
-		if (!element) {
-			throw new Error("Missing required argument: element");
-		}
-
-		var metaData = this.getModuleMetaData(element);
-
-		if (metaData.types.length === 1) {
-			module = this.createModule(element, metaData.types[0], metaData.options, true);
-			module.init(element, metaData.options);
-		}
-		else {
-			for (i = 0, length = metaData.types.length; i < length; i++) {
-				type = metaData.types[i];
-				opts = metaData.options[type] || {};
-				module = this.createModule(element, type, opts, true);
-				module.init(element, opts);
+		registerModule: function registerModule(type, module) {
+			if (module.guid === undefined || module.guid === null) {
+				throw new Error("Cannot register module " + type + " without a guid property");
 			}
-		}
+			else if (this.registry[module.guid]) {
+				throw new Error("Module " + module.guid + " has already been registered");
+			}
 
-		this.markModulesCreated(element, metaData);
+			this.registry[module.guid] = {module: module, type: type};
 
-		metaData = element = module = opts = options = null;
-	},
+			if (!this.groups[type]) {
+				this.groups[type] = [];
+			}
 
-	focusDefaultModule: function focusDefaultModule(anything) {
-		if (this.defaultModule && !this.defaultModuleFocused) {
-			this.defaultModuleFocused = true;
-			this.defaultModule.focus(anything);
-		}
-	},
+			this.groups[type].push(module);
 
-	getModuleMetaData: function getModuleMetaData(element) {
-		var length;
-		var types = element.getAttribute("data-modules");
-		var options = element.getAttribute("data-module-options");
-		var metaData = {
-			element: element,
-			types: null,
-			options: null
-		};
-
-		if (!types) {
-			throw new Error("Missing required attribute data-modules on " + element.nodeName + "." + element.className.split(/\s+/g).join(".") + "#" + element.id);
-		}
-
-		types = types.replace(/^\s+|\s+$/g, "").split(/\s+/g);
-		length = types.length;
-		options = (options) ? JSON.parse(options) : {};
-
-		metaData.types = types;
-		metaData.options = options;
-
-		element = null;
-
-		return metaData;
-	},
-
-	initModuleInContainer: function initModuleInContainer(element, container, config, template, type, module) {
-		var createdAt = new Date();
-		var renderData = new Hash({
-			guid: module.guid,
-			createdAt: createdAt,
-			timestamp: createdAt.getTime()
-		});
-
-		if (config.renderData) {
-			renderData.merge(config.renderData);
-		}
-
-		var html = template.innerHTML.replace(/#\{([-.\w]+)\}/g, function(match, key) {
-			return renderData[key] || "";
-		});
-
-		element.className += (" " + this.baseClassName + " " + config.className).replace(/\s{2,}/g, " ");
-		element.innerHTML = html;
-
-		if (config.insert === "top" && container.firstChild) {
-			container.insertBefore(element, container.firstChild);
-		}
-		else {
-			container.appendChild(element);
-		}
-
-		module.init(element);
-		this.registerModule(type, module);
-	},
-
-	markModulesCreated: function markModulesCreated(element, metaData) {
-		element.setAttribute("data-modules-created", metaData.types.join(" "));
-		element.removeAttribute("data-modules");
-		element = metaData = null;
-	},
-
-	registerModule: function registerModule(type, module) {
-		if (module.guid === undefined || module.guid === null) {
-			throw new Error("Cannot register module " + type + " without a guid property");
-		}
-		else if (this.registry[module.guid]) {
-			throw new Error("Module " + module.guid + " has already been registered");
-		}
-
-		this.registry[module.guid] = {module: module, type: type};
-
-		if (!this.groups[type]) {
-			this.groups[type] = [];
-		}
-
-		this.groups[type].push(module);
-
-		module = null;
-	},
-
-	unregisterModule: function unregisterModule(module) {
-		if (!module.guid || !this.registry[module.guid]) {
 			module = null;
-			return;
-		}
+		},
 
-		var guid = module.guid;
-		var type = this.registry[guid].type;
-		var group = this.groups[type];
+		unregisterModule: function unregisterModule(module) {
+			if (!module.guid || !this.registry[module.guid]) {
+				module = null;
+				return;
+			}
 
-		this.registry[guid].module = null;
-		this.registry[guid] = null;
-		delete this.registry[guid];
+			var guid = module.guid;
+			var type = this.registry[guid].type;
+			var group = this.groups[type];
 
-		if (group) {
-			for (var i = 0, length = group.length; i < length; i++) {
-				if (group[i] === module) {
-					group.splice(i, 1);
-					break;
+			this.registry[guid].module = null;
+			this.registry[guid] = null;
+			delete this.registry[guid];
+
+			if (group) {
+				for (var i = 0, length = group.length; i < length; i++) {
+					if (group[i] === module) {
+						group.splice(i, 1);
+						break;
+					}
 				}
 			}
+
+			module = group = null;
+		},
+
+		setDefaultModule: function setDefaultModule(module) {
+			if (!this.defaultModule) {
+				this.defaultModule = module;
+			}
+
+			module = null;
 		}
 
-		module = group = null;
-	},
+	};
 
-	setDefaultModule: function setDefaultModule(module) {
-		if (!this.defaultModule) {
-			this.defaultModule = module;
-		}
+	Module.Manager = Manager;
 
-		module = null;
-	}
-
-};
+})(window.Module || {});
 
 // @import Hash
 // @requires module/manager.js
@@ -3297,15 +3403,16 @@ Module.Manager.SubModuleProperties = {
 			}
 
 			var manager = this.constructor.getManager();
-			var metaData = manager.getModuleMetaData(element);
+			var metaData = new Module.MetaData(element);
 			var module, proto = this.constructor.prototype;
 
 			if (metaData.types.length > 1) {
-				throw new Error("Sub module elements cannot have more than one type specified in data-module");
+				throw new Error("Sub module elements cannot have more than one type specified in data-modules");
 			}
 
 			module = manager.createModule(element, metaData.types[0], metaData.options);
-			module.init(element);
+			module.setElement(element);
+			module.init();
 
 			if (proto[name] === null) {
 				if (this.hasOwnProperty(name)) {
@@ -3337,7 +3444,7 @@ Module.Manager.SubModuleProperties = {
 Module.include(Module.Manager.SubModuleProperties);
 
 var Foundry = {
-	version: "0.0.4"
+	version: "0.0.5"
 };
 
 /*

@@ -22,6 +22,8 @@
       "vendor/module_controller/lib/module.js",
       "vendor/module_controller/lib/module/form_module.js",
       "vendor/module_controller/lib/module/factory.js",
+      "vendor/module_controller/lib/module/meta_data.js",
+      "vendor/module_controller/lib/module/provider.js",
       "vendor/module_controller/lib/module/manager.js",
       "vendor/module_controller/lib/module/manager/lazy_loader.js",
       "vendor/module_controller/lib/module/manager/sub_module_properties.js",

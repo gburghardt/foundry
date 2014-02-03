@@ -1,4 +1,4 @@
-/*! foundry 2014-01-10 */
+/*! foundry 2014-02-03 */
 dom.events.Delegator.MooToolsAdaptor = {
 	prototype: {
 		addEventListener: function(element, eventType, callback) {
@@ -23,11 +23,11 @@ ElementStore.MootoolsAdapter = {
 
 	prototype: {
 
-		querySelector: function(selector, element) {
+		querySelector: function querySelector(selector, element) {
 			return $(element || this._root).getFirst(selector);
 		},
 
-		querySelectorAll: function(selector, element) {
+		querySelectorAll: function querySelectorAll(selector, element) {
 			return $(element || this._root).getChildren(selector);
 		}
 
