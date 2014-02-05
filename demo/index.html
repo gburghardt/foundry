@@ -241,7 +241,7 @@ app.objectFactory
 			className: "ElementStore"
 		},
 		globalEventDispatcher: {
-			className: "Events.Dispatcher",
+			className: "Beacon.Dispatcher",
 			singleton: true
 		},
 		module: {
@@ -308,9 +308,7 @@ app.objectFactory
 		config.eagerLoadModules = false;
 	});
 
-	window.onload = function() {
-		app.init(document.getElementsByTagName("html")[0]);
-	};
+	app.init(document.documentElement);
 
 })(window, document);
 

@@ -1,4 +1,4 @@
-/*! foundry 2014-02-03 */
+/*! foundry 2014-02-05 */
 (function() {
 
 	var _isMSIE = (/msie/i).test(navigator.userAgent);
@@ -1292,402 +1292,418 @@ ElementStore.Utils = {
 	}
 };
 
-var Events = {};
+(function() {
 
-// @requires events.js
+	function include(Klass, mixin) {
+		if (mixin.self) {
+			merge(mixin.self, Klass, true);
+		}
 
-Events.Event = function Event(type, publisher, data) {
-	this.type = type;
-	this.publisher = publisher;
-	this.data = data || {};
-	this.dateStarted = (this.INCLUDE_DATE) ? new Date() : null;
-	publish = data = null;
-};
+		if (mixin.prototype) {
+			merge(mixin.prototype, Klass.prototype, true);
+		}
 
-Events.Event.prototype = {
-
-	INCLUDE_DATE: true,
-
-	cancelled: false,
-	data: null,
-	dateStarted: null,
-	publisher: null,
-	type: null,
-
-	destructor: function destructor() {
-		this.publisher = this.data = this.dateStarted = null;
-	},
-
-	cancel: function cancel() {
-		this.cancelled = true;
+		if (mixin.included) {
+			mixin.included(Klass);
+		}
 	}
 
-};
+	function merge(source, destination, safe) {
+		var key, undef;
 
-// @requires events.js
-
-Events.Dispatcher = function Dispatcher() {
-	this._subscribers = {};
-};
-
-Events.Dispatcher.logger = window.console || null;
-
-Events.Dispatcher.prototype = {
-
-	_subscribers: null,
-
-	constructor: Events.Dispatcher,
-
-	destructor: function destructor() {
-		if (!this._subscribers) {
-			return;
+		for (key in source) {
+			if (source.hasOwnProperty(key) &&
+				(!safe || destination[key] === undef)) {
+				destination[key] = source[key];
+			}
 		}
 
-		var _subscribers = this._subscribers, subscriber, eventType, i, length;
+		source = destination = null;
+	}
 
-		for (eventType in _subscribers) {
-			if (_subscribers.hasOwnProperty(eventType)) {
-				for (i = 0, length = _subscribers[eventType].length; i < length; i++) {
-					subscriber = _subscribers[eventType][i];
-					subscriber.callback = subscriber.context = null;
+	var Beacon = {
+		setup: function setup(Klass) {
+			if (Beacon.ApplicationEvents) {
+				include(Klass, Beacon.ApplicationEvents);
+
+				if (Beacon.Notifications) {
+					include(Klass, Beacon.Notifications);
+				}
+			}
+		}
+	};
+
+	window.Beacon = Beacon;
+
+})();
+
+Beacon = (function(Beacon) {
+
+	function Dispatcher() {
+		this._subscribers = {};
+	}
+
+	Dispatcher.prototype = {
+
+		_subscribers: null,
+
+		constructor: Dispatcher,
+
+		destructor: function destructor() {
+			if (!this._subscribers) {
+				return;
+			}
+
+			var subscribers = this._subscribers,
+			    subscriber,
+			    eventType,
+			    i, length;
+
+			for (eventType in subscribers) {
+				if (subscribers.hasOwnProperty(eventType)) {
+					for (i = 0, length = subscribers[eventType].length; i < length; i++) {
+						subscriber = subscribers[eventType][i];
+						subscriber.callback = subscriber.context = null;
+					}
+
+					subscribers[eventType] = null;
+				}
+			}
+
+			subscriber = subscribers = this._subscribers = null;
+		},
+
+		_dispatchEvent: function _dispatchEvent(publisher, data, subscribers) {
+			var subscriber,
+			    result,
+			    i = 0,
+			    length = subscribers.length;
+
+			for (i; i < length; i++) {
+				subscriber = subscribers[i];
+
+				if (subscriber.type === "function") {
+					result = subscriber.callback.call(subscriber.context, publisher, data);
+				}
+				else if (subscriber.type === "string") {
+					result = subscriber.context[ subscriber.callback ](publisher, data);
 				}
 
-				_subscribers[eventType] = null;
-			}
-		}
-
-		subscriber = _subscribers = this._subscribers = null;
-	},
-
-	_dispatchEvent: function _dispatchEvent(event, _subscribers) {
-		var subscriber;
-
-		for (var i = 0, length = _subscribers.length; i < length; i++) {
-			subscriber = _subscribers[i];
-
-			if (subscriber.type === "function") {
-				subscriber.callback.call(subscriber.context, event, event.publisher, event.data);
-			}
-			else if (subscriber.type === "string") {
-				subscriber.context[ subscriber.callback ]( event, event.publisher, event.data );
+				if (result === false) {
+					break;
+				}
 			}
 
-			if (event.cancelled) {
-				break;
+			subscribers = subscriber = publisher = data = null;
+
+			return result !== false;
+		},
+
+		publish: function publish(eventType, publisher, data) {
+			if (!this._subscribers[eventType]) {
+				return true;
 			}
-		}
 
-		_subscribers = subscriber = event = null;
-	},
+			var result = this._dispatchEvent(publisher, data, this._subscribers[eventType]);
 
-	publish: function publish(eventType, publisher, data) {
-		if (!this._subscribers[eventType]) {
-			return true;
-		}
+			publisher = data = null;
 
-		var event = new Events.Event(eventType, publisher, data);
-		var _subscribers = this._subscribers[eventType];
-		var cancelled = false;
+			return result;
+		},
 
-		this._dispatchEvent(event, _subscribers);
-		cancelled = event.cancelled;
-		event.destructor();
-
-		event = publisher = data = _subscribers = null;
-
-		return !cancelled;
-	},
-
-	subscribe: function subscribe(eventType, context, callback) {
-		var contextType = typeof context;
-		var callbackType = typeof callback;
-		
-		this._subscribers[eventType] = this._subscribers[eventType] || [];
-		
-		if (contextType === "function") {
-			this._subscribers[eventType].push({
-				context: null,
-				callback: context,
-				type: "function"
-			});
-		}
-		else if (contextType === "object") {
-			if (callbackType === "string" && typeof context[ callback ] !== "function") {
-				throw new Error("Cannot subscribe to " + eventType + " because " + callback + " is not a function");
-			}
-		
-			this._subscribers[eventType].push({
-				context: context || null,
-				callback: callback,
-				type: callbackType
-			});
-		}
-	},
-
-	unsubscribe: function unsubscribe(eventType, context, callback) {
-		if (this._subscribers[eventType]) {
+		subscribe: function subscribe(eventType, context, callback) {
 			var contextType = typeof context;
 			var callbackType = typeof callback;
-			var _subscribers = this._subscribers[eventType];
-			var i = _subscribers.length;
-			var subscriber;
+
+			this._subscribers[eventType] = this._subscribers[eventType] || [];
 
 			if (contextType === "function") {
-				callback = context;
-				context = null;
-				callbackType = "function";
+				this._subscribers[eventType].push({
+					context: null,
+					callback: context,
+					type: "function"
+				});
 			}
-			else if (contextType === "object" && callbackType === "undefined") {
-				callbackType = "any";
-			}
-
-			while (i--) {
-				subscriber = _subscribers[i];
-
-				if (
-				    (callbackType === "any" && subscriber.context === context) ||
-						(subscriber.type === callbackType && subscriber.context === context && subscriber.callback === callback)
-				) {
-					_subscribers.splice(i, 1);
+			else if (contextType === "object") {
+				if (callbackType === "string" && typeof context[ callback ] !== "function") {
+					throw new Error("Cannot subscribe to " + eventType + " because " + callback + " is not a function");
 				}
+
+				this._subscribers[eventType].push({
+					context: context || null,
+					callback: callback,
+					type: callbackType
+				});
 			}
-		}
+		},
 
-		context = callback = _subscribers = subscriber = null;
-	},
+		unsubscribe: function unsubscribe(eventType, context, callback) {
 
-	unsubscribeAll: function unsubscribeAll(context) {
-		var type, i, _subscribers;
+			if (this._subscribers[eventType]) {
+				var contextType = typeof context,
+				    callbackType = typeof callback,
+				    subscribers = this._subscribers[eventType],
+				    i = subscribers.length,
+				    subscriber;
 
-		for (type in this._subscribers) {
-			if (this._subscribers.hasOwnProperty(type)) {
-				_subscribers = this._subscribers[type];
-				i = _subscribers.length;
+				if (contextType === "function") {
+					callback = context;
+					context = null;
+					callbackType = "function";
+				}
+				else if (contextType === "object" && callbackType === "undefined") {
+					callbackType = "any";
+				}
 
 				while (i--) {
-					if (_subscribers[i].context === context) {
-						_subscribers.splice(i, 1);
+					subscriber = subscribers[i];
+
+					if (
+					    (callbackType === "any" && subscriber.context === context) ||
+						(subscriber.type === callbackType && subscriber.context === context && subscriber.callback === callback)
+					) {
+						subscribers.splice(i, 1);
+					}
+				}
+
+				subscribers = subscriber = null;
+			}
+
+			context = callback = null;
+		},
+
+		unsubscribeAll: function unsubscribeAll(context) {
+			var type, i, subscribers;
+
+			for (type in this._subscribers) {
+				if (this._subscribers.hasOwnProperty(type)) {
+					subscribers = this._subscribers[type];
+					i = subscribers.length;
+
+					while (i--) {
+						if (subscribers[i].context === context) {
+							subscribers.splice(i, 1);
+						}
 					}
 				}
 			}
+
+			context = subscribers = null;
 		}
 
-		context = _subscribers = null;
-	}
-};
+	};
 
-// @requires events.js
-// @requires events/dispatcher.js
-// @requires events/event.js
+	Beacon.Dispatcher = Dispatcher;
 
-Events.ApplicationEvents = {
+	return Beacon;
 
-	eventDispatcher: null,
+})(window.Beacon || {});
+Beacon = (function(Beacon) {
 
-	self: {
-
-		getEventDispatcher: function getEventDispatcher() {
-			if (!Events.ApplicationEvents.eventDispatcher) {
-				Events.ApplicationEvents.eventDispatcher = new Events.Dispatcher();
-			}
-
-			return Events.ApplicationEvents.eventDispatcher;
-		},
-
-		checkEventDispatcher: function checkEventDispatcher() {
-			if (!this.getEventDispatcher()) {
-				throw new Error("No application event dispatcher was found. Please set Events.ApplicationEvents.eventDispatcher.");
-			}
-
-			return true;
-		},
-
-		publish: function publish(eventName, publisher, data) {
-			this.checkEventDispatcher();
-			return this.getEventDispatcher().publish(eventName, publisher, data);
-		},
-
-		subscribe: function subscribe(eventName, context, callback) {
-			this.checkEventDispatcher();
-			this.getEventDispatcher().subscribe(eventName, context, callback);
-		},
-
-		unsubscribe: function unsubscribe(eventName, context, callback) {
-			this.checkEventDispatcher();
-			this.getEventDispatcher().unsubscribe(eventName, context, callback);
-		}
-
-	},
-
-	prototype: {
+	var ApplicationEvents = {
 
 		eventDispatcher: null,
 
-		_initApplicationEvents: function _initApplicationEvents() {
-			if (!this.hasOwnProperty("eventDispatcher")) {
-				this.eventDispatcher = this.constructor.getEventDispatcher();
+		self: {
+
+			getEventDispatcher: function getEventDispatcher() {
+				if (!Beacon.ApplicationEvents.eventDispatcher) {
+					Beacon.ApplicationEvents.eventDispatcher = new Beacon.Dispatcher();
+				}
+
+				return Beacon.ApplicationEvents.eventDispatcher;
+			},
+
+			publish: function publish(eventName, publisher, data) {
+				return this.getEventDispatcher().publish(eventName, publisher, data);
+			},
+
+			subscribe: function subscribe(eventName, context, callback) {
+				this.getEventDispatcher().subscribe(eventName, context, callback);
+			},
+
+			unsubscribe: function unsubscribe(eventName, context, callback) {
+				this.getEventDispatcher().unsubscribe(eventName, context, callback);
 			}
+
 		},
 
-		_destroyApplicationEvents: function _destroyApplicationEvents() {
-			if (this.eventDispatcher) {
-				this.eventDispatcher.unsubscribe(this);
+		prototype: {
+
+			eventDispatcher: null,
+
+			_initApplicationEvents: function _initApplicationEvents() {
+				if (!this.hasOwnProperty("eventDispatcher")) {
+					this.eventDispatcher = this.constructor.getEventDispatcher();
+				}
+			},
+
+			_destroyApplicationEvents: function _destroyApplicationEvents() {
+				if (this.eventDispatcher) {
+					this.eventDispatcher.unsubscribe(this);
+				}
+			},
+
+			publish: function publish(eventName, data) {
+				return this.eventDispatcher.publish(eventName, this, data);
+			},
+
+			subscribe: function subscribe(eventName, context, callback) {
+				this.eventDispatcher.subscribe(eventName, context, callback);
+
+				return this;
+			},
+
+			unsubscribe: function unsubscribe(eventName, context, callback) {
+				this.eventDispatcher.unsubscribe(eventName, context, callback);
+
+				return this;
 			}
-		},
 
-		publish: function publish(eventName, data) {
-			return this.eventDispatcher.publish(eventName, this, data);
-		},
-
-		subscribe: function subscribe(eventName, context, callback) {
-			this.eventDispatcher.subscribe(eventName, context, callback);
-
-			return this;
-		},
-
-		unsubscribe: function unsubscribe(eventName, context, callback) {
-			this.eventDispatcher.unsubscribe(eventName, context, callback);
-
-			return this;
 		}
 
-	}
+	};
 
-};
+	Beacon.ApplicationEvents = ApplicationEvents;
 
-// @requires events.js
-// @requires events/dispatcher.js
-// @requires events/event.js
-// @requires events/application_events.js
+	return Beacon;
 
-Events.Notifications = {
+})(window.Beacon || {});
 
-	includes: Events.ApplicationEvents,
+Beacon = (function(Beacon) {
 
-	guid: 0,
+	var _guid = 0;
 
-	self: {
+	var Notifications = {
 
-		addNotifications: function addNotifications(newNotifications) {
-			var name, notifications = this.prototype.notifications || {};
+		self: {
 
-			for (name in newNotifications) {
-				if (newNotifications.hasOwnProperty(name)) {
-					if (notifications[name]) {
-						notifications[name] = (notifications[name] instanceof Array) ? notifications[name] : [ notifications[name] ];
-					}
-					else {
-						notifications[name] = [];
-					}
+			addNotifications: function addNotifications(newNotifications) {
+				var name, notifications = this.prototype.notifications || {};
 
-					notifications[name].push( newNotifications[name] );
-				}
-			}
+				for (name in newNotifications) {
+					if (newNotifications.hasOwnProperty(name)) {
+						if (notifications[name]) {
+							notifications[name] = (notifications[name] instanceof Array) ? notifications[name] : [ notifications[name] ];
+						}
+						else {
+							notifications[name] = [];
+						}
 
-			this.prototype.notifications = notifications;
-			notifications = newNotifications = null;
-		}
-
-	},
-
-	prototype: {
-
-		_notificationDispatcher: null,
-
-		_notificationId: null,
-
-		_notificationIdPrefix: "notifications",
-
-		notifications: null,
-
-		_initNotifications: function _initNotifications() {
-			if (!this.__proto__.hasOwnProperty("_compiledNotifications")) {
-				this._compileNotifications();
-			}
-
-			this._initApplicationEvents();
-
-			this._notificationId = Events.Notifications.guid++;
-
-			var name, i, length, notifications;
-
-			for (name in this._compiledNotifications) {
-				if (this._compiledNotifications.hasOwnProperty(name)) {
-					notifications = this._compiledNotifications[name];
-
-					for (i = 0, length = notifications.length; i < length; i++) {
-						this.listen( name, this, notifications[i] );
+						notifications[name].push( newNotifications[name] );
 					}
 				}
+
+				this.prototype.notifications = notifications;
+				notifications = newNotifications = null;
 			}
 
-			this._setUpNotifications();
 		},
 
-		_compileNotifications: function _compileNotifications() {
-			var _compiledNotifications = {}, name, i, length, notifications, proto = this.__proto__;
+		prototype: {
 
-			while (proto) {
-				if (proto.hasOwnProperty("notifications") && proto.notifications) {
-					notifications = proto.notifications;
+			_notificationDispatcher: null,
 
-					for (name in notifications) {
-						if (notifications.hasOwnProperty(name)) {
-							_compiledNotifications[name] = _compiledNotifications[name] || [];
-							notifications[name] = notifications[name] instanceof Array ? notifications[name] : [ notifications[name] ];
+			_notificationId: null,
 
-							// To keep notifications executing in the order they were defined in the classes,
-							// we loop backwards and place the new notifications at the top of the array.
-							i = notifications[name].length;
-							while (i--) {
-								_compiledNotifications[name].unshift( notifications[name][i] );
-							}
+			_notificationIdPrefix: "notifications",
+
+			notifications: null,
+
+			_initNotifications: function _initNotifications() {
+				if (!this.__proto__.hasOwnProperty("_compiledNotifications")) {
+					this._compileNotifications();
+				}
+
+				this._initApplicationEvents();
+
+				this._notificationId = _guid++;
+
+				var name, i, length, notifications;
+
+				for (name in this._compiledNotifications) {
+					if (this._compiledNotifications.hasOwnProperty(name)) {
+						notifications = this._compiledNotifications[name];
+
+						for (i = 0, length = notifications.length; i < length; i++) {
+							this.listen( name, this, notifications[i] );
 						}
 					}
 				}
 
-				proto = proto.__proto__;
+				this._setUpNotifications();
+			},
+
+			_compileNotifications: function _compileNotifications() {
+				var _compiledNotifications = {}, name, i, length, notifications, proto = this.__proto__;
+
+				while (proto) {
+					if (proto.hasOwnProperty("notifications") && proto.notifications) {
+						notifications = proto.notifications;
+
+						for (name in notifications) {
+							if (notifications.hasOwnProperty(name)) {
+								_compiledNotifications[name] = _compiledNotifications[name] || [];
+								notifications[name] = notifications[name] instanceof Array ? notifications[name] : [ notifications[name] ];
+
+								// To keep notifications executing in the order they were defined in the classes,
+								// we loop backwards and place the new notifications at the top of the array.
+								i = notifications[name].length;
+								while (i--) {
+									_compiledNotifications[name].unshift( notifications[name][i] );
+								}
+							}
+						}
+					}
+
+					proto = proto.__proto__;
+				}
+
+				this.__proto__._compiledNotifications = _compiledNotifications;
+
+				proto = notifications = _compiledNotifications = null;
+			},
+
+			_destroyNotifications: function _destroyNotifications() {
+				if (this._notificationDispatcher) {
+					this._notificationDispatcher.destructor();
+					this._notificationDispatcher = null;
+				}
+			},
+
+			_setUpNotifications: function _setUpNotifications() {
+				// Child classes may override this to do something special with adding notifications.
+			},
+
+			notify: function notify(message, data) {
+				var success = this.publish(this._notificationIdPrefix + "." + this._notificationId + "." + message, data);
+				data = null;
+				return success;
+			},
+
+			listen: function listen(message, context, notification) {
+				this.subscribe(this._notificationIdPrefix + "." + this._notificationId + "." + message, context, notification);
+				context = notification = null;
+
+				return this;
+			},
+
+			ignore: function ignore(message, context, notification) {
+				this.unsubscribe(this._notificationIdPrefix + "." + this._notificationId + "." + message, context, notification);
+				context = notification = null;
+
+				return this;
 			}
 
-			this.__proto__._compiledNotifications = _compiledNotifications;
-
-			proto = notifications = _compiledNotifications = null;
-		},
-
-		_destroyNotifications: function _destroyNotifications() {
-			if (this._notificationDispatcher) {
-				this._notificationDispatcher.destructor();
-				this._notificationDispatcher = null;
-			}
-		},
-
-		_setUpNotifications: function _setUpNotifications() {
-			// Child classes may override this to do something special with adding notifications.
-		},
-
-		notify: function notify(message, data) {
-			var success = this.publish(this._notificationIdPrefix + "." + this._notificationId + "." + message, data);
-			data = null;
-			return success;
-		},
-
-		listen: function listen(message, context, notification) {
-			this.subscribe(this._notificationIdPrefix + "." + this._notificationId + "." + message, context, notification);
-			context = notification = null;
-
-			return this;
-		},
-		
-		ignore: function ignore(message, context, notification) {
-			this.unsubscribe(this._notificationIdPrefix + "." + this._notificationId + "." + message, context, notification);
-			context = notification = null;
-
-			return this;
 		}
 
-	}
+	};
 
-};
+	Beacon.Notifications = Notifications;
+
+	return Beacon;
+
+})(window.Beacon || {});
 
 /**
  * class Hash < Object
@@ -2310,7 +2326,8 @@ var Module = Object.extend({
 
 	includes: [
 		Callbacks.Utils,
-		Events.Notifications,
+		Beacon.ApplicationEvents,
+		Beacon.Notifications,
 		ElementStore.Utils
 	],
 
@@ -3444,7 +3461,7 @@ Module.Manager.SubModuleProperties = {
 Module.include(Module.Manager.SubModuleProperties);
 
 var Foundry = {
-	version: "0.0.5"
+	version: "0.0.6"
 };
 
 /*

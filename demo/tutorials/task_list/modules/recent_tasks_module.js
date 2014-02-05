@@ -17,16 +17,16 @@ var RecentTasksModule = Module.extend({
 			this.subscribe("task." + this.options.eventSuffix, this, "handleTaskEvent");
 		},
 
-		handleTaskEvent: function handleTaskEvent(event) {
+		handleTaskEvent: function handleTaskEvent(publisher, data) {
 			var html = this.template().innerHTML.replace(/#\{([-.\w]+)\}/g, function(match, key) {
-				return event.data[key] || "";
+				return data[key] || "";
 			});
 
 			var item = this.elementStore.parseHTML(html)[0];
 
 			this.list().appendChild(item);
 
-			event = item = null;
+			publisher = data = item = null;
 		}
 
 	}

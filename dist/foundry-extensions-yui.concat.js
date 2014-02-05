@@ -1,4 +1,4 @@
-/*! foundry 2014-02-03 */
+/*! foundry 2014-02-05 */
 dom.events.Delegator.YuiAdaptor = {
 	prototype: {
 		addEventListener: function(element, eventType, callback) {
