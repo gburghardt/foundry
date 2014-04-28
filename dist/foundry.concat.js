@@ -1,4 +1,4 @@
-/*! foundry 2014-04-24 */
+/*! foundry 2014-05-02 */
 (function(global) {
 
 var toString = global.Object.prototype.toString;
@@ -511,6 +511,7 @@ Oxydizr.FrontController.prototype = {
 		}
 		else {
 			this.controllers[controller.controllerId] = null;
+			delete this.controllers[controller.controllerId];
 			controller.onControllerUnregistered(this);
 			return true;
 		}
@@ -1603,7 +1604,7 @@ Factory.prototype = {
 
 	objectFactory: null,
 
-	constructor: Module.Factory,
+	constructor: Factory,
 
 	destructor: function destructor() {
 		this.objectFactory = null;
@@ -1614,30 +1615,29 @@ Factory.prototype = {
 
 		if (this.objectFactory) {
 			instance = this.objectFactory.getInstance(type);
-
-			if (!instance) {
-				throw new Error("The object factory failed to get a new instance for type: " + type);
-			}
 		}
-		else if (/^[a-zA-Z][a-zA-Z0-9.]+[a-zA-Z0-9]$/.test(type)) {
-			try {
-				Klass = eval(type);
-			}
-			catch (error) {
-				throw new Error("Class name " + type + " does not exist");
-			}
 
-			if (!Klass) {
-				throw new Error("Class name " + type + " does not exist");
-			}
-			else if (typeof Klass !== "function") {
-				throw new Error("Class name " + type + " is not a constructor function");
-			}
+		if (!instance) {
+			if (/^[a-zA-Z][a-zA-Z0-9.]+[a-zA-Z0-9]$/.test(type)) {
+				try {
+					Klass = eval(type);
+				}
+				catch (error) {
+					throw new Error("Class name " + type + " does not exist");
+				}
 
-			instance = new Klass();
-		}
-		else {
-			throw new Error("Cannot instantiate invalid type: " + type);
+				if (!Klass) {
+					throw new Error("Class name " + type + " does not exist");
+				}
+				else if (typeof Klass !== "function") {
+					throw new Error("Class name " + type + " is not a constructor function");
+				}
+
+				instance = new Klass();
+			}
+			else {
+				throw new Error("Cannot instantiate invalid type: " + type);
+			}
 		}
 
 		return instance;
@@ -1737,13 +1737,13 @@ function LazyLoader() {
 	}
 
 	function initModulesInsideViewport() {
-		var elements = _element.getElementsByTagName("*"), i, element;
+		var elements = _element.querySelectorAll("[data-module-lazyload]"), i, element;
 		var viewport = Viewport.create(getScrollElement());
 
 		for (i = 0; i < elements.length; i++) {
 			element = elements[i];
 
-			if (element.getAttribute("data-module-lazyload") && viewport.isVisible(element)) {
+			if (viewport.isVisible(element)) {
 				lazyLoadModules(element, "scrollto");
 			}
 		}
@@ -1753,8 +1753,7 @@ function LazyLoader() {
 		var attr = element.getAttribute("data-module-lazyload");
 
 		if (attr === "any" || new RegExp(value).test(attr)) {
-
-			if (_manager.createModules(element).length) {
+			if (_manager.createModules(element, true).length) {
 				element.removeAttribute("data-module-lazyload");
 				element.setAttribute("data-module-lazyloaded", attr);
 			}
@@ -2107,14 +2106,11 @@ Manager.prototype = {
 	},
 
 	eagerLoadModules: function eagerLoadModules(element) {
-		var els = element.getElementsByTagName("*"), i = 0, length = els.length, el;
+		var els = element.querySelectorAll("[data-modules]"),
+			i = 0;
 
 		for (i; i < els.length; i++) {
-			el = els[i];
-
-			if (el.getAttribute("data-modules") && !el.getAttribute("data-module-lazyload")) {
-				this.createModules(el);
-			}
+			this.createModules(els[i]);
 		}
 
 		els = null;
@@ -2146,9 +2142,15 @@ Manager.prototype = {
 		return module;
 	},
 
-	createModules: function createModules(element) {
+	createModules: function createModules(element, lazyLoad) {
 		if (!element) {
 			throw new Error("Missing required argument: element");
+		}
+		else if (!lazyLoad && element.getAttribute("data-module-lazyload")) {
+			return [];
+		}
+		else if (element.getAttribute("data-module-property")) {
+			return [];
 		}
 
 		var metaData = new Module.MetaData(element),
@@ -2866,7 +2868,101 @@ Module.Utils.Rendering = {
 Module.Utils.include(Module.Utils.Rendering);
 
 var Foundry = {
-	version: "0.0.7"
+	version: "0.1.1"
+};
+
+Foundry.run = function(callback) {
+	callback = callback || function() {};
+
+	var config = {
+		application: {
+			type: "Foundry.Application",
+			singleton: true,
+			properties: {
+				container: "container",
+				dispatcher: "eventDispatcher",
+				frontController: "frontController",
+				moduleManager: "moduleManager"
+			}
+		},
+		frontController: {
+			type: "Oxydizr.FrontController",
+			singleton: true
+		},
+		eventDispatcher: {
+			type: "Beacon.Dispatcher",
+			singleton: true
+		},
+		objectFactory: {
+			type: "Foundry.ModuleFactory",
+			singleton: true,
+			properties: {
+				container: "container"
+			}
+		},
+		moduleFactory: {
+			type: "Module.Factory",
+			singleton: true,
+			properties: {
+				objectFactory: "objectFactory"
+			}
+		},
+		moduleProvider: {
+			type: "Module.Provider",
+			singleton: true,
+			properties: {
+				factory: "moduleFactory"
+			}
+		},
+		moduleManager: {
+			type: "Module.Manager",
+			singleton: true,
+			properties: {
+				provider: "moduleProvider",
+				moduleObserver: "moduleObserver"
+			}
+		},
+		moduleObserver: {
+			type: "Module.FrontControllerModuleObserver",
+			properties: {
+				frontController: "frontController"
+			}
+		},
+		module: {
+			abstract: true,
+			properties: {
+				elementStore: "elementStore",
+				eventDispatcher: "eventDispatcher"
+			}
+		},
+		elementStore: {
+			type: "ElementStore"
+		},
+		merge: function(overrides) {
+			for (var key in overrides) {
+				if (overrides.hasOwnProperty(key)) {
+					this[key] = overrides[key];
+				}
+			}
+
+			return this;
+		}
+	};
+
+	var options = { autoInit: true },
+	    element = callback(config, options) || document.documentElement,
+	    container = new Hypodermic.Container(config),
+	    app = container.resolve("application");
+
+	if (options.autoInit) {
+		app.init(element, options);
+	}
+	else {
+		app.setElement(element);
+		app.setOptions(options);
+	}
+
+	return app;
 };
 
 Foundry.Application = function() {
@@ -2875,8 +2971,8 @@ Foundry.Application = function() {
 		focusAnythingInDefaultModule: false,
 		handleActionErrors: true,
 		handleApplicationErrors: true,
-		lazyLoadModules: true,
-		subModulesDisabled: true
+		lazyLoadModules: false,
+		subModulesDisabled: false
 	};
 };
 
@@ -2897,8 +2993,6 @@ Foundry.Application.prototype = {
 	moduleManager: null,
 
 	newModuleController: null,
-
-	objectFactory: null,
 
 	options: null,
 
@@ -2974,33 +3068,13 @@ Foundry.Application.prototype = {
 	},
 
 	destructor: function() {
-		if (this.dispatcher) {
-			this.dispatcher.publish("application.destroy", this);
-			this.dispatcher.destructor();
-		}
-		if (this.frontController) {
-			this.frontController.destructor();
-		}
-
-		if (this.moduleManager) {
-			this.moduleManager.destructor(true);
-		}
-
-		if (this.objectFactory) {
-			this.objectFactory.destructor();
-		}
-
-		if (this.errorHandler) {
-			this.errorHandler.destructor();
-		}
-
-		if (this.eventsController) {
-			this.eventsController.destructor();
-		}
-
-		if (this.newModuleController) {
-			this.newModuleController.destructor();
-		}
+		this.dispatcher.publish("application.destroy", this);
+		this.moduleManager.destructor(true);
+		this.errorHandler.destructor();
+		this.eventsController.destructor();
+		this.newModuleController.destructor();
+		this.frontController.destructor();
+		this.dispatcher.destructor();
 
 		this.newModuleController =
 		this.eventsController =
@@ -3008,7 +3082,6 @@ Foundry.Application.prototype = {
 		this.frontController =
 		this.moduleManager =
 		this.errorHandler =
-		this.objectFactory =
 		this.element =
 		this.document =
 		this.window =

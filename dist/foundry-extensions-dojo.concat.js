@@ -1,4 +1,4 @@
-/*! foundry 2014-04-24 */
+/*! foundry 2014-05-02 */
 require(["dojo/dom", "dojo/query"], function(dom, query) {
 
 	ElementStore.DojoAdapter = {

@@ -12,7 +12,7 @@
 		</style>
 	</head>
 	<body>
-		<div data-modules="TaskListModule" data-module-options='{"controllerId": "tasks"}'>
+		<div data-modules="taskList" data-module-options='{"controllerId": "tasks"}'>
 			<h2>My Todo List</h2>
 
 			<form method="get" action="#" data-actions="tasks.add">
@@ -33,7 +33,7 @@
 			</script>
 		</div>
 
-		<div data-modules="RecentTasksModule">
+		<div data-modules="recentTasks">
 			<h2>Recently Added:</h2>
 			<ol></ol>
 			<script type="text/html" class="template">
@@ -41,7 +41,7 @@
 			</script>
 		</div>
 
-		<div data-modules="RecentTasksModule" data-module-options='{"eventSuffix": "completed"}'>
+		<div data-modules="recentTasks" data-module-options='{"eventSuffix": "completed"}'>
 			<h2>Recently Completed:</h2>
 			<ol></ol>
 			<script type="text/html" class="template">
@@ -58,16 +58,20 @@
 
 		<script type="text/javascript">
 
-			var app = new Foundry.Application();
+			var app = Foundry.run(function(config, options) {
+				config.merge({
+					recentTasks: {
+						type: "RecentTasksModule",
+						parent: "module"
+					},
+					taskList: {
+						type: "TaskListModule",
+						parent: "module"
+					}
+				});
 
-			app.frontController = new Oxydizr.FrontController();
-			app.moduleManager = new Module.Manager();
-			app.moduleManager.moduleObserver = new Module.FrontControllerModuleObserver();
-			app.moduleManager.moduleObserver.frontController = app.frontController;
-			app.dispatcher = new Beacon.Dispatcher();
-
-			app.init(document.documentElement, {
-				eagerLoadModules: true
+				options.eagerLoadModules = true;
+				options.lazyLoadModules = false;
 			});
 
 			window.onunload = function() {

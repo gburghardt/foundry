@@ -4,8 +4,8 @@ Foundry.Application = function() {
 		focusAnythingInDefaultModule: false,
 		handleActionErrors: true,
 		handleApplicationErrors: true,
-		lazyLoadModules: true,
-		subModulesDisabled: true
+		lazyLoadModules: false,
+		subModulesDisabled: false
 	};
 };
 
@@ -26,8 +26,6 @@ Foundry.Application.prototype = {
 	moduleManager: null,
 
 	newModuleController: null,
-
-	objectFactory: null,
 
 	options: null,
 
@@ -103,33 +101,13 @@ Foundry.Application.prototype = {
 	},
 
 	destructor: function() {
-		if (this.dispatcher) {
-			this.dispatcher.publish("application.destroy", this);
-			this.dispatcher.destructor();
-		}
-		if (this.frontController) {
-			this.frontController.destructor();
-		}
-
-		if (this.moduleManager) {
-			this.moduleManager.destructor(true);
-		}
-
-		if (this.objectFactory) {
-			this.objectFactory.destructor();
-		}
-
-		if (this.errorHandler) {
-			this.errorHandler.destructor();
-		}
-
-		if (this.eventsController) {
-			this.eventsController.destructor();
-		}
-
-		if (this.newModuleController) {
-			this.newModuleController.destructor();
-		}
+		this.dispatcher.publish("application.destroy", this);
+		this.moduleManager.destructor(true);
+		this.errorHandler.destructor();
+		this.eventsController.destructor();
+		this.newModuleController.destructor();
+		this.frontController.destructor();
+		this.dispatcher.destructor();
 
 		this.newModuleController =
 		this.eventsController =
@@ -137,7 +115,6 @@ Foundry.Application.prototype = {
 		this.frontController =
 		this.moduleManager =
 		this.errorHandler =
-		this.objectFactory =
 		this.element =
 		this.document =
 		this.window =

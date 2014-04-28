@@ -209,100 +209,33 @@ app.objectFactory
 
 <!-- Bootstrapping Code -->
 <script type="text/javascript">
+	var app = Foundry.run(function(config, options) {
+		config.merge({
+			dynamicModule: {
+				type: "DateCreatedModule",
+				parent: "module"
+			},
+			lazyLoaded: {
+				type: "ShowDateModule",
+				parent: "module"
+			},
+			recentTasks: {
+				type: "RecentTasksModule",
+				parent: "module"
+			},
+			selection: {
+				type: "SelectionModule",
+				parent: "module"
+			},
+			tasks: {
+				type: "TaskListModule",
+				parent: "module"
+			}
+		});
 
-	var container = new Hypodermic.Container({
-		application: {
-			type: "Foundry.Application",
-			singleton: true,
-			properties: {
-				dispatcher: "eventDispatcher",
-				frontController: "frontController",
-				moduleManager: "moduleManager",
-				container: "container"
-			}
-		},
-		elementStore: {
-			type: "ElementStore"
-		},
-		frontController: {
-			type: "Oxydizr.FrontController",
-			singleton: true
-		},
-		eventDispatcher: {
-			type: "Beacon.Dispatcher",
-			singleton: true
-		},
-		moduleFactory: {
-			type: "Foundry.ModuleFactory",
-			singleton: true,
-			properties: {
-				container: "container"
-			}
-		},
-		moduleProvider: {
-			type: "Module.Provider",
-			singleton: true,
-			properties: {
-				factory: "moduleFactory"
-			}
-		},
-		moduleManager: {
-			type: "Module.Manager",
-			singleton: true,
-			properties: {
-				provider: "moduleProvider",
-				moduleObserver: "moduleObserver"
-			}
-		},
-		moduleObserver: {
-			type: "Module.FrontControllerModuleObserver",
-			properties: {
-				frontController: "frontController"
-			}
-		},
-
-		// Modules for your application
-		moduleOptions: {
-			type: "Object",
-			properties: {
-				// Global default module options go here
-			}
-		},
-		module: {
-			abstract: true,
-			properties: {
-				elementStore: "elementStore",
-				eventDispatcher: "eventDispatcher",
-				options: "moduleOptions"
-			}
-		},
-		dynamicModule: {
-			type: "DateCreatedModule",
-			parent: "module"
-		},
-		lazyLoaded: {
-			type: "ShowDateModule",
-			parent: "module"
-		},
-		recentTasks: {
-			type: "RecentTasksModule",
-			parent: "module"
-		},
-		selection: {
-			type: "SelectionModule",
-			parent: "module"
-		},
-		tasks: {
-			type: "TaskListModule",
-			parent: "module"
-		}
+		options.lazyLoadModules = true;
+		options.eagerLoadModules = false;
 	});
-
-	var app = container.resolve("application")
-	app.init(document.documentElement, {
-		eagerLoadModules: false
-	});
-
 </script>
 </body>
 </html>
