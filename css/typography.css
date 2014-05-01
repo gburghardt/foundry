@@ -1,0 +1,139 @@
+a {
+	color: #0036BF;
+	text-decoration: none;
+}
+a:visited {
+	color: #4F7EFF;
+}
+a:active, a:focus, a:hover {
+	color: #436DD8;
+	text-decoration: underline;
+}
+.aside {
+	font-family: "Montserrat", sans-serif;
+	font-size: 0.8em;
+	line-height: 1.95em;
+}
+blockquote, dd, li, p {
+	line-height: 1.5em;
+	text-align: justify;
+}
+dd pre, li pre {
+	line-height: normal;
+}
+blockquote {
+	border-left: 3px solid #777;
+	color: #777;
+	margin: 1em 0;
+	padding-left: 1em;
+}
+body {
+	font-family: "Sorts Mill Goudy", serif;
+	font-size: 1.1em;
+}
+code, pre {
+	font-family: Consolas, Monaco, monospace;
+}
+code {
+	font-size: .9em;
+}
+.code-label {
+	background-color: #f6f6f6;
+	border: 1px solid #909090;
+	border-bottom-width: 0;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	display: inline-block;
+	font-family: "Montserrat", sans-serif;
+	font-size: 1em;
+	margin-bottom: -1px;
+	padding: .1em .5em;
+	vertical-align: bottom;
+}
+.code-label+.highlight>pre {
+	margin-top: 0;
+}
+dd {
+	margin-left: 0;
+	padding-left: 0;
+}
+dt {
+	font-size: 1.25em;
+	margin-top: .67em;
+}
+dt, h1, h2, h3, h4, h5, h6, .header {
+	font-family: "Montserrat", sans-serif;
+	margin-bottom: -18px;
+}
+dt {
+	margin-bottom: 0;
+}
+h1 {
+	margin-bottom: 18px;
+}
+h2+.aside,
+h3+.aside,
+h4+.aside,
+h5+.aside,
+h6+.aside {
+	margin-top: 1.5em;
+}
+.intro {
+	color: #505050;
+	font-family: "Montserrat", sans-serif;
+	font-size: 1em;
+	font-weight: normal;
+	margin: 1em 0;
+}
+.nav-secondary {
+	font-family: "Montserrat", sans-serif;
+}
+.pagination {
+	font-family: "Montserrat", sans-serif;
+}
+.pagination a {
+	background-color: #0036BF;
+	color: #fff;
+}
+.pagination span {
+	background-color: #c0c0c0;
+	color: #606060;
+	cursor: default;
+}
+pre {
+	background-color: #f6f6f6;
+	border: 1px solid #909090;
+	border-radius: 12px;
+	font-size: 14px;
+	margin-left: -13px;
+	overflow: auto;
+	padding: 12px;
+	width: 974px;
+}
+pre code {
+	background-color: transparent;
+	border-radius: 0;
+	border-width: 0;
+	font-size: inherit;
+	padding: 0;
+	white-space: pre;
+}
+h3+table {
+	margin-top: 1em;
+}
+table {
+	border-collapse: collapse;
+	border-top: 1px solid #c0c0c0;
+}
+table caption {
+	font-family: "Montserrat", sans-serif;
+	font-weight: bold;
+	margin: 0;
+	text-align: left;
+}
+table td,
+table th {
+	border-bottom: 1px solid #c0c0c0;
+	padding-right: .5em;
+	text-align: left;
+}

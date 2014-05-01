@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="edge">
+		<title>Getting Started with Foundry: Your First Module</title>
+	</head>
+	<body>
+
+		<div data-modules="WelcomeModule"></div>
+		<div data-modules="WelcomeModule" data-module-options='{"backgroundColor": "#f0f0f0"}'></div>
+
+		<!-- Base Framework -->
+		<script type="text/javascript" src="../../../dist/foundry.concat.js"></script>
+
+		<!-- Your Application Files -->
+		<script type="text/javascript" src="./modules/welcome_module.js"></script>
+
+		<script type="text/javascript">
+
+			// Instantiation and Initialization
+			var app = Foundry.run();
+
+			// Destruction
+			window.onunload = function() {
+				app.destructor();
+				app = null;
+			};
+
+		</script>
+
+	</body>
+</html>

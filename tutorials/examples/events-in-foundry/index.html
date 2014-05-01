@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="edge">
+		<title>Events In Foundry</title>
+		<style type="text/css">
+			.module {
+				border: 1px solid #000;
+				border-radius: 8px;
+				margin: 1em 0;
+				padding: 0 1em;
+			}
+			.module.recentTasks,
+			.module.taskList {
+				float: left;
+				margin-right: 2em;
+				width: 400px;
+			}
+			.module.selection ol {
+				cursor: pointer;
+				list-style-position: inside;
+				margin: 1em 0;
+				padding: 0;
+			}
+			.selected {
+				background-color: #ffc;
+			}
+		</style>
+	</head>
+	<body>
+
+		<form method="GET" action="#"
+			data-actions="tasks.add"
+			data-modules="TaskListModule"
+			data-module-options='{
+				"controllerId": "tasks",
+				"defaultModule": true
+			}'>
+			<h2>Tasks</h2>
+			<p>
+				<label>Task: <input type="text" name="taskName"></label>
+				<button type="submit">Add Task</button>
+			</p>
+
+			<div data-module-property="selection"
+				data-modules="SelectionModule"
+				data-module-options='{"controllerId": "tasks-selection"}'>
+				<ol></ol>
+
+				<p>
+					Selected: <span class="selection-count">0</span>
+				</p>
+			</div>
+
+		</form>
+
+		<div data-modules="RecentTasksModule">
+			<h2>Recently Added Tasks</h2>
+			<ol></ol>
+		</div>
+
+		<!-- Base Framework -->
+		<script type="text/javascript" src="/js/foundry/v0.1.1/foundry.concat.js"></script>
+
+		<!-- Your Application Files -->
+		<script type="text/javascript" src="./task_list_module.js"></script>
+		<script type="text/javascript" src="./selection_module.js"></script>
+		<script type="text/javascript" src="./recent_tasks_module.js"></script>
+
+		<script type="text/javascript">
+
+			// Instantiation and Initialization
+			var app = Foundry.run();
+
+			// Destruction
+			window.onunload = function() {
+				app.destructor();
+				app = null;
+			};
+
+		</script>
+
+	</body>
+</html>

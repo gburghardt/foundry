@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="edge">
+		<title>Getting Started with Foundry: The Boilerplate</title>
+	</head>
+	<body>
+
+		<!-- Base Framework -->
+		<script type="text/javascript" src="/js/foundry/v0.1.1/foundry.concat.js"></script>
+
+		<!-- Your Application Files -->
+
+		<script type="text/javascript">
+
+			// Instantiation and Initialization
+			var app = Foundry.run();
+
+			// Destruction
+			window.onunload = function() {
+				app.destructor();
+				app = null;
+			};
+
+		</script>
+
+	</body>
+</html>

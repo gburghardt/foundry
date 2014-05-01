@@ -1,0 +1,10 @@
+- text: Home
+  url: /
+- text: Overview
+  url: /overview.html
+- text: Tutorials
+  url: /tutorials/
+- text: Downloads
+  url: /downloads.html
+- text: Blog
+  url: /blog/
