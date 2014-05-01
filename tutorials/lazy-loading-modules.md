@@ -25,6 +25,11 @@ attributes.
 1. [Foundry](/downloads.html)
 2. A basic understanding of [how Modules work in Foundry](/tutorials/introduction-to-modules.html)
 
+<div class="aside">
+    You can view a demo of lazy loaded modules here:<br>
+    <a href="/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html">Eager and Lazy Loading Modules</a>
+</div>
+
 ## What You'll Learn
 
 - How to configure Foundry to lazy load modules as they are scrolled into view
@@ -100,16 +105,18 @@ You don't have to choose between Eager Loading or Lazy Loading. You can do both:
 In this case, you only need to enable lazy loading modules. Foundry is smart
 enough to eager load a module if no `data-module-lazyload` attribute is present.
 
-__Demo:__ [Eager and Lazy Loading Modules](http://localhost:4000/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html)
+__Demo:__ [Eager and Lazy Loading Modules](/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html)
 
-## Up Next: Integrating Pollyfills With Foundry
+## Up Next: Responsive Modules
 
-Foundry wasn't built with older browsers in mind, which means many older
-browsers aren't supported. The next tutorial shows you how to enable support for
-older browsers using Pollyfills.
+Responsive Design has allowed us to create CSS optimized for smaller devices,
+and enabled Mobile First Design. Until now, JavaScript frameworks didn't support
+the same functionality. With Foundry, you can couple Responsive Design and
+Responsive Modules using CSS3 Media Queries and the `data-module-media`
+attribute.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/responsive-modules.html" title="Back: Responsive Modules Using CSS3 Media Queries">Back</a></li>
+    <li class="pagination-back"><a href="/tutorials/unit-testing.html" title="Back: Unit Testing Foundry Applications">Back</a></li>
     <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/integrating-pollyfills.html" title="Next: Integrating Pollyfills With Foundry">Next</a></li>
+    <li class="pagination-next"><a href="/tutorials/responsive-modules.html" title="Next: Responsive Modules Using CSS3 Media Queries">Next</a></li>
 </ul>

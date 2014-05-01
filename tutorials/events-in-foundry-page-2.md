@@ -7,18 +7,23 @@ title: A Practical Example Of Events In Foundry
 
 # {{ page.title }}
 
-In the [previous tutorial](/tutorials/events-in-foundry.html), we outlined two
-kinds of events that modules deal with. In this tutorial, we dive into a real
-world implementation of Application and Notification events in Foundry. We will
-create three module classes: `TaskListModule`, `SelectionModule` and
-`RecentTasksModule`.
+<h2 class="intro">
+    In the <a href="/tutorials/events-in-foundry.html">previous tutorial</a>,
+    we outlined two kinds of events that modules deal with. In this tutorial,
+    we dive into a real world implementation of Application and Notification
+    events in Foundry.
+</h2>
 
 ## What You'll Need For This Tutorial
-
 
 1. [Foundry](/downloads.html)
 2. A basic understanding of [how Modules work in Foundry](/tutorials/introduction-to-modules.html)
 3. A basic understanding of [events in Foundry](/tutorials/events-in-foundry.html)
+
+<div class="aside">
+    You can view a demo of how to use Application and Notification events in Foundry here:<br>
+    <a href="/tutorials/examples/events-in-foundry/">Events In Foundry</a>
+</div>
 
 ## What You'll Learn
 

@@ -12,7 +12,7 @@ This is your first stop in learning how to use Foundry. Before we start, here is
 the list of what you'll need to have and know:
 
 1. A modern web browser &mdash; Newer versions of Firefox, Chrome,
-   Safari and Internet Explorer 8+ are required.
+   Safari and Internet Explorer 10+ are required.
 2. A [copy of Foundry](/downloads) fresh off the Intertubes.
 3. A working knowledge of HTML and CSS.
 4. Moderate knowledge of JavaScript, the Document Object Model, and

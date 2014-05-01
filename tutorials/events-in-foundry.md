@@ -9,8 +9,14 @@ meta_keywords: Foundry, events, javascript, framework
 
 # {{ page.title }}
 
-Events are central to how Foundry works. There are three kinds of events in
-Foundry:
+<h2 class="intro">
+    Events are central to how Foundry works. The most familiar of which are
+    Document Object Model events, like <code>click</code> or
+    <code>submit</code>. Application and Notification events provide the
+    communication layer between modules.
+</h2>
+
+There are three kinds of events in Foundry:
 
 - Document Object Model events
 - Notification events
@@ -27,10 +33,13 @@ Application events.
 1. [Foundry](/downloads.html)
 2. A basic understanding of [how Modules work in Foundry](/tutorials/introduction-to-modules.html)
 
-## What You'll Learn
+<div class="aside">
+    You can view a demo of how to use Application and Notification events in Foundry:
+    <a href="/tutorials/examples/events-in-foundry/">Events In Foundry</a>.<br>
+    If you learn better by doing, <a href="/tutorials/events-in-foundry-page-2.html">skip ahead to the examples</a>.
+</div>
 
-> __Note:__ If you learn better by doing,
-> [skip ahead to the examples](/tutorials/events-in-foundry-page-2.html).
+## What You'll Learn
 
 This two part series dives into event handling in Foundry. This first part gives
 you the gritty details, and the next part walks you through a practical example
@@ -300,7 +309,7 @@ Next we'll create a practical example using a task list, a list of selectable
 items and a module responding to any added task.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="tutorials/introduction-to-modules.html" title="Back: Introduction To Modules">Back</a></li>
+    <li class="pagination-back"><a href="/tutorials/introduction-to-modules.html" title="Back: Introduction To Modules">Back</a></li>
     <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
     <li class="pagination-next"><a href="/tutorials/events-in-foundry-page-2.html" title="Next: A Practical Example Of Events In Foundry">Next</a></li>
 </ul>

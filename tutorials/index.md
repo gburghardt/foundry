@@ -32,11 +32,11 @@ secondary_nav: index
 	<dt><a href="/tutorials/unit-testing.html">Unit Testing Foundry Applications</a></dt>
 	<dd>Unit Test a Foundry application, using Jasmine as an example.</dd>
 
-	<dt><a href="/tutorials/responsive-modules.html">Responsive Modules Using CSS3 Media Queries</a></dt>
-	<dd>Create modules conditionally using CSS3 Media Queries. Finally, we have Responsive JavaScript to go with our Responsive Design!</dd>
-
 	<dt><a href="/tutorials/lazy-loading-modules.html">Lazy Loading Modules</a></dt>
 	<dd>Increase the performance of your web application by loading modules as they appear in the browser viewport.</dd>
+
+	<dt><a href="/tutorials/responsive-modules.html">Responsive Modules Using CSS3 Media Queries</a></dt>
+	<dd>Create modules conditionally using CSS3 Media Queries. Finally, we have Responsive JavaScript to go with our Responsive Design!</dd>
 
 	<dt><a href="/tutorials/integrating-pollyfills.html">Integrating Pollyfills With Foundry</a></dt>
 	<dd>Support older browsers by including pollyfills for missing functionality.</dd>

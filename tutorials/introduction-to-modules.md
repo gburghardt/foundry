@@ -8,7 +8,10 @@ secondary_nav: modules-intro
 
 # {{ page.title }}
 
-This tutorial introduces you to building Modules in Foundry.
+<h2 class="intro">
+    Modules in Foundry are where the proverbial rubber meets the road. This
+    tutorial introduces you to building Modules in Foundry.
+</h2>
 
 ## What You'll Need For This Tutorial
 
@@ -19,6 +22,11 @@ This tutorial introduces you to building Modules in Foundry.
 4. Moderate knowledge of JavaScript, the Document Object Model and
   object oriented programming
 5. A basic understanding of the [MVC design pattern](http://martinfowler.com/eaaDev/uiArchs.html#ModelViewController).
+
+<div class="aside">
+    You can view a demo here:
+    <a href="/tutorials/examples/introduction-to-modules/">Introduction to Modules</a>
+</div>
 
 ## What You'll Learn
 
@@ -371,7 +379,7 @@ selection modules specifically:
 
 Now refresh this page in your browser.
 
-__Demo:__ [Introduction to Modules](/tutorials/examples/introduction-to-modules.html)
+__Demo:__ [Introduction to Modules](/tutorials/examples/introduction-to-modules/)
 
 ## A Quick Recap
 

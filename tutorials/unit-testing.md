@@ -12,7 +12,7 @@ title: Unit Testing Foundry Applications
 </h2>
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/unit-testing.html" title="Back: Unit Testing Foundry Applications">Back</a></li>
+    <li class="pagination-back"><a href="/tutorials/client-side-templates.html" title="Back: Rendering Client Side Templates">Back</a></li>
     <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/responsive-modules.html" title="Next: Responsive Modules">Next</a></li>
+    <li class="pagination-next"><a href="/tutorials/lazy-loading-modules.html" title="Next: Lazy Loading Modules">Next</a></li>
 </ul>

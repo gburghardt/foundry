@@ -27,6 +27,12 @@ focus on one of the most popular ones:
 4. A fresh copy of [Bloodhound][1]
 5. A fresh copy of [Promise][2]
 
+<div class="aside">
+    You can view a demo of rendering client side templates using Mustache.js
+    here:<br>
+    <a href="/tutorials/examples/client-side-templates/">Rendering Client Side Templates With Foundry</a>
+</div>
+
 ## What You'll Learn
 
 - How to configure the dependencies for [Bloodhound][1]
