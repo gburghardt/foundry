@@ -15,9 +15,10 @@ title: Lazy Loading Modules
 
 By default, Foundry performs an Eager Load of all the modules on the page. Any
 HTML tag with a `data-modules` attribute has those modules created and
-inititalized. When the number of modules on the page increases, this can
-introduce performance problems. Lazy loading modules comes baked in to Foundry,
-and only requires a few config changes, and some additional HTML attributes.
+inititalized. When the number of modules on the page increases, performance
+problems can crop up during page load. Lazy loading modules comes baked in to
+Foundry, and only requires a few config changes, and some additional HTML
+attributes.
 
 ## What You'll Need For This Tutorial
 
@@ -81,6 +82,31 @@ necessary, but there are a few best practices to follow for lazy loaded modules.
   wait..." state until they AJAX in their contents.
 - In the `_ready` method, call `this._loaded();` to remove the `loading` HTML
   class from your module's root element.
+
+__Demo:__ [Lazy Loading Modules](/tutorials/examples/lazy-loading-modules/)
+
+## Eager and Lazy Loading Modules
+
+You don't have to choose between Eager Loading or Lazy Loading. You can do both:
+
+```html
+<script type="text/javascript">
+  var app = Foundry.run(function(dependencies, options) {
+    options.lazyLoadModules = true;
+  });
+</script>
+```
+
+In this case, you only need to enable lazy loading modules. Foundry is smart
+enough to eager load a module if no `data-module-lazyload` attribute is present.
+
+__Demo:__ [Eager and Lazy Loading Modules](http://localhost:4000/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html)
+
+## Up Next: Integrating Pollyfills With Foundry
+
+Foundry wasn't built with older browsers in mind, which means many older
+browsers aren't supported. The next tutorial shows you how to enable support for
+older browsers using Pollyfills.
 
 <ul class="pagination">
     <li class="pagination-back"><a href="/tutorials/responsive-modules.html" title="Back: Responsive Modules Using CSS3 Media Queries">Back</a></li>
