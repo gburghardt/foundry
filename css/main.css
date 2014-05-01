@@ -86,6 +86,7 @@ body {
 	margin: 0;
 }
 .nav-secondary ul {
+	font-size: .8em;
 	list-style-type: none;
 	margin: 0;
 	padding: 0;

@@ -8,9 +8,9 @@ title: Lazy Loading Modules
 # {{ page.title }}
 
 <h2 class="intro">
-	Delay the loading of a module until it appears on screen. This easy
-	performance enhancement can be applied to any module without any JavaScript
-	code changes.
+    Delay the loading of a module until it appears on screen. This easy
+    performance enhancement can be applied to any module without any JavaScript
+    code changes.
 </h2>
 
 By default, Foundry performs an Eager Load of all the modules on the page. Any
@@ -40,10 +40,10 @@ There are two small changes to make in your Foundry application config:
 
 ```html
 <script type="text/javascript">
-	var app = Foundry.run(function(dependencies, options) {
-		options.eagerLoadModules = false;
-		options.lazyLoadModules = true;
-	});
+    var app = Foundry.run(function(dependencies, options) {
+        options.eagerLoadModules = false;
+        options.lazyLoadModules = true;
+    });
 </script>
 ```
 
@@ -96,9 +96,9 @@ You don't have to choose between Eager Loading or Lazy Loading. You can do both:
 
 ```html
 <script type="text/javascript">
-  var app = Foundry.run(function(dependencies, options) {
-    options.lazyLoadModules = true;
-  });
+    var app = Foundry.run(function(dependencies, options) {
+        options.lazyLoadModules = true;
+    });
 </script>
 ```
 

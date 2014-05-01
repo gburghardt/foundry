@@ -174,7 +174,7 @@ selecting and deselecting of items in a list. The `TaskListModule` will hold a
 reference to an instance of `SelectionModule`, and listen for notification
 events on it. First, let's see the source code for `SelectionModule`:
 
-<h3 class="code-lable">Contents of selection_module.js</h3>
+<h3 class="code-label">Contents of selection_module.js</h3>
 
 ```javascript
 var SelectionModule = Module.Base.extend({
