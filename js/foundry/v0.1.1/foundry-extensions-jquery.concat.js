@@ -1,4 +1,4 @@
-/*! foundry 2014-04-29 */
+/*! foundry 2014-05-02 */
 (function ($) {
 
 	ElementStore.jQueryAdapter = {
