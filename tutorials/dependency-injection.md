@@ -19,7 +19,7 @@ the components that ship with Foundry.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry](/downloads.html)
+1. [Foundry]({{ site.baseurl }}/downloads.html)
 2. An understanding of [Dependency Injection and Inversion of Control](http://martinfowler.com/articles/injection.html)
 3. Moderate knowledge of Object Oriented JavaScript
 
@@ -60,7 +60,7 @@ var app = Foundry.run(function(dependencies, options) {
 ## Using Dependency Injection For Modules
 
 If you recall the
-[Events In Foundry Demo](/tutorials/examples/events-in-foundry/), we had a task
+[Events In Foundry Demo]({{ site.baseurl }}/tutorials/examples/events-in-foundry/), we had a task
 list, a selection module, and a list of recently added tasks. The `data-modules`
 HTML5 attributes referred to JavaScript class names. Let's build on this example
 to use Dependency Injection.
@@ -162,7 +162,7 @@ Web pages are no longer bound to HTML. Find out how to render HTML using client
 side templates and a view resolver in Foundry.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/events-in-foundry-page-2.html" title="Back: A Practical Example Of Events In Foundry">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/client-side-templates.html" title="Next: Rendering Client Side Templates">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/events-in-foundry-page-2.html" title="Back: A Practical Example Of Events In Foundry">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/client-side-templates.html" title="Next: Rendering Client Side Templates">Next</a></li>
 </ul>

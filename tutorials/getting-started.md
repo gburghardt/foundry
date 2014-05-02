@@ -8,12 +8,16 @@ secondary_nav: getting-started
 
 # {{ page.title }}
 
+<div class="info">
+    <p>You can view the demo here: <a href="{{ site.baseurl }}/tutorials/examples/getting-started/final.html">Getting Started with Foundry: The Boilerplate</a></p>
+</div>
+
 This is your first stop in learning how to use Foundry. Before we start, here is
 the list of what you'll need to have and know:
 
 1. A modern web browser &mdash; Newer versions of Firefox, Chrome,
    Safari and Internet Explorer 10+ are required.
-2. A [copy of Foundry](/downloads) fresh off the Intertubes.
+2. A [copy of Foundry](/{{ site.baseurl }}/downloads.html) fresh off the Intertubes.
 3. A working knowledge of HTML and CSS.
 4. Moderate knowledge of JavaScript, the Document Object Model, and
    object oriented JavaScript.
@@ -30,7 +34,7 @@ Foundry application.
 {% include /tutorials/code/foundry_boilerplate.html %}
 ```
 
-__Demo:__ [Getting Started with Foundry: The Boilerplate](/tutorials/examples/getting-started/boilerplate.html)
+__Demo:__ [Boilerplate]({{ site.baseurl }}/tutorials/examples/getting-started/boilerplate.html)
 
 Great. Now we have a blank page that does nothing. Absolutely. Nothing. Let's
 maje it do something.
@@ -175,12 +179,12 @@ The completed HTML file should look like this:
 {% include tutorials/code/final.html %}
 ```
 
-__Demo:__ [Getting Started With Foundry: Your First Module](/tutorials/examples/getting-started/final.html)
+__Demo:__ [Getting Started With Foundry: Your First Module]({{ site.baseurl }}/tutorials/examples/getting-started/final.html)
 
 That's all there is to it.
 
 <ul class="pagination">
     <li class="pagination-back"><span>Back</span></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/introduction-to-modules.html" title="Next: Introduction to Modules">Next</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/introduction-to-modules.html" title="Next: Introduction to Modules">Next</a></li>
 </ul>

@@ -16,6 +16,13 @@ meta_keywords: Foundry, events, javascript, framework
     communication layer between modules.
 </h2>
 
+<div class="info">
+    <p>
+        You can view the demo here:
+        <a href="{{ site.baseurl }}/tutorials/examples/events-in-foundry/">Events In Foundry</a>
+    </p>
+</div>
+
 There are three kinds of events in Foundry:
 
 - Document Object Model events
@@ -30,14 +37,8 @@ Application events.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry](/downloads.html)
-2. A basic understanding of [how Modules work in Foundry](/tutorials/introduction-to-modules.html)
-
-<div class="aside">
-    You can view a demo of how to use Application and Notification events in Foundry:
-    <a href="/tutorials/examples/events-in-foundry/">Events In Foundry</a>.<br>
-    If you learn better by doing, <a href="/tutorials/events-in-foundry-page-2.html">skip ahead to the examples</a>.
-</div>
+1. [Foundry]({{ site.baseurl }}/downloads.html)
+2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 
 ## What You'll Learn
 
@@ -309,7 +310,7 @@ Next we'll create a practical example using a task list, a list of selectable
 items and a module responding to any added task.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/introduction-to-modules.html" title="Back: Introduction To Modules">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/events-in-foundry-page-2.html" title="Next: A Practical Example Of Events In Foundry">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/introduction-to-modules.html" title="Back: Introduction To Modules">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/events-in-foundry-page-2.html" title="Next: A Practical Example Of Events In Foundry">Next</a></li>
 </ul>

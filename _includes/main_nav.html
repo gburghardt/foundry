@@ -1,5 +1,5 @@
 <ul class="nav nav-horizontal clearfix">
   {% for item in site.data.main_nav %}
-    <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+    <li><a href="{{ site.baseurl }}{{ item.url }}">{{ item.text }}</a></li>
   {% endfor %}
 </ul>

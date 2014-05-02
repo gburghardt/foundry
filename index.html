@@ -1,13 +1,106 @@
 ---
 layout: default
-title: Your New Jekyll Site
+title: "Foundry: Industrial Strength JavaScript"
+meta_description: Foundry is a modern, object oriented JavaScript framework built for speed of development, flexibility and file size.
+meta_tags: javascript, framework, object oriented, foundry
+stylesheets:
+  - url: /css/home.css
+    media: screen
 ---
 
-<div id="home">
-  <h1>Blog Posts</h1>
-  <ul class="posts">
-    {% for post in site.posts %}
-      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
-    {% endfor %}
-  </ul>
+<div class="plug">
+    <h1>Foundry: Industrial Strength JavaScript</h1>
+    <a class="download" href="{{ site.baseurl }}/downloads.html">Download</a>
+    <a class="browse-code" href="https://github.com/gburghardt/foundry">Browse the Code</a>
+
+    <p>Foundry is:</p>
+    <ul>
+        <li>Free and Open Source</li>
+        <li>Object Oriented</li>
+        <li>Testable</li>
+        <li>Extendable</li>
+        <li>Modular</li>
+    </ul>
 </div>
+
+<h2>Why Foundry?</h2>
+<p>
+    {{ page.meta_description }}
+</p>
+<p>
+    It doesn't make arrogant assumptions about how you write your applications,
+    but it comes with some handy defaults. Don't like how it works? No problem.
+    Everything in Foundry is coded to an interface. Roll your own
+    implementation!
+</p>
+
+<h3>Foundry is Modular</h3>
+<p>
+    Foundry is coded to an interface, so anything can be plucked out of the web
+    page and live on its own. This makes Foundry easy to test. All controllers
+    in Foundry are built to live on their own, but can
+    <a href="{{ site.baseurl }}/tutorials/events-in-foundry.html">communicate with one another
+    through events</a>.
+</p>
+
+<h3>Foundry is Declarative</h3>
+<p>
+    Forget about hand writing JavaScript just to make the application work. Use
+    HTML5 data attributes to declare the modules on the page, and even the user
+    interaction. No more hunting around for event handlers bound to HTML tag
+    class names. It's easy to debug.
+    <a href="{{ site.baseurl }}/tutorials/lazy-loading-modules.html">Lazy load modules</a> as they
+    scroll into view, or use
+    <a href="{{ site.baseurl }}/tutorials/responsive-modules.html">CSS3 Media Queries to restrict
+    when a module gets created</a>!
+</p>
+
+{% highlight html %}
+<div data-modules="taskList"
+     data-module-options='{"controllerId": "tasks"}'
+     data-module-media="screen and (min-width: 600px)"
+     data-module-lazyload="any"
+>
+  Task: <input type="text">
+  <button data-actions="tasks.add">Add Task</button>
+</div>
+{% endhighlight %}
+
+<h3>Foundry is Extendable</h3>
+<p>
+    All the players in the system are wired together using
+    <a href="{{ site.baseurl }}/tutorials/dependency-injection.html">Inversion of Control and
+    Dependency Injection</a>. It's easy to swap out one component for another,
+    or extend existing components.
+</p>
+
+{% highlight javascript %}
+Foundry.run(function(dependencies, options) {
+    dependencies.merge({
+        moduleObserver: {
+            type: "MyCustomModuleObserver",
+            singleton: true
+        },
+        taskList: {
+            type: "TaskListModule",
+            parent: "module",
+            properties: {
+                tasks: "taskRepository"
+            }
+        },
+        taskRepository: {
+            type: "TaskRepository",
+            singleton: true,
+            properties: {
+                xhr: "ajax",
+                url: { value: "/tasks" }
+            }
+        },
+        ajax: {
+            type: "XMLHttpRequest"
+        }
+    });
+});
+{% endhighlight %}
+
+<p><a href="{{ site.baseurl }}/tutorials/getting-started.html">Get started today!</a></p>

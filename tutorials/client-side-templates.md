@@ -8,10 +8,17 @@ title: Rendering Client Side Templates
 # {{ page.title }}
 
 <h2 class="intro">
-	Turn client side templates into HTML using Mustache templates and a View
-	Resolver allowing your application to render data agnostic of the template
-	language underneath.
+    Turn client side templates into HTML using Mustache templates and a View
+    Resolver allowing your application to render data agnostic of the template
+    language underneath.
 </h2>
+
+<div class="info">
+    <p>
+        You can view the demo here:
+        <a href="{{ site.baseurl }}/tutorials/examples/client-side-templates/">Rendering Client Side Templates With Foundry</a>
+    </p>
+</div>
 
 The next major leap for a web application is to take on the responsibility of
 rendering data into HTML. A plethora of templating solutions are available for
@@ -21,17 +28,11 @@ focus on one of the most popular ones:
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry](/downloads.html)
-2. Basic knowledge of [Dependency Injection with Foundry](/tutorials/dependency-injection.html)
+1. [Foundry]({{ site.baseurl }}/downloads.html)
+2. Basic knowledge of [Dependency Injection with Foundry]({{ site.baseurl }}/tutorials/dependency-injection.html)
 3. A fresh copy of [Mustache.js][0]
 4. A fresh copy of [Bloodhound][1]
 5. A fresh copy of [Promise][2]
-
-<div class="aside">
-    You can view a demo of rendering client side templates using Mustache.js
-    here:<br>
-    <a href="/tutorials/examples/client-side-templates/">Rendering Client Side Templates With Foundry</a>
-</div>
 
 ## What You'll Learn
 
@@ -46,30 +47,30 @@ comments using Mustache.js templates.
 ```html
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="x-ua-compatible" content="edge">
-		<title>Demo: Rendering Client Side Templates &mdash; Foundry</title>
-	</head>
-	<body>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="edge">
+        <title>Demo: Rendering Client Side Templates &mdash; Foundry</title>
+    </head>
+    <body>
 
-		<div data-modules="postDetail" data-module-options='{"post_id": 1}'>Loading ...</div>
+        <div data-modules="postDetail" data-module-options='{"post_id": 1}'>Loading ...</div>
 
-		<!-- Base Framework -->
-		<script type="text/javascript" src="/js/foundry/v0.1.1/foundry.concat.js"></script>
+        <!-- Base Framework -->
+        <script type="text/javascript" src="/js/foundry/v0.1.1/foundry.concat.js"></script>
 
-		<!-- Client Side Template Libs -->
-		<script type="text/javascript" src="/js/mustache.js/mustache.js"></script>
-		<script type="text/javascript" src="/js/promise/src/promise.js"></script>
-		<script type="text/javascript" src="/js/bloodhound/src/bloodhound.js"></script>
-		<script type="text/javascript" src="/js/bloodhound/src/bloodhound/adapters/mustache_template.js"></script>
-		<script type="text/javascript" src="/js/bloodhound/src/bloodhound/rendering_engines/dynamic_rendering_engine.js"></script>
-		<script type="text/javascript" src="/js/bloodhound/src/bloodhound/view_providers/mustache_view_provider.js"></script>
-		<script type="text/javascript" src="/js/bloodhound/src/bloodhound/view_resolvers/dynamic_view_resolver.js"></script>
+        <!-- Client Side Template Libs -->
+        <script type="text/javascript" src="/js/mustache.js/mustache.js"></script>
+        <script type="text/javascript" src="/js/promise/src/promise.js"></script>
+        <script type="text/javascript" src="/js/bloodhound/src/bloodhound.js"></script>
+        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/adapters/mustache_template.js"></script>
+        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/rendering_engines/dynamic_rendering_engine.js"></script>
+        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/view_providers/mustache_view_provider.js"></script>
+        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/view_resolvers/dynamic_view_resolver.js"></script>
 
-		<!-- Application Files -->
-		<script type="text/javascript" src="./post_detail_module.js"></script>
-	</body>
+        <!-- Application Files -->
+        <script type="text/javascript" src="./post_detail_module.js"></script>
+    </body>
 </html>
 ```
 
@@ -82,46 +83,46 @@ view resolver:
 
 ```html
 <body>
-	...
+    ...
 
-	<!-- Application Files -->
-	<script type="text/javascript" src="./post_detail_module.js"></script>
+    <!-- Application Files -->
+    <script type="text/javascript" src="./post_detail_module.js"></script>
 
-	<script type="text/javascript">
+    <script type="text/javascript">
 
-		var app = Foundry.run(function(dependencies, options) {
-			dependencies.merge({
-				viewProvider: {
-					type: "Bloodhound.ViewProviders.MustacheViewProvider",
-					singleton: true
-				},
-				viewResolver: {
-					type: "Bloodhound.ViewResolvers.DynamicViewResolver",
-					singleton: true,
-					properties: {
-						container: "document",
-						provider: "viewProvider",
-						templateUrlBase: { value: "/tutorials/examples/client-side-templates" }
-					}
-				},
-				renderingEngine: {
-					type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
-					singleton: true,
-					properties: {
-						viewResolver: "viewResolver"
-					}
-				},
-				postDetail: {
-					type: "PostDetailModule",
-					parent: "module"
-				}
-			});
+        var app = Foundry.run(function(dependencies, options) {
+            dependencies.merge({
+                viewProvider: {
+                    type: "Bloodhound.ViewProviders.MustacheViewProvider",
+                    singleton: true
+                },
+                viewResolver: {
+                    type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+                    singleton: true,
+                    properties: {
+                        container: "document",
+                        provider: "viewProvider",
+                        templateUrlBase: { value: "{{ site.baseurl }}/tutorials/examples/client-side-templates" }
+                    }
+                },
+                renderingEngine: {
+                    type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+                    singleton: true,
+                    properties: {
+                        viewResolver: "viewResolver"
+                    }
+                },
+                postDetail: {
+                    type: "PostDetailModule",
+                    parent: "module"
+                }
+            });
 
-			// All modules will have this rendering engine available
-			dependencies.module.properties.renderingEngine = "renderingEngine";
-		});
+            // All modules will have this rendering engine available
+            dependencies.module.properties.renderingEngine = "renderingEngine";
+        });
 
-	</script>
+    </script>
 </body>
 ```
 
@@ -133,41 +134,41 @@ Now let's create the `PostDetailModule` class:
 
 ```javascript
 var PostDetailModule = Module.Base.extend({
-	prototype: {
+    prototype: {
 
-		options: {
-			post_id: 0,
-			view: "post/detail"
-		},
+        options: {
+            post_id: 0,
+            view: "post/detail"
+        },
 
-		_ready: function() {
-			Module.Base.prototype._ready.call(this);
+        _ready: function() {
+            Module.Base.prototype._ready.call(this);
 
-			var xhr = new XMLHttpRequest(),
-			    data = null,
-			    that = this;
+            var xhr = new XMLHttpRequest(),
+                data = null,
+                that = this;
 
-			xhr.onreadystatechange = function() {
-				if (this.readyState < 4 || this.status < 200 || this.status > 299) {
-					return;
-				}
+            xhr.onreadystatechange = function() {
+                if (this.readyState < 4 || this.status < 200 || this.status > 299) {
+                    return;
+                }
 
-				data = JSON.parse(this.responseText);
-				that._show(data);
-			};
+                data = JSON.parse(this.responseText);
+                that._show(data);
+            };
 
-			xhr.open("GET", "./" + this.options.post_id + ".json");
-			xhr.send(null);
-		},
+            xhr.open("GET", "./" + this.options.post_id + ".json");
+            xhr.send(null);
+        },
 
-		_show: function(data) {
-			this.render(this.options.view, data.post, this.element)
-				.done(function() {
-					this._loaded();
-				}, this);
-		}
+        _show: function(data) {
+            this.render(this.options.view, data.post, this.element)
+                .done(function() {
+                    this._loaded();
+                }, this);
+        }
 
-	}
+    }
 });
 ```
 
@@ -198,40 +199,40 @@ We will just use a hard coded JSON file called `1.json`:
 
 ```javascript
 {
-	"post": {
-		"id": 1,
-		"title": "Rendering Client Side Templates With Foundry",
-		"date": "04/20/2014",
-		"author": "Wilbur, the Grunt",
-		"body": "<p>It's easy to render client side templates!</p>",
-		"tags": [
-			"javascript",
-			"foundry",
-			"templates",
-			"mustache"
-		],
-		"comments": [{
-			"id": 1,
-			"post_id": 1,
-			"author": "Anonymous Coward",
-			"text": "This is terrible!"
-		}, {
-			"id": 2,
-			"post_id": 1,
-			"author": "John Doe",
-			"text": "No it's not!"
-		}, {
-			"id": 3,
-			"post_id": 1,
-			"author": "Jane Doe",
-			"text": "Witty retort!"
-		}, {
-			"id": 4,
-			"post_id": 1,
-			"author": "Anonymous Coward",
-			"text": "Smack talk!"
-		}]
-	}
+    "post": {
+        "id": 1,
+        "title": "Rendering Client Side Templates With Foundry",
+        "date": "04/20/2014",
+        "author": "Wilbur, the Grunt",
+        "body": "<p>It's easy to render client side templates!</p>",
+        "tags": [
+            "javascript",
+            "foundry",
+            "templates",
+            "mustache"
+        ],
+        "comments": [{
+            "id": 1,
+            "post_id": 1,
+            "author": "Anonymous Coward",
+            "text": "This is terrible!"
+        }, {
+            "id": 2,
+            "post_id": 1,
+            "author": "John Doe",
+            "text": "No it's not!"
+        }, {
+            "id": 3,
+            "post_id": 1,
+            "author": "Jane Doe",
+            "text": "Witty retort!"
+        }, {
+            "id": 4,
+            "post_id": 1,
+            "author": "Anonymous Coward",
+            "text": "Smack talk!"
+        }]
+    }
 }
 ```
 
@@ -252,19 +253,19 @@ the name of the view we render is in `this.options.view`, which is equal to
 ```html
 {% raw %}
 <div class="post" id="ost-{{id}}">
-	<h1>{{title}}</h1>
-	<p class="date">{{date}}</p>
-	<p>By {{author}}</p>
+    <h1>{{title}}</h1>
+    <p class="date">{{date}}</p>
+    <p>By {{author}}</p>
 
-	{{{body}}}
+    {{{body}}}
 
-	<p>Tags:
-		{{#tags}}
-			<a href="/tags/{{.}}">{{.}}</a>
-		{{/tags}}
-	</p>
+    <p>Tags:
+        {{#tags}}
+            <a href="/tags/{{.}}">{{.}}</a>
+        {{/tags}}
+    </p>
 
-	{{> post/comments}}
+    {{> post/comments}}
 </div>
 {% endraw %}
 ```
@@ -277,11 +278,11 @@ template named `post/comments` and render that as a partial in Mustache.js:
 ```html
 {% raw %}
 <ol class="comments">
-	{{#comments}}
-		<li id="post-{{post_id}}-comment-{{id}}">
-			{{text}} &mdash; {{author}}
-		</li>
-	{{/comments}}
+    {{#comments}}
+        <li id="post-{{post_id}}-comment-{{id}}">
+            {{text}} &mdash; {{author}}
+        </li>
+    {{/comments}}
 </ol>
 {% endraw %}
 ```
@@ -293,7 +294,7 @@ language you want to use. Since we are using
 demand and cached for later use. Your web page does not need the source code for
 all of its views to be included in the web page source.
 
-__Demo:__ [Rendering Client Side Templates With Foundry](/tutorials/examples/client-side-templates/)
+__Demo:__ [Rendering Client Side Templates With Foundry]({{ site.baseurl }}/tutorials/examples/client-side-templates/)
 
 ## A Quick Recap
 
@@ -308,9 +309,9 @@ is no exception. Learn how to unit test your Foundry application using Jasmine
 in the next tutorial.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/dependency-injection.html" title="Back: Dependency Injection With Foundry">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/unit-testing.html" title="Next: Unit Testing Foundry Applications">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/dependency-injection.html" title="Back: Dependency Injection With Foundry">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/unit-testing.html" title="Next: Unit Testing Foundry Applications">Next</a></li>
 </ul>
 
 [0]: https://github.com/janl/mustache.js

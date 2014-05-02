@@ -23,15 +23,28 @@ body {
 	display: table;
 	clear: both;
 }
-.content {
+.content,
+.footer {
 	padding: 0 4em;
 	max-width: 40em;
+}
+.footer {
+	margin: 1em 0;
+	text-align: center;
 }
 .header {
 	background-color: #000;
 	color: #fff;
 	padding: .5em 4em;
 	margin-bottom: 3em;
+}
+.info {
+	background-color: #CEE6FF;
+	border: 0 solid #00A1FF;
+	border-bottom-width: 1px;
+	border-top-width: 1px;
+	margin: 1em 0;
+	padding: 0 1em;
 }
 .logo {
 	margin: 0;
@@ -58,7 +71,7 @@ body {
 	margin-top: -1em;
 	position: relative;
 	top: 1.4em;
-	max-width: 800px;
+	width: 722px;
 }
 .nav-horizontal li {
 	float: left;

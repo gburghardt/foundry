@@ -13,20 +13,22 @@ secondary_nav: modules-intro
     tutorial introduces you to building Modules in Foundry.
 </h2>
 
+<div class="info">
+    <p>
+        You can view a demo here:
+        <a href="{{ site.baseurl }}/tutorials/examples/introduction-to-modules/">Introduction to Modules</a>
+    </p>
+</div>
+
 ## What You'll Need For This Tutorial
 
-1. [Foundry](/downloads.html)
-2. An basic understanding of how Foundry works ([Overview](/overview.html) |
-  [Getting Started](/tutorials/getting-started.html))
+1. [Foundry]({{ site.baseurl }}/downloads.html)
+2. An basic understanding of how Foundry works ([Overview]({{ site.baseurl }}/overview.html) |
+  [Getting Started]({{ site.baseurl }}/tutorials/getting-started.html))
 3. Working knowledge of HTML
 4. Moderate knowledge of JavaScript, the Document Object Model and
   object oriented programming
 5. A basic understanding of the [MVC design pattern](http://martinfowler.com/eaaDev/uiArchs.html#ModelViewController).
-
-<div class="aside">
-    You can view a demo here:
-    <a href="/tutorials/examples/introduction-to-modules/">Introduction to Modules</a>
-</div>
 
 ## What You'll Learn
 
@@ -379,7 +381,7 @@ selection modules specifically:
 
 Now refresh this page in your browser.
 
-__Demo:__ [Introduction to Modules](/tutorials/examples/introduction-to-modules/)
+__Demo:__ [Introduction to Modules]({{ site.baseurl }}/tutorials/examples/introduction-to-modules/)
 
 ## A Quick Recap
 
@@ -402,7 +404,7 @@ Learn how to use Application and Notification events to facilitate communication
 between one or more modules. Click "Next" below.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/getting-started.html" title="Back: Getting Started With Foundry">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/events-in-foundry.html" title="Next: Events In Foundry">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/getting-started.html" title="Back: Getting Started With Foundry">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/events-in-foundry.html" title="Next: Events In Foundry">Next</a></li>
 </ul>

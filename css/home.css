@@ -1,0 +1,58 @@
+.browse-code,
+.download {
+	background: #4F7EFF url(../images/icon_download.png) no-repeat scroll 0 50%;
+	border-radius: 12px;
+	display: inline-block;
+	font-size: 1.25em;
+	padding: 6px 12px 6px 30px;
+}
+.browse-code,
+.browse-code:visited,
+.browse-code:hover,
+.browse-code:focus,
+.browse-code:active,
+.download,
+.download:visited,
+.download:hover,
+.download:focus,
+.download:active {
+	color: #fff;
+}
+.browse-code {
+	background-image: url(../images/blacktocat.png);
+	background-position: 6px 50%;
+	padding-left: 38px;
+}
+.plug {
+	background-color: #F0F0F0;
+	border: 3px solid #E0E0E0;
+	border-radius: 12px;
+	font-family: "Montserrat", sans-serif;
+	font-size: .8em;
+	padding: 0 1em;
+	text-align: center;
+}
+.plug h1 {
+	font-size: 1.25em;
+}
+.plug p,
+.plug ul {
+	list-style-position: inside;
+	margin: 1em auto;
+	padding: 0;
+	max-width: 20em;
+}
+.plug p {
+	font-weight: bold;
+}
+.plug p+ul {
+	margin-top: -.8em;
+}
+.text-cols-2 {
+	column-count: 2;
+	column-rule: 1em;
+	-moz-column-count: 2;
+	-moz-column-rule: 1em;
+	-webkit-column-count: 2;
+	-webkit-column-rule: 1em;
+}

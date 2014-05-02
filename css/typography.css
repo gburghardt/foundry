@@ -47,10 +47,12 @@ code {
 	font-family: "Montserrat", sans-serif;
 	font-size: 1em;
 	margin-bottom: -1px;
+	margin-left: -13px;
 	padding: .1em .5em;
 	vertical-align: bottom;
 }
 .code-label+.highlight>pre {
+	border-top-left-radius: 0;
 	margin-top: 0;
 }
 dd {
@@ -77,6 +79,10 @@ h4+.aside,
 h5+.aside,
 h6+.aside {
 	margin-top: 1.5em;
+}
+.info {
+	font-family: "Montserrat", sans-serif;
+	font-size: .8em;
 }
 .intro {
 	color: #505050;

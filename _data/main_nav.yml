@@ -4,7 +4,11 @@
   url: /overview.html
 - text: Tutorials
   url: /tutorials/
+- text: Contributing
+  url: /contributing.html
 - text: Downloads
   url: /downloads.html
+- text: Changelog
+  url: /changelog.html
 - text: Blog
   url: /blog/

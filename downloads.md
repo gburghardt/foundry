@@ -6,7 +6,7 @@ title: Download Foundry
 # {{ page.title }}
 
 Since Foundry is currently under heavy development, the latest stable
-code is available at https://github.com/gburghardt/foundry.
+code is available at [https://github.com/gburghardt/foundry](https://github.com/gburghardt/foundry).
 
 ### Acquiring Foundry via Git:
 

@@ -13,10 +13,17 @@ title: Responsive Modules Using CSS3 Media Queries
 	your CSS.
 </h2>
 
+<div class="info">
+    <p>
+        You can view a demo here:
+        <a href="{{ site.baseurl }}/tutorials/examples/responsive-modules/">Responsive Modules</a>
+    </p>
+</div>
+
 ## What You'll Need For This Tutorial
 
-1. [Foundry](/downloads.html)
-2. A basic understanding of [how Modules work in Foundry](/tutorials/introduction-to-modules.html)
+1. [Foundry]({{ site.baseurl }}/downloads.html)
+2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 3. Moderate knowledge of [Responsive Design][0] and [CSS Media Queries][1].
 
 ## What You'll Learn
@@ -29,11 +36,6 @@ title: Responsive Modules Using CSS3 Media Queries
 - Which browsers support Responsive Modules
 
 ## What Is A Responsive Module?
-
-<div class="aside">
-    You can view a demo of eager and lazy loaded Responsive Modules here:
-    <a href="/tutorials/examples/responsive-modules/">Responsive Modules</a>
-</div>
 
 Responsive Modules are just like every other module you create for Foundry,
 except they only get loaded by the framework if the `data-module-media`
@@ -122,7 +124,7 @@ module:
     data-module-lazyload="any"></div>
 ```
 
-__Demo:__ [Responsive Modules](/tutorials/examples/responsive-modules/)
+__Demo:__ [Responsive Modules]({{ site.baseurl }}/tutorials/examples/responsive-modules/)
 
 ## Browser Support For Responsive Modules
 
@@ -148,9 +150,9 @@ Modules for browsers that do not support the `matchMedia` function in
 JavaScript.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/lazy-loading-modules.html" title="Back: Lazy Loading Modules">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/integrating-pollyfills.html" title="Next: Integrating Pollyfills With Foundry">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/lazy-loading-modules.html" title="Back: Lazy Loading Modules">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/integrating-pollyfills.html" title="Next: Integrating Pollyfills With Foundry">Next</a></li>
 </ul>
 
 [0]: http://alistapart.com/topic/responsive-design

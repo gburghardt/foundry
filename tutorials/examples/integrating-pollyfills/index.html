@@ -38,10 +38,10 @@
 		</div>
 
 		<!-- Base Framework -->
-		<script type="text/javascript" src="/js/yepnope.1.5.4-min.js"></script>
-		<script type="text/javascript" src="/js/foundry/v0.1.1/foundry.concat.js"></script>
-		<script type="text/javascript" src="/js/foundry/v0.1.1/pollyfill_promise.js"></script>
-		<script type="text/javascript" src="/js/foundry/v0.1.1/pollyfill_promise/yepnope.js"></script>
+		<script type="text/javascript" src="../../../js/yepnope.1.5.4-min.js"></script>
+		<script type="text/javascript" src="../../../js/foundry/v0.1.1/foundry.concat.js"></script>
+		<script type="text/javascript" src="../../../js/foundry/v0.1.1/pollyfill_promise.js"></script>
+		<script type="text/javascript" src="../../../js/foundry/v0.1.1/pollyfill_promise/yepnope.js"></script>
 
 		<!-- Your Application Files -->
 		<script type="text/javascript" src="./complex_module.js"></script>
@@ -55,8 +55,8 @@
 			Foundry.pollyfill({
 				test: !!window.matchMedia,
 				nope: [
-					"/js/matchMedia.js",
-					"/js/matchMedia.addListener.js"
+					"../../../js/matchMedia.js",
+					"../../../js/matchMedia.addListener.js"
 				]
 			})
 			.afterAll(function() {

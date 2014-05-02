@@ -409,11 +409,11 @@ load. Learn how you can delay the creation of modules until they are scrolled
 into view in the next tutorial.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/client-side-templates.html" title="Back: Rendering Client Side Templates">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/lazy-loading-modules.html" title="Next: Lazy Loading Modules">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/client-side-templates.html" title="Back: Rendering Client Side Templates">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/lazy-loading-modules.html" title="Next: Lazy Loading Modules">Next</a></li>
 </ul>
 
-[0]: /downloads.html
+[0]: {{ site.baseurl }}/downloads.html
 [1]: https://github.com/gburghardt/mocking_bird/
 [2]: http://jasmine.github.io

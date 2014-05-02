@@ -13,6 +13,13 @@ title: Lazy Loading Modules
     code changes.
 </h2>
 
+<div class="info">
+    <p>
+        You can view a demo here:
+        <a href="{{ site.baseurl }}/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html">Eager and Lazy Loading Modules</a>
+    </p>
+</div>
+
 By default, Foundry performs an Eager Load of all the modules on the page. Any
 HTML tag with a `data-modules` attribute has those modules created and
 inititalized. When the number of modules on the page increases, performance
@@ -22,13 +29,8 @@ attributes.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry](/downloads.html)
-2. A basic understanding of [how Modules work in Foundry](/tutorials/introduction-to-modules.html)
-
-<div class="aside">
-    You can view a demo of lazy loaded modules here:<br>
-    <a href="/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html">Eager and Lazy Loading Modules</a>
-</div>
+1. [Foundry]({{ site.baseurl }}/downloads.html)
+2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 
 ## What You'll Learn
 
@@ -88,7 +90,7 @@ necessary, but there are a few best practices to follow for lazy loaded modules.
 - In the `_ready` method, call `this._loaded();` to remove the `loading` HTML
   class from your module's root element.
 
-__Demo:__ [Lazy Loading Modules](/tutorials/examples/lazy-loading-modules/)
+__Demo:__ [Lazy Loading Modules]({{ site.baseurl }}/tutorials/examples/lazy-loading-modules/)
 
 ## Eager and Lazy Loading Modules
 
@@ -105,7 +107,7 @@ You don't have to choose between Eager Loading or Lazy Loading. You can do both:
 In this case, you only need to enable lazy loading modules. Foundry is smart
 enough to eager load a module if no `data-module-lazyload` attribute is present.
 
-__Demo:__ [Eager and Lazy Loading Modules](/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html)
+__Demo:__ [Eager and Lazy Loading Modules]({{ site.baseurl }}/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html)
 
 ## Up Next: Responsive Modules
 
@@ -116,7 +118,7 @@ Responsive Modules using CSS3 Media Queries and the `data-module-media`
 attribute.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/unit-testing.html" title="Back: Unit Testing Foundry Applications">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/responsive-modules.html" title="Next: Responsive Modules Using CSS3 Media Queries">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/unit-testing.html" title="Back: Unit Testing Foundry Applications">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/responsive-modules.html" title="Next: Responsive Modules Using CSS3 Media Queries">Next</a></li>
 </ul>

@@ -2,3 +2,4 @@ name: Foundry
 slogan: Industrial Strength JavaScript
 markdown: redcarpet
 pygments: true
+baseurl: '/foundry'

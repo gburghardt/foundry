@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="edge">
+		<title>New Modules On The Fly &mdash; Foundry</title>
+		<style type="text/css">
+			body {
+				margin: 0;
+				padding: 0;
+			}
+			.main {
+				margin: 1em 14px 0 345px;
+			}
+			.module {
+				border: 1px solid #000;
+				border-radius: 8px;
+				margin: 1em 0;
+				padding: 0 1em;
+			}
+			.module.taskList ol {
+				border-top: 1px solid transparent;
+				list-style-type: none;
+				margin: 1em 0;
+				padding: 0;
+			}
+			.module.taskList ol li {
+				border-bottom: 1px solid transparent;
+				cursor: pointer;
+				padding: .5em;
+			}
+			.module.taskList-grocery {
+				background-color: #9cf;
+			}
+			.module.taskList-grocery ol,
+			.module.taskList-grocery ol li {
+				border-color: #369;
+			}
+			.module.taskList-grocery .selected {
+				background-color: #CCE5FF;
+			}
+			.module.taskList-todo {
+				background-color: #f0f0f0;
+			}
+			.module.taskList-todo ol,
+			.module.taskList-todo ol li {
+				border-color: #a0a0a0;
+			}
+			.selected {
+				background-color: #ffc;
+			}
+			.side {
+				border-right: 3px solid #e0e0e0;
+				float: left;
+				margin: 0 0 0 14px;
+				padding-right: 14px;
+				width: 300px;
+			}
+			.side ul {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			.side ul li {
+				margin: .33em 0;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div class="side">
+			<ul>
+				<li>
+					<button
+						data-actions="newModules.createModule"
+						data-action-params='{
+							"newModules.createModule": {
+								"module": {
+									"type": "TaskListModule",
+									"options": {
+										"type": "grocery"
+									},
+									"template": "taskList"
+								},
+								"container": {
+									"selector": ".main",
+									"renderData": {
+										"title": "Grocery List"
+									}
+								}
+							}
+						}'
+					>New Grocery List</button>
+				</li>
+				<li>
+					<button
+						data-actions="newModules.createModule"
+						data-action-params='{
+							"newModules.createModule": {
+								"module": {
+									"type": "TaskListModule",
+									"options": {
+										"type": "todo"
+									},
+									"template": "taskList"
+								},
+								"container": {
+									"insert": "bottom",
+									"selector": ".side",
+									"renderData": {
+										"title": "TODO List"
+									}
+								}
+							}
+						}'
+					>New TODO List</button>
+				</li>
+			</ul>
+		</div>
+
+		<div class="main">
+		</div>
+
+		<!-- Base Framework -->
+		<script type="text/javascript" src="../../../js/foundry/v0.1.1/foundry.concat.js"></script>
+
+		<!-- Your Application Files -->
+		<script type="text/javascript" src="./task_list_module.js"></script>
+
+		<!-- Client side templates -->
+		<script type="text/html" data-template="taskList">
+			<form method="GET" action="#" data-actions="#{controllerId}.add">
+				<h2>#{title}</h2>
+				<p>
+					<input type="text" name="task">
+					<button type="submit">Add</button>
+				</p>
+				<ol></ol>
+				<p>
+					<button type="button" data-actions="#{controllerId}.destroy">Delete List</button>
+					<button type="button" data-actions="#{controllerId}.removeSelected">Remove Selected Items</button>
+				</p>
+			</form>
+		</script>
+
+		<script type="text/javascript">
+
+			// Instantiation and Initialization
+			var app = Foundry.run();
+
+			// Destruction
+			window.onunload = function() {
+				app.destructor();
+				app = null;
+			};
+
+		</script>
+
+	</body>
+</html>

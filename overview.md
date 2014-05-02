@@ -292,19 +292,14 @@ For example, the view for a blog post would be saved in
 Now that you've gotten a quick tour of Foundry, let's get our hands
 dirty!
 
-1. [Download Foundry](/downloads.html)
-2. [Get started with a simple application](/tutorials/getting-started.html)
-3. [View more Tutorials](/tutorials/)
+1. [Download Foundry]({{ site.baseurl }}/downloads.html)
+2. [Get started with a simple application]({{ site.baseurl }}/tutorials/getting-started.html)
+3. [View more Tutorials]({{ site.baseurl }}/tutorials/)
 4. [Browse the code](https://github.com/gburghardt/foundry)
-5. [Contribute ideas](/contibuting.html),
+5. [Contribute ideas]({{ site.baseurl }}/contributing.html),
    [bug reports](https://github.com/gburghardt/foundry/issues),
    [fixes](https://github.com/gburghardt/foundry/pulls) and
-   [features](/contributing.html)
-6. [View the demo](https://github.com/gburghardt/foundry/blob/master/demo/index.html)
+   [features]({{ site.baseurl }}/contributing.html)
+6. [View the demo]({{ site.baseurl }}/tutorials/examples/getting-started/)
 
 Thanks for trying out Foundry. Happy coding!
-
-<hr>
-
-[[Wiki Home|Home]] |
-[[Next &gt;|Dependencies]]

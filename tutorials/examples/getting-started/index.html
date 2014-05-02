@@ -12,7 +12,7 @@
 			data-module-options='{"backgroundColor": "#f0f0f0"}'></div>
 
 		<!-- Base Framework -->
-		<script type="text/javascript" src="/js/foundry/v0.1.1/foundry.concat.js"></script>
+		<script type="text/javascript" src="../../../js/foundry/v0.1.1/foundry.concat.js"></script>
 
 		<!-- Your Application Files -->
 		<script type="text/javascript" src="./welcome_module.js"></script>
@@ -28,6 +28,8 @@
 						parent: "module"
 					}
 				});
+
+				options.lazyLoadModules = true;
 			});
 
 			// Destruction

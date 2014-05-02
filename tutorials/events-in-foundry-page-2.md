@@ -8,22 +8,24 @@ title: A Practical Example Of Events In Foundry
 # {{ page.title }}
 
 <h2 class="intro">
-    In the <a href="/tutorials/events-in-foundry.html">previous tutorial</a>,
+    In the <a href="{{ site.baseurl }}/tutorials/events-in-foundry.html">previous tutorial</a>,
     we outlined two kinds of events that modules deal with. In this tutorial,
     we dive into a real world implementation of Application and Notification
     events in Foundry.
 </h2>
 
+<div class="info">
+    <p>
+        You can view the demo here:
+        <a href="{{ site.baseurl }}/tutorials/examples/events-in-foundry/">Events In Foundry</a>
+    </p>
+</div>
+
 ## What You'll Need For This Tutorial
 
-1. [Foundry](/downloads.html)
-2. A basic understanding of [how Modules work in Foundry](/tutorials/introduction-to-modules.html)
-3. A basic understanding of [events in Foundry](/tutorials/events-in-foundry.html)
-
-<div class="aside">
-    You can view a demo of how to use Application and Notification events in Foundry here:<br>
-    <a href="/tutorials/examples/events-in-foundry/">Events In Foundry</a>
-</div>
+1. [Foundry]({{ site.baseurl }}/downloads.html)
+2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
+3. A basic understanding of [events in Foundry]({{ site.baseurl }}/tutorials/events-in-foundry.html)
 
 ## What You'll Learn
 
@@ -351,7 +353,7 @@ This gives you the basic idea of how to use Notification Events. A module holds
 a reference to another module, and calls `listen(...)` on it. The other module
 calls `notify(...)` to send the Notification Event.
 
-__Demo:__ [Events In Foundry](/tutorials/examples/events-in-foundry/)
+__Demo:__ [Events In Foundry]({{ site.baseurl }}/tutorials/examples/events-in-foundry/)
 
 ## A Quick Recap
 
@@ -375,7 +377,7 @@ wire together the framework. Learn how to leverage Dependency Injection and
 Inversion of Control when creating your own modules.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/events-in-foundry.html" title="Back: Events In Foundry">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/dependency-injection.html" title="Next: Using Dependency Injection With Foundry">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/events-in-foundry.html" title="Back: Events In Foundry">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/dependency-injection.html" title="Next: Using Dependency Injection With Foundry">Next</a></li>
 </ul>

@@ -13,16 +13,18 @@ title: Integrating Pollyfills With Foundry
     the many Pollyfills that are available.
 </h2>
 
+<div class="info">
+	<p>
+		You can view a demo here:
+		<a href="{{ site.baseurl }}/tutorials/examples/integrating-pollyfills/">Integrating Pollyfills</a>
+	</p>
+</div>
+
 In the [previous tutorial][0], we explored how to load modules based on the
 current viewport dimensions. We noted that the native `matchMedia` function is
 used to enable this feature, but older browsers do not support this. Now it's
 time to add support to those older browsers by using a Pollyfill. This tutorial
 explains how to seamlessly integrate Pollyfills with Foundry.
-
-<div class="aside">
-	You can view a demo of how to use Pollyfills with Foundry and yepnope.js:
-	<a href="/tutorials/examples/integrating-pollyfills/">Integrating Pollyfills</a>
-</div>
 
 ## What You'll Need For This Tutorial
 
@@ -110,19 +112,19 @@ Foundry
 	.start();
 ```
 
-__Demo:__ [Integrating Pollyfills](/tutorials/examples/integrating-pollyfills/)
+__Demo:__ [Integrating Pollyfills]({{ site.baseurl }}/tutorials/examples/integrating-pollyfills/)
 
 Many great pollyfills exist. [HTML5Please.com][4] has a pretty comprehensive
 list available.
 
 <ul class="pagination">
-    <li class="pagination-back"><a href="/tutorials/responsive-modules.html" title="Back: Responsive Modules Using CSS3 Media Queries">Back</a></li>
-    <li class="pagination-up"><a href="/tutorials/">All Tutorials</a></li>
-    <li class="pagination-next"><a href="/tutorials/TODO.html" title="Next: TODO">Next</a></li>
+    <li class="pagination-back"><a href="{{ site.baseurl }}/tutorials/responsive-modules.html" title="Back: Responsive Modules Using CSS3 Media Queries">Back</a></li>
+    <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
+    <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/new-modules-on-the-fly.html" title="Next: Creating New Modules On The Fly">Next</a></li>
 </ul>
 
-[0]: /tutorials/responsive-modules.html
-[1]: /downloads.html
+[0]: {{ site.baseurl }}/tutorials/responsive-modules.html
+[1]: {{ site.baseurl }}/downloads.html
 [2]: http://yepnopejs.com
 [3]: https://github.com/paulirish/matchMedia.js/
 [4]: http://html5please.com/#polyfill
