@@ -19,7 +19,9 @@ the components that ship with Foundry.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html)
+1. [Foundry]({{ site.baseurl }}/downloads.html),
+   [module-base](https://github.com/gburghardt/module-base), and
+   [module-utils](https://github.com/gburghardt/module-utils)
 2. An understanding of [Dependency Injection and Inversion of Control](http://martinfowler.com/articles/injection.html)
 3. Moderate knowledge of Object Oriented JavaScript
 

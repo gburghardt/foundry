@@ -1,3 +1,4 @@
+/*! foundry 2014-05-05 */
 Foundry.pollyfill = function() {
 	return new Foundry.PollyfillPromise(Array.prototype.slice.call(arguments));
 };
@@ -46,5 +47,33 @@ Foundry.PollyfillPromise.prototype = {
 
 	start: function() {
 		throw new Error("Not Implemented!");
+	}
+};
+Foundry.PollyfillPromise.prototype.start = function() {
+	var i = 0,
+	    length = this.tests.length,
+	    idx = i,
+	    that = this,
+	    test;
+
+	for (i; i < length; i++) {
+		test = this.tests[i];
+		test.callback = callback;
+		test.complete = complete;
+		yepnope(test);
+	}
+
+	function complete() {
+		if (++idx === length) {
+			that.fullfill("afterAll", arguments);
+		}
+	}
+
+	function callback() {
+		that.fullfill("afterEach", arguments);
+	}
+
+	function cleanup() {
+		test = that = null;
 	}
 };

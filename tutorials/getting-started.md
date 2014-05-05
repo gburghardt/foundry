@@ -18,6 +18,8 @@ the list of what you'll need to have and know:
 1. A modern web browser &mdash; Newer versions of Firefox, Chrome,
    Safari and Internet Explorer 10+ are required.
 2. A [copy of Foundry](/{{ site.baseurl }}/downloads.html) fresh off the Intertubes.
+3. A [copy of module-base](https://github.com/gburghardt/module-base)
+4. A [copy of module-utils](https://github.com/gburghardt/module-utils)
 3. A working knowledge of HTML and CSS.
 4. Moderate knowledge of JavaScript, the Document Object Model, and
    object oriented JavaScript.

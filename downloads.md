@@ -8,13 +8,21 @@ title: Download Foundry
 Since Foundry is currently under heavy development, the latest stable
 code is available at [https://github.com/gburghardt/foundry](https://github.com/gburghardt/foundry).
 
-### Acquiring Foundry via Git:
+## The Foundry Bootstrapping Project
+
+The easiest way to get up and running with Foundy is by cloning or downloading
+the Foundry Bootstrapping Project:
+
+- [GitHub](https://github.com/gburghardt/foundry.bootstrap)
+- Download: [zip](https://github.com/gburghardt/foundry.bootstrap/archive/master.zip)
+
+## Acquiring Foundry via Git:
 
 Foundry is hosted on GitHub:
 
     $ git clone https://github.com/gburghardt/foundry.git
 
-### Download Foundry Source Code
+## Download Foundry Source Code
 
 <table>
   <thead>
@@ -45,7 +53,7 @@ Foundry is hosted on GitHub:
   </tbody>
 </table>
 
-### Installing Foundry Using Bower
+## Installing Foundry Using Bower
 
 Foundry is available as a Bower package as well:
 

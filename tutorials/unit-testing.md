@@ -22,7 +22,9 @@ mocking objects like the `document` and the `window` become much easier.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry][0]
+1. [Foundry][0],
+   [module-base](https://github.com/gburghardt/module-base), and
+   [module-utils](https://github.com/gburghardt/module-utils)
 2. A copy of [Mocking Bird][1] to mock AJAX requests
 3. [Jasmine][2] for unit testing
 
@@ -107,6 +109,8 @@ When running your Jasmine tests, you'll need the following JavaScript files:
 1. `mocking_bird.js`
 2. `mocking_bird/xml_http_request.js`
 3. `foundry.concat.js`
+4. `module-base/module/base.js`
+5. `module-utils/module-utils.concat.js`
 4. `task_list_module.js`
 
 ### The TaskListModule Spec

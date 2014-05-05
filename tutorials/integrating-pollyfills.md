@@ -28,7 +28,9 @@ explains how to seamlessly integrate Pollyfills with Foundry.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry][1]
+1. [Foundry][1],
+   [module-base](https://github.com/gburghardt/module-base), and
+   [module-utils](https://github.com/gburghardt/module-utils)
 2. A copy of [yepnope.js][2]
 3. A copy of the [matchMedia pollyfill][3] by Paul Irish
 
@@ -47,8 +49,9 @@ look at the HTML we need:
 	<!-- Base Framework -->
 	<script type="text/javascript" src="path/to/yepnope.1.5.4-min.js"></script>
 	<script type="text/javascript" src="path/to/foundry.concat.js"></script>
-	<script type="text/javascript" src="path/to/foundry/pollyfill_promise.js"></script>
-	<script type="text/javascript" src="path/to/foundry/pollyfill_promise/yepnope.js"></script>
+	<script type="text/javascript" src="path/to/foundry_pollyfill_yepnope.concat.js"></script>
+	<script type="text/javascript" src="path/to/module-base/module/base.js"></script>
+	<script type="text/javascript" src="path/to/module-utils/module-utils.concat.js"></script>
 
 	<!-- Your Application Files -->
 	<script type="text/javascript" src="./complex_module.js"></script>

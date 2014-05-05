@@ -124,6 +124,7 @@ pre code {
 	padding: 0;
 	white-space: pre;
 }
+h2+table,
 h3+table {
 	margin-top: 1em;
 }

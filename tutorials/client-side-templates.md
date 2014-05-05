@@ -28,7 +28,9 @@ focus on one of the most popular ones:
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html)
+1. [Foundry]({{ site.baseurl }}/downloads.html),
+   [module-base](https://github.com/gburghardt/module-base), and
+   [module-utils](https://github.com/gburghardt/module-utils)
 2. Basic knowledge of [Dependency Injection with Foundry]({{ site.baseurl }}/tutorials/dependency-injection.html)
 3. A fresh copy of [Mustache.js][0]
 4. A fresh copy of [Bloodhound][1]
@@ -57,7 +59,9 @@ comments using Mustache.js templates.
         <div data-modules="postDetail" data-module-options='{"post_id": 1}'>Loading ...</div>
 
         <!-- Base Framework -->
-        <script type="text/javascript" src="/js/foundry/v0.1.1/foundry.concat.js"></script>
+        <script type="text/javascript" src="/js/foundry/v0.1.2/foundry.concat.js"></script>
+        <script type="text/javascript" src="/js/module-base/module/base.js"></script>
+        <script type="text/javascript" src="/js/module-utils/module-utils.concat.js"></script>
 
         <!-- Client Side Template Libs -->
         <script type="text/javascript" src="/js/mustache.js/mustache.js"></script>

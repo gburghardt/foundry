@@ -22,7 +22,9 @@ title: Responsive Modules Using CSS3 Media Queries
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html)
+1. [Foundry]({{ site.baseurl }}/downloads.html),
+   [module-base](https://github.com/gburghardt/module-base), and
+   [module-utils](https://github.com/gburghardt/module-utils)
 2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 3. Moderate knowledge of [Responsive Design][0] and [CSS Media Queries][1].
 

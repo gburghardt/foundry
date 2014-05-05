@@ -22,7 +22,9 @@ secondary_nav: modules-intro
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html)
+1. [Foundry]({{ site.baseurl }}/downloads.html),
+   [module-base](https://github.com/gburghardt/module-base), and
+   [module-utils](https://github.com/gburghardt/module-utils)
 2. An basic understanding of how Foundry works ([Overview]({{ site.baseurl }}/overview.html) |
   [Getting Started]({{ site.baseurl }}/tutorials/getting-started.html))
 3. Working knowledge of HTML
@@ -78,6 +80,8 @@ Let's start with our HTML boilerplate for this example:
 
         <!-- Base Framework -->
         <script type="text/javascript" src="path/to/foundry.concat.js"></script>
+        <script type="text/javascript" src="path/to/module-base/module/base.js"></script>
+        <script type="text/javascript" src="path/to/module-utils/module-utils.concat.js"></script>
 
         <!-- Your Application Files -->
         <script type="text/javascript" src="path/to/selection_module.js"></script>
