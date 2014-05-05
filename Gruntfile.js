@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  var files = grunt.file.readJSON('dependencies.json');
+  var files = grunt.file.readJSON('build/files.json');
 
   // Project configuration.
   grunt.initConfig({
@@ -9,29 +9,23 @@ module.exports = function(grunt) {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
-      bare: {
-        src: files.framework.bare,
+      main: {
+        src: files.main,
         dest: 'dist/<%= pkg.name %>.concat.js'
       },
-      "extensions.dojo": {
-        src: files.extensions.dojo,
-        dest: 'dist/<%= pkg.name %>-extensions-dojo.concat.js'
+      pollyfill_yepnope: {
+        src: files.pollyfill.yepnope,
+        dest: 'dist/<%= pkg.name %>_pollyfill_yepnope.concat.js'
+      }
+    },
+    min: {
+      main: {
+        src: 'dist/<%= pkg.name %>.concat.js',
+        dest: 'dist/<%= pkg.name %>.min.js',
       },
-      "extensions.jquery": {
-        src: files.extensions.jquery,
-        dest: 'dist/<%= pkg.name %>-extensions-jquery.concat.js'
-      },
-      "extensions.mootools": {
-        src: files.extensions.mootools,
-        dest: 'dist/<%= pkg.name %>-extensions-mootools.concat.js'
-      },
-      "extensions.yui": {
-        src: files.extensions.yui,
-        dest: 'dist/<%= pkg.name %>-extensions-yui.concat.js'
-      },
-      "extensions.zepto": {
-        src: files.extensions.zepto,
-        dest: 'dist/<%= pkg.name %>-extensions-zepto.concat.js'
+      pollyfill_yepnope: {
+        src: 'dist/<%= pkg.name %>_pollyfill_yepnope.concat.js',
+        dest: 'dist/<%= pkg.name %>_pollyfill_yepnope.min.js',
       }
     }
   });
@@ -39,7 +33,10 @@ module.exports = function(grunt) {
   // Load the plugin that provides the "concat" task.
   grunt.loadNpmTasks('grunt-contrib-concat');
 
+  // Load the plugin that provides the "min" task.
+  grunt.loadNpmTasks('grunt-yui-compressor');
+
   // Default task(s).
-  grunt.registerTask('default', ['concat']);
+  grunt.registerTask('default', ['concat', 'min']);
 
 };

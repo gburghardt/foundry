@@ -56,7 +56,7 @@ Foundry.run = function(callback) {
 			}
 		},
 		module: {
-			abstract: true,
+			template: true,
 			properties: {
 				elementStore: "elementStore",
 				eventDispatcher: "eventDispatcher"

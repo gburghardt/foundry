@@ -1,7 +1,7 @@
 {
 	"name": "foundry",
 	"description": "Foundry is a modern, object oriented JavaScript framework built for speed of development, flexibility and file size.",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"homepage": "http://gburghardt.github.io/foundry",
 	"authors": [
 		"Greg Burghardt <greg_burghardt@yahoo.com>"
@@ -20,11 +20,11 @@
 	],
 	"dependencies": {
 		"oxydizr": "~1.0.1",
-		"module-manager": "~1.1.2",
-		"hypodermic": "~2.0.0"
+		"module-manager": "~1.1.3",
+		"hypodermic": "~2.0.1"
 	},
 	"devDependencies": {
-		"module-base": "~1.0.0",
-		"module-utils": "~1.0.0"
+		"module-base": "~1.0.1",
+		"module-utils": "~1.0.2"
 	}
 }
