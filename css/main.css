@@ -78,7 +78,8 @@ body {
 }
 .nav-horizontal li>a {
 	color: inherit;
-	border-left: 1px solid #fff;
+	border: 0 solid #fff;
+	border-left-width: 1px;
 	display: block;
 	padding: 3px 8px;
 	text-decoration: none;
@@ -128,4 +129,54 @@ body {
 	border-radius: 6px;
 	display: inline-block;
 	padding: 4px 8px;
+}
+
+@media screen and (max-width: 800px) {
+	.aside {
+		float: none;
+		margin: 1em;
+		width: auto;
+	}
+	.content,
+	.header {
+		padding-left: 1em;
+		padding-right: 1em;
+	}
+	.nav-horizontal {
+		display: block;
+		margin-top: 0;
+		top: 0;
+		width: auto;
+	}
+	.nav-horizontal li {
+		float: none;
+	}
+	.nav-horizontal li>a {
+		border-width: 0;
+		border-bottom-width: 1px;
+	}
+	.nav-horizontal li:last-child>a {
+		border-bottom-width: 0;
+	}
+	.nav-secondary {
+		border-left-width: 0;
+		float: none;
+		font-size: 1em;
+		margin: 1em 0;
+		padding: 0 0 2em 0;
+		width: auto;
+	}
+	.nav-secondary a {
+		border: 1px solid #0036BF;
+		border-radius: 12px;
+		display: block;
+		padding: 1em;
+		margin: .5em 0;
+	}
+	.pagination {
+		font-size: 1.25em
+	}
+	pre {
+		width: auto;
+	}
 }
