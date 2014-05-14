@@ -311,7 +311,21 @@ for (var i = 0, key, length = globals.length; i < length; i++) {
 	key = globals[i];
 
 	if (key in global) {
-		globalSingletons[key] = global[key];
+		try {
+			globalSingletons[key] = global[key];
+		}
+		catch (error) {
+			var message = "Cannot seed global singletons with " + key + ". Failed with error: " + error.message;
+
+			if (global.console && global.console.warn) {
+				global.console.warn(message);
+			}
+			else {
+				setTimeout(function() {
+					throw message;
+				}, 500);
+			}
+		}
 	}
 }
 
@@ -650,10 +664,18 @@ Module.FrontControllerModuleObserver.prototype = {
 
 	constructor: Module.FrontControllerModuleObserver,
 
-	onModuleCreated: function(module, element, type) {
+	_ensureControllerId: function(module) {
 		module.controllerId = module.controllerId
 		                   || module.options.controllerId
 		                   || module.guid;
+	},
+
+	onModuleCreated: function(module, element, type) {
+		this._ensureControllerId(module);
+	},
+
+	onSubModuleCreated: function(module, element, type) {
+		this.frontController.registerController(module);
 	},
 
 	onModuleRegistered: function(module, type) {
@@ -1006,6 +1028,7 @@ Manager.prototype = {
 
 	moduleObserver: {
 		onModuleCreated: function(module, element, type) {},
+		onSubModuleCreated: function(module, element, type) {},
 		onModuleRegistered: function(module, type) {},
 		onModuleUnregistered: function(module) {}
 	},
@@ -1452,6 +1475,7 @@ Provider.prototype = {
 		}
 
 		subModule = this.createModule(element, metaData.types[0], metaData.options);
+		this.moduleObserver.onSubModuleCreated(subModule, element, metaData.types[0]);
 		subModule.init();
 
 		if (parentModule[name] === null) {

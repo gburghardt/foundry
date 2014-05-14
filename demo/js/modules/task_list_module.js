@@ -57,10 +57,6 @@ var TaskListModule = Module.Base.extend({
 			}, millis);
 		},
 
-		onControllerRegistered: function(frontController, controllerId) {
-			frontController.registerController(this.selection);
-		},
-
 		remove: function click(event, element, params) {
 			event.stop();
 
