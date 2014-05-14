@@ -22,9 +22,7 @@ mocking objects like the `document` and the `window` become much easier.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry][0],
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. A copy of [Mocking Bird][1] to mock AJAX requests
 3. [Jasmine][2] for unit testing
 
@@ -37,7 +35,7 @@ For our example, we will be working with a simple task list module. It will:
 - Publish an event called `task.added`
 - Add the new task to a list on screen
 
-<h3 class="code-label">task_list_module.js</h3>
+<h3 class="code-label">app/modules/task_list_module.js</h3>
 
 ```javascript
 var TaskListModule = Module.Base.extend({
@@ -108,16 +106,15 @@ When running your Jasmine tests, you'll need the following JavaScript files:
 
 1. `mocking_bird.js`
 2. `mocking_bird/xml_http_request.js`
-3. `foundry.concat.js`
-4. `module-base/module/base.js`
-5. `module-utils/module-utils.concat.js`
-4. `task_list_module.js`
+3. `foundry-framework.concat.js`
+4. `foundry-application.concat.js`
+5. `task_list_module.js`
 
 ### The TaskListModule Spec
 
 The spec for TaskListModule will need a few things to start with:
 
-<h3 class="code-label">task_list_module_spec.js</h3>
+<h3 class="code-label">spec/javascripts/modules/task_list_module_spec.js</h3>
 
 ```javascript
 describe("TaskListModule", function() {
@@ -421,3 +418,4 @@ into view in the next tutorial.
 [0]: {{ site.baseurl }}/downloads.html
 [1]: https://github.com/gburghardt/mocking_bird/
 [2]: http://jasmine.github.io
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

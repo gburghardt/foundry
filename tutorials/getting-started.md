@@ -8,38 +8,32 @@ secondary_nav: getting-started
 
 # {{ page.title }}
 
-<div class="info">
-    <p>You can view the demo here: <a href="{{ site.baseurl }}/tutorials/examples/getting-started/final.html">Getting Started with Foundry: The Boilerplate</a></p>
-</div>
-
 This is your first stop in learning how to use Foundry. Before we start, here is
 the list of what you'll need to have and know:
 
 1. A modern web browser &mdash; Newer versions of Firefox, Chrome,
    Safari and Internet Explorer 10+ are required.
-2. A [copy of Foundry](/{{ site.baseurl }}/downloads.html) fresh off the Intertubes.
-3. A [copy of module-base](https://github.com/gburghardt/module-base)
-4. A [copy of module-utils](https://github.com/gburghardt/module-utils)
+2. The [Foundry Starter Project][downloads]
 3. A working knowledge of HTML and CSS.
 4. Moderate knowledge of JavaScript, the Document Object Model, and
    object oriented JavaScript.
 5. A basic understanding of the [MVC design pattern](http://martinfowler.com/eaaDev/uiArchs.html#ModelViewController).
 
-## The HTML Boiler Plate for Foundry
+## The Foundry Starter Project
 
-Since it's hard to have a web page without HTML, let's start there. Copy the
-code below and save it. You'll need to change the file paths that reference the
-JavaScript files, but that's it. This is the basic boiler plate for every
-Foundry application.
+The Foundry Starter Project is the easiest way to start building a Foundry
+application. It gives you the basic scaffolding and markup structure.
 
-```html
-{% include /tutorials/code/foundry_boilerplate.html %}
-```
-
-__Demo:__ [Boilerplate]({{ site.baseurl }}/tutorials/examples/getting-started/boilerplate.html)
-
-Great. Now we have a blank page that does nothing. Absolutely. Nothing. Let's
-maje it do something.
+1. [Download the Foundry Starter Project][downloads]
+2. Unzip the zip file and open this directory up in the command line
+3. Run `npm install` to install all the Node.js dependencies. You will need this
+   in order to concatenate and minify the JavaScript files.
+4. Copy `.bowerrc_example` to `.bowerrc`
+5. Run `bower install` to pull down all the dependencies for Foundry.
+6. Configure a web server on your computer to serve the root directory of this
+   project.
+7. Open `index.html` in a browser. You should see a page with two "Welcome to
+   Foundry!" modules
 
 ## Building Your First Module
 
@@ -54,17 +48,21 @@ defaulting to an orange color.
 Foundry gives you a class to inherit from, called Module. This base class bakes
 in many useful methods and lifecycle events.
 
+First, create a new file: `app/modules/hello_world_module.js`
+
+<h3 class="code-label">app/modules/hello_world_module.js</h3>
+
 ```javascript
-var WelcomeModule = Module.Base.extend({
+var HelloWorldModule = Module.Base.extend({
     prototype: {
         options: {
-            backgroundColor: "#ffcc99"
+            backgroundColor: "#f0f0f0"
         },
 
         _ready: function() {
-            Module.prototype._ready.call(this);
+            Module.Base.prototype._ready.call(this);
 
-            this.element.innerHTML = '<p>Welcome!</p>';
+            this.element.innerHTML = '<h1>Hello, World!</h1>';
             this.element.style.backgroundColor = this.options.backgroundColor;
         }
     }
@@ -88,34 +86,43 @@ prefixed with an underscore are marked as "not public". This means that outside
 code should never call `_ready` and that code internal to the Module class
 hierarchy can.
 
-Save this file in `modules/welcome_module.js` and add a reference to it in your
-HTML file.
+Now add this new file to `config/files.json` in the "application" section:
 
-```html
-<!-- Your Application Files -->
-<script type="text/javascript" src="./modules/welcome_module.js"></script>
+<h3 class="code-label">config/files.json</h3>
 
-<script type="text/javascript">
-
-    // Instantiation and Initialization
-    var app = Foundry.run();
+```javascript
+{
     ...
+
+    "application": [
+        "app/models/welcome.js",
+        "app/modules/welcome_module.js",
+        "app/modules/hello_world_module.js"
+    ]
+}
 ```
 
-Now refresh the web page. Nothing happens. No errors. Now, it's time to bring
-this thing to life.
+Next we need to rebuild the JavaScript files. From the command line:
+
+```
+foundry-starter-project $ grunt
+```
+
+This will create the concatenated and minified files, including the new
+HelloWorldModule you just created. Now, it's time to bring this thing to life.
 
 ### Instantiating a Module
 
 The Foundry framework will instantiate and initialize the module for you. All we
-need is an HTML tag with an HTML5 `data-modules` attribute. Add this HTML above
-the SCRIPT tags:
+need is an HTML tag with an HTML5 `data-modules` attribute. Add this HTML just
+inside the `<body>` tag in `index.html`:
+
+<h4 class="code-label">index.html</h4>
 
 ```html
 <body>
-    <div data-modules="WelcomeModule"></div>
+    <div data-modules="HelloWorldModule"></div>
 
-    <!-- Class Libraries -->
     ...
 </body>
 ```
@@ -128,7 +135,7 @@ the Module.
 
 We've done three things with a single line of HTML:
 
-1. Instantiate a WelcomeModule object
+1. Instantiate a HelloWorldModule object
 2. Initialize the module with the DIV tag as its root element
 3. Stash the object in the Module Manager
 
@@ -137,29 +144,30 @@ favorite browser debugging tool on the demo page, and type this into the
 Console:
 
 ```javascript
-app.moduleManager.groups.WelcomeModule[0]
+app.moduleManager.groups.HelloWorldModule[0]
 ```
 
-That is the instance of WelcomeModule that manages user interaction in the DIV
-tag with the `data-modules` attribute.
+That is the instance of HelloWorldModule that manages user interaction in the
+DIV tag with the `data-modules` attribute.
 
 ### Multiple Instances of the Same Module
 
-Let's create another WelcomeModule:
+Let's create another HelloWorldModule:
+
+<h4 class="code-label">index.html</h4>
 
 ```html
 <body>
-    <div data-modules="WelcomeModule"></div>
-    <div data-modules="WelcomeModule" data-module-options='{"backgroundColor": "#f0f0f0"}'></div>
+    <div data-modules="HelloWorldModule"></div>
+    <div data-modules="HelloWorldModule" data-module-options='{"backgroundColor": "#ffc"}'></div>
 
-    <!-- Class Libraries -->
     ...
 </body>
 ```
 
 This second instance also has a `data-module-options` attribute, which overrides
-the `backgroundColor` option. Refresh the page and you'll see two Welcome
-modules. One orange, the other gray.
+the `backgroundColor` option. Refresh the page and you'll see two
+HelloWorldModule's One yellow, the other gray.
 
 Use the `data-module-options` attribute to override default values in the
 "options" property of your modules. This becomes a handy way to propagate data
@@ -168,25 +176,15 @@ from a server side application and inject it into JavaScript in the browser.
 With the browser Console window open again, type this:
 
 ```javascript
-app.moduleManager.groups.WelcomeModule[1]
+app.moduleManager.groups.HelloWorldModule[1]
 ```
 
-There's the second instance of WelcomeModule!
-
-## The Complete Example
-
-The completed HTML file should look like this:
-
-```html
-{% include tutorials/code/final.html %}
-```
-
-__Demo:__ [Getting Started With Foundry: Your First Module]({{ site.baseurl }}/tutorials/examples/getting-started/final.html)
-
-That's all there is to it.
+There's the second instance of HelloWorldModule!
 
 <ul class="pagination">
     <li class="pagination-back"><span>Back</span></li>
     <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
     <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/introduction-to-modules.html" title="Next: Introduction to Modules">Next</a></li>
 </ul>
+
+[downloads]: /{{ site.baseurl }}/downloads.html

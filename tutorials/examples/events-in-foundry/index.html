@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="edge">
-		<title>Events In Foundry</title>
+		<title>Foundry: Events</title>
 		<style type="text/css">
 			.module {
 				border: 1px solid #000;
@@ -29,14 +29,14 @@
 		</style>
 	</head>
 	<body>
-
 		<form method="GET" action="#"
-			data-actions="tasks.add"
 			data-modules="TaskListModule"
 			data-module-options='{
 				"controllerId": "tasks",
 				"defaultModule": true
-			}'>
+			}'
+			data-actions="tasks.add"
+		>
 			<h2>Tasks</h2>
 			<p>
 				<label>Task: <input type="text" name="taskName"></label>
@@ -52,7 +52,6 @@
 					Selected: <span class="selection-count">0</span>
 				</p>
 			</div>
-
 		</form>
 
 		<div data-modules="RecentTasksModule">
@@ -60,28 +59,42 @@
 			<ol></ol>
 		</div>
 
-		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../js/foundry/v0.1.2/foundry.concat.js"></script>
-		<script type="text/javascript" src="../../../js/module-base/module/base.js"></script>
-		<script type="text/javascript" src="../../../js/module-utils/module-utils.concat.js"></script>
+		<div id="views" style="display: none;">
+			<!-- Static and dynamic views go here -->
+		</div>
 
-		<!-- Your Application Files -->
-		<script type="text/javascript" src="./task_list_module.js"></script>
-		<script type="text/javascript" src="./selection_module.js"></script>
-		<script type="text/javascript" src="./recent_tasks_module.js"></script>
-
+		<script type="text/javascript" src="./dist/foundry-framework.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-module_pack.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-application.min.js"></script>
 		<script type="text/javascript">
+			var app = Foundry.run(function(dependencies, options) {
+				dependencies.merge({
+					viewProvider: {
+						type: "Bloodhound.ViewProviders.MustacheViewProvider",
+						singleton: true
+					},
+					viewResolver: {
+						type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+						singleton: true,
+						properties: {
+							container: { value: "views" },
+							provider: "viewProvider",
+							templateUrlBase: { value: "./app/views" }
+						}
+					},
+					renderingEngine: {
+						type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+						singleton: true,
+						properties: {
+							viewResolver: "viewResolver"
+						}
+					}
+				});
 
-			// Instantiation and Initialization
-			var app = Foundry.run();
+				dependencies.module.properties.renderingEngine = "renderingEngine";
 
-			// Destruction
-			window.onunload = function() {
-				app.destructor();
-				app = null;
-			};
-
+				options.lazyLoadModules = true;
+			});
 		</script>
-
 	</body>
 </html>

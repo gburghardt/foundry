@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="edge">
-		<title>Responsive Modules &mdash; Foundry</title>
+		<title>Foundry: Responsive Modules</title>
 		<style type="text/css">
 			.module {
 				background-color: #f0f0f0;
@@ -15,7 +15,7 @@
 			}
 
 			.module.loading {
-				background-image: url(../../../images/ajax-loader.gif);
+				background-image: url(./images/ajax-loader.gif);
 				background-position: 50% 50%;
 				background-repeat: no-repeat;
 			}
@@ -45,30 +45,42 @@
 			<div class="module loading" data-module-lazyload="any" data-modules="GoldilocksModule"></div>
 		</fieldset>
 
-		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../js/foundry/v0.1.2/foundry.concat.js"></script>
-		<script type="text/javascript" src="../../../js/module-base/module/base.js"></script>
-		<script type="text/javascript" src="../../../js/module-utils/module-utils.concat.js"></script>
+		<div id="views" style="display: none;">
+			<!-- Static and dynamic views go here -->
+		</div>
 
-		<!-- Your Application Files -->
-		<script type="text/javascript" src="./complex_module.js"></script>
-		<script type="text/javascript" src="./mini_module.js"></script>
-		<script type="text/javascript" src="./goldilocks_module.js"></script>
-
+		<script type="text/javascript" src="./dist/foundry-framework.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-module_pack.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-application.min.js"></script>
 		<script type="text/javascript">
-
-			// Instantiation and Initialization
 			var app = Foundry.run(function(dependencies, options) {
+				dependencies.merge({
+					viewProvider: {
+						type: "Bloodhound.ViewProviders.MustacheViewProvider",
+						singleton: true
+					},
+					viewResolver: {
+						type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+						singleton: true,
+						properties: {
+							container: { value: "views" },
+							provider: "viewProvider",
+							templateUrlBase: { value: "./app/views" }
+						}
+					},
+					renderingEngine: {
+						type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+						singleton: true,
+						properties: {
+							viewResolver: "viewResolver"
+						}
+					}
+				});
+
+				dependencies.module.properties.renderingEngine = "renderingEngine";
+
 				options.lazyLoadModules = true;
 			});
-
-			// Destruction
-			window.onunload = function() {
-				app.destructor();
-				app = null;
-			};
-
 		</script>
-
 	</body>
 </html>

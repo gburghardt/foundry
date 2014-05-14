@@ -14,9 +14,16 @@ title: Lazy Loading Modules
 </h2>
 
 <div class="info">
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/lazy-loading-modules.zip" class="download-zip"
+            title="Download &ldquo;Lazy Loading Modules&rdquo; Demo as a ZIP file"></a>
+    </p>
+
     <p>
-        You can view a demo here:
-        <a href="{{ site.baseurl }}/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html">Eager and Lazy Loading Modules</a>
+        View The Demo:
+        <a href="{{ site.baseurl }}/tutorials/examples/lazy-loading-modules/">Lazy Loading Modules</a>
     </p>
 </div>
 
@@ -29,9 +36,7 @@ attributes.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 
 ## What You'll Learn
@@ -109,8 +114,6 @@ You don't have to choose between Eager Loading or Lazy Loading. You can do both:
 In this case, you only need to enable lazy loading modules. Foundry is smart
 enough to eager load a module if no `data-module-lazyload` attribute is present.
 
-__Demo:__ [Eager and Lazy Loading Modules]({{ site.baseurl }}/tutorials/examples/lazy-loading-modules/eager-and-lazy-loading.html)
-
 ## Up Next: Responsive Modules
 
 Responsive Design has allowed us to create CSS optimized for smaller devices,
@@ -124,3 +127,5 @@ attribute.
     <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
     <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/responsive-modules.html" title="Next: Responsive Modules Using CSS3 Media Queries">Next</a></li>
 </ul>
+
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

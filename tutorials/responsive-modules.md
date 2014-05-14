@@ -14,17 +14,22 @@ title: Responsive Modules Using CSS3 Media Queries
 </h2>
 
 <div class="info">
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/responsive-modules.zip" class="download-zip"
+            title="Download &ldquo;Responsive Modules&rdquo; Demo as a ZIP file"></a>
+    </p>
+
     <p>
-        You can view a demo here:
+        View The Demo:
         <a href="{{ site.baseurl }}/tutorials/examples/responsive-modules/">Responsive Modules</a>
     </p>
 </div>
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+2. The [Foundry Starter Project][starter_project]
 2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 3. Moderate knowledge of [Responsive Design][0] and [CSS Media Queries][1].
 
@@ -160,3 +165,4 @@ JavaScript.
 [0]: http://alistapart.com/topic/responsive-design
 [1]: https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Media_queries
 [2]: https://developer.mozilla.org/en-US/docs/Web/API/Window.matchMedia#Browser_compatibility
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

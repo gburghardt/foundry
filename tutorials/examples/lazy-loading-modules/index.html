@@ -3,69 +3,50 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="edge">
-		<title>Demo of Lazy Loading Modules &mdash; Foundry</title>
-		<style type="text/css">
-
-			/* Styles applied to all modules */
-			.module {
-				background-color: #f0f0f0;
-				border: 1px solid #000;
-				border-radius: 8px;
-				margin: 1em;
-				min-height: 2em;
-				padding: 0 1em;
-				position: absolute;
-				width: 200px;
-			}
-
-			.module.loading {
-				background-image: url(/images/ajax-loader.gif);
-				background-position: 50% 50%;
-				background-repeat: no-repeat;
-			}
-
-			.module.loading * {
-				visibility: hidden;
-			}
-
-		</style>
+		<title>Foundry: Lazy Loading Modules</title>
 	</head>
 	<body>
+		<div data-modules="AverageJoeModule" data-module-lazyload="any">Loading...</div>
+		<div data-modules="AverageJoeModule" data-module-lazyload="any" style="position: absolute; top: 103%; left: 0">Loading...</div>
+		<div data-modules="AverageJoeModule" data-module-lazyload="any" style="position: absolute; top: 70%; left: 0">Loading...</div>
+		<div data-modules="AverageJoeModule" data-module-lazyload="any" style="position: absolute; top: 70%; left: 105%">Loading...</div>
 
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="top: 100px;"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="top: 300px; left: 500px"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="top: 105%;"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="top: 105%; left: 300px;"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="top: 105%; left: 600px;"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="top: 105%; left: 900px;"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="left: 105%;"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="left: 105%; top: 100px;"></div>
-		<div class="module loading" data-modules="PeekABooModule" data-module-lazyload="any" style="left: 105%; top: 200px;"></div>
+		<div id="views" style="display: none;">
+			<!-- Static and dynamic views go here -->
+		</div>
 
-		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../js/foundry/v0.1.2/foundry.concat.js"></script>
-		<script type="text/javascript" src="../../../js/module-base/module/base.js"></script>
-		<script type="text/javascript" src="../../../js/module-utils/module-utils.concat.js"></script>
-
-		<!-- Your Application Files -->
-		<script type="text/javascript" src="./peek_a_boo_module.js"></script>
-
+		<script type="text/javascript" src="./dist/foundry-framework.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-module_pack.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-application.min.js"></script>
 		<script type="text/javascript">
-
-			// Instantiation and Initialization
 			var app = Foundry.run(function(dependencies, options) {
-				options.eagerLoadModules = false;
+				dependencies.merge({
+					viewProvider: {
+						type: "Bloodhound.ViewProviders.MustacheViewProvider",
+						singleton: true
+					},
+					viewResolver: {
+						type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+						singleton: true,
+						properties: {
+							container: { value: "views" },
+							provider: "viewProvider",
+							templateUrlBase: { value: "./app/views" }
+						}
+					},
+					renderingEngine: {
+						type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+						singleton: true,
+						properties: {
+							viewResolver: "viewResolver"
+						}
+					}
+				});
+
+				dependencies.module.properties.renderingEngine = "renderingEngine";
+
 				options.lazyLoadModules = true;
 			});
-
-			// Destruction
-			window.onunload = function() {
-				app.destructor();
-				app = null;
-			};
-
 		</script>
-
 	</body>
 </html>

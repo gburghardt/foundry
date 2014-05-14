@@ -9,27 +9,30 @@ secondary_nav: modules-intro
 # {{ page.title }}
 
 <h2 class="intro">
-    Modules in Foundry are where the proverbial rubber meets the road. This
-    tutorial introduces you to building Modules in Foundry.
+    Learn how to create a module that reacts to the user
 </h2>
 
 <div class="info">
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/introduction-to-modules.zip" class="download-zip"
+            title="Download &ldquo;Introduction To Modules&rdquo; Demo as a ZIP file"></a>
+    </p>
+
     <p>
-        You can view a demo here:
-        <a href="{{ site.baseurl }}/tutorials/examples/introduction-to-modules/">Introduction to Modules</a>
+        View The Demo:
+        <a href="{{ site.baseurl }}/tutorials/examples/introduction-to-modules/">Introduction To Modules</a>
     </p>
 </div>
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
-2. An basic understanding of how Foundry works ([Overview]({{ site.baseurl }}/overview.html) |
-  [Getting Started]({{ site.baseurl }}/tutorials/getting-started.html))
+1. A basic understanding of [how Foundry works]({{ site.baseurl }}/overview.html)
+2. The [Foundry Starter Project][starter_project]
 3. Working knowledge of HTML
 4. Moderate knowledge of JavaScript, the Document Object Model and
-  object oriented programming
+   object oriented programming
 5. A basic understanding of the [MVC design pattern](http://martinfowler.com/eaaDev/uiArchs.html#ModelViewController).
 
 ## What You'll Learn
@@ -55,60 +58,9 @@ We are going to create a module that selects and deselects items in a list. It
 will respond to `click` events, and it will have one runtime configurable option
 to toggle the background color of the selected items.
 
-Let's start with our HTML boilerplate for this example:
+Below is the source code for `app/modules/selection_module.js`
 
-```html
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="edge">
-        <title>Introduction to Modules &mdash; Foundry</title>
-        <style type="text/css">
-
-            /* Misc styles */
-            .selected {
-                background-color: #ffc;
-            }
-            .selected-item {
-                background-color: #8ECEFF;
-            }
-
-        </style>
-    </head>
-    <body>
-
-        <!-- Base Framework -->
-        <script type="text/javascript" src="path/to/foundry.concat.js"></script>
-        <script type="text/javascript" src="path/to/module-base/module/base.js"></script>
-        <script type="text/javascript" src="path/to/module-utils/module-utils.concat.js"></script>
-
-        <!-- Your Application Files -->
-        <script type="text/javascript" src="path/to/selection_module.js"></script>
-
-        <script type="text/javascript">
-
-            // Instantiation and Initialization
-            var app = Foundry.run();
-
-            // Destruction
-            window.onunload = function() {
-                app.destructor();
-                app = null;
-            };
-
-        </script>
-
-    </body>
-</html>
-```
-
-Save this to your computer and load it in a web browser, changing the paths to
-the JavaScript files. We will create the `selection_module.js` file next.
-
-### Writing the Selection Module Class
-
-Below is the source code for `selection_module.js`
+<h3 class="code-label">app/modules/selection_module.js</h3>
 
 ```javascript
 var SelectionModule = Module.Base.extend({
@@ -123,9 +75,6 @@ var SelectionModule = Module.Base.extend({
     }
 });
 ```
-
-Save this to your computer as `selection_module.js` and reload your example
-page.
 
 There are several key pieces to note:
 
@@ -177,6 +126,22 @@ The `toggle` function also takes three arguments: `event`, `element` and
 - `event`: The browser event object
 - `element`: The HTML tag that has the `data-actions` attribute on it.
 - `params`: Data passed along in this one module action.
+
+### Rebuilding the JavaScript Package
+
+First, add `selection_module.js` to `config/files.json`
+
+```javascript
+{
+    ...
+    "application": [
+        "app/modules/selection_module.js"
+    ]
+}
+```
+
+Lastly, run `grunt` from the command line in the Foundry Starter Project
+directory.
 
 In the next section, we'll explore the glue between HTML and JavaScript.
 
@@ -237,9 +202,21 @@ our modules.
 
 ### Using our SelectionModule Class
 
-Now, add HTML to our web page that puts all the pieces together:
+Now, add HTML to our web page that puts all the pieces together, including some
+simple CSS styles to highlight the selected items:
 
 ```html
+<head>
+    ...
+
+    <style type="text/css">
+        .selected {
+            background-color: #ffc;
+        }
+        .selected-item {
+            background-color: #8ECEFF;
+        }
+    </style>
 <body>
 
     <!-- HTML for instance #1 of SelectionModule -->
@@ -263,8 +240,6 @@ Now, add HTML to our web page that puts all the pieces together:
         </ol>
     </div>
 
-    <!-- Base Framework -->
-    <script type="text/javascript" src="path/to/foundry.concat.js"></script>
     ...
 </body>
 ```
@@ -385,8 +360,6 @@ selection modules specifically:
 
 Now refresh this page in your browser.
 
-__Demo:__ [Introduction to Modules]({{ site.baseurl }}/tutorials/examples/introduction-to-modules/)
-
 ## A Quick Recap
 
 In this tutorial we learned how create a simple module by sub classing
@@ -412,3 +385,5 @@ between one or more modules. Click "Next" below.
     <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
     <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/events-in-foundry.html" title="Next: Events In Foundry">Next</a></li>
 </ul>
+
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

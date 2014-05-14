@@ -14,10 +14,17 @@ title: Integrating Pollyfills With Foundry
 </h2>
 
 <div class="info">
-	<p>
-		You can view a demo here:
-		<a href="{{ site.baseurl }}/tutorials/examples/integrating-pollyfills/">Integrating Pollyfills</a>
-	</p>
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/integrating-pollyfills.zip" class="download-zip"
+            title="Download &ldquo;Integrating Pollyfills&rdquo; Demo as a ZIP file"></a>
+    </p>
+
+    <p>
+        View The Demo:
+        <a href="{{ site.baseurl }}/tutorials/examples/integrating-pollyfills/">Integrating Pollyfills</a>
+    </p>
 </div>
 
 In the [previous tutorial][0], we explored how to load modules based on the
@@ -28,9 +35,7 @@ explains how to seamlessly integrate Pollyfills with Foundry.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry][1],
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. A copy of [yepnope.js][2]
 3. A copy of the [matchMedia pollyfill][3] by Paul Irish
 
@@ -45,18 +50,6 @@ look at the HTML we need:
 ```html
 <body>
 	...
-
-	<!-- Base Framework -->
-	<script type="text/javascript" src="path/to/yepnope.1.5.4-min.js"></script>
-	<script type="text/javascript" src="path/to/foundry.concat.js"></script>
-	<script type="text/javascript" src="path/to/foundry_pollyfill_yepnope.concat.js"></script>
-	<script type="text/javascript" src="path/to/module-base/module/base.js"></script>
-	<script type="text/javascript" src="path/to/module-utils/module-utils.concat.js"></script>
-
-	<!-- Your Application Files -->
-	<script type="text/javascript" src="./complex_module.js"></script>
-	<script type="text/javascript" src="./goldilocks_module.js"></script>
-	<script type="text/javascript" src="./mini_module.js"></script>
 
 	<script type="text/javascript">
 
@@ -82,11 +75,9 @@ look at the HTML we need:
 </body>
 ```
 
-We need to add references to the yepnope javaScript files, plus we need to
-include `pollyfill_promise.js` and `pollyfill_promise/yepnope.js`.
-
-Initializing the application is a little different now, since we must call
-`Foundry.pollyfill(...)`. This method returns an instance of
+The [Foundry Starter Project][starter_project] comes with yepnope.js straight
+out of the box. Initializing the application is a little different now, since we
+must call `Foundry.pollyfill(...)`. This method returns an instance of
 `Foundry.PollyfillPromise`. The `afterAll` callback is executed after all
 pollyfills have been downloaded. The `start` method begins the pollyfill
 downloads.
@@ -131,3 +122,4 @@ list available.
 [2]: http://yepnopejs.com
 [3]: https://github.com/paulirish/matchMedia.js/
 [4]: http://html5please.com/#polyfill
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

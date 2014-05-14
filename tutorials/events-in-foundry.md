@@ -17,8 +17,15 @@ meta_keywords: Foundry, events, javascript, framework
 </h2>
 
 <div class="info">
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/events-in-foundry.zip" class="download-zip"
+            title="Download &ldquo;Events In Foundry&rdquo; Demo as a ZIP file"></a>
+    </p>
+
     <p>
-        You can view the demo here:
+        View The Demo:
         <a href="{{ site.baseurl }}/tutorials/examples/events-in-foundry/">Events In Foundry</a>
     </p>
 </div>
@@ -37,9 +44,7 @@ Application events.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 
 ## What You'll Learn
@@ -316,3 +321,5 @@ items and a module responding to any added task.
     <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
     <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/events-in-foundry-page-2.html" title="Next: A Practical Example Of Events In Foundry">Next</a></li>
 </ul>
+
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

@@ -3,31 +3,19 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="edge">
-		<title>Demo: Rendering Client Side Templates &mdash; Foundry</title>
+		<title>Foundry: Rendering Client Side Templates</title>
 	</head>
 	<body>
+		<div data-modules="postDetail" data-module-options='{"post_id": 1}'></div>
 
-		<div data-modules="postDetail" data-module-options='{"post_id": 1}'>Loading ...</div>
+		<div id="views" style="display: none;">
+			<!-- Static and dynamic views go here -->
+		</div>
 
-		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../js/foundry/v0.1.2/foundry.concat.js"></script>
-		<script type="text/javascript" src="../../../js/module-base/module/base.js"></script>
-		<script type="text/javascript" src="../../../js/module-utils/module-utils.concat.js"></script>
-
-		<!-- Client Side Template Libs -->
-		<script type="text/javascript" src="../../../js/mustache.js/mustache.js"></script>
-		<script type="text/javascript" src="../../../js/promise/src/promise.js"></script>
-		<script type="text/javascript" src="../../../js/bloodhound/src/bloodhound.js"></script>
-		<script type="text/javascript" src="../../../js/bloodhound/src/bloodhound/adapters/mustache_template.js"></script>
-		<script type="text/javascript" src="../../../js/bloodhound/src/bloodhound/rendering_engines/dynamic_rendering_engine.js"></script>
-		<script type="text/javascript" src="../../../js/bloodhound/src/bloodhound/view_providers/mustache_view_provider.js"></script>
-		<script type="text/javascript" src="../../../js/bloodhound/src/bloodhound/view_resolvers/dynamic_view_resolver.js"></script>
-
-		<!-- Application Files -->
-		<script type="text/javascript" src="./post_detail_module.js"></script>
-
+		<script type="text/javascript" src="./dist/foundry-framework.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-module_pack.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-application.min.js"></script>
 		<script type="text/javascript">
-
 			var app = Foundry.run(function(dependencies, options) {
 				dependencies.merge({
 					viewProvider: {
@@ -38,9 +26,9 @@
 						type: "Bloodhound.ViewResolvers.DynamicViewResolver",
 						singleton: true,
 						properties: {
-							container: "document",
+							container: { value: "views" },
 							provider: "viewProvider",
-							templateUrlBase: { value: "." }
+							templateUrlBase: { value: "./app/views" }
 						}
 					},
 					renderingEngine: {
@@ -50,17 +38,18 @@
 							viewResolver: "viewResolver"
 						}
 					},
+
+					// Your modules go here
 					postDetail: {
 						type: "PostDetailModule",
 						parent: "module"
 					}
 				});
 
-				// All modules will have this rendering engine available
 				dependencies.module.properties.renderingEngine = "renderingEngine";
+
+				options.lazyLoadModules = true;
 			});
-
 		</script>
-
 	</body>
 </html>

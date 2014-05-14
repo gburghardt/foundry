@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="edge">
+		<title>Foundry: Dependency Injection</title>
+		<style type="text/css">
+			.module {
+				border: 1px solid #000;
+				border-radius: 8px;
+				margin: 1em 0;
+				padding: 0 1em;
+			}
+			.module.recentTasks,
+			.module.taskList {
+				float: left;
+				margin-right: 2em;
+				width: 400px;
+			}
+			.module.selection ol {
+				cursor: pointer;
+				list-style-position: inside;
+				margin: 1em 0;
+				padding: 0;
+			}
+			.selected {
+				background-color: #ffc;
+			}
+		</style>
+	</head>
+	<body>
+		<form method="GET" action="#"
+			data-modules="taskList"
+			data-module-options='{
+				"controllerId": "tasks",
+				"defaultModule": true
+			}'
+			data-actions="tasks.add"
+		>
+			<h2>Tasks</h2>
+			<p>
+				<label>Task: <input type="text" name="taskName"></label>
+				<button type="submit">Add Task</button>
+			</p>
+
+			<div data-module-property="selection"
+				data-modules="selection"
+				data-module-options='{"controllerId": "tasks-selection"}'>
+				<ol></ol>
+
+				<p>
+					Selected: <span class="selection-count">0</span>
+				</p>
+			</div>
+		</form>
+
+		<div data-modules="recentTasks">
+			<h2>Recently Added Tasks</h2>
+			<ol></ol>
+		</div>
+
+		<div id="views" style="display: none;">
+			<!-- Static and dynamic views go here -->
+		</div>
+
+		<script type="text/javascript" src="./dist/foundry-framework.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-module_pack.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-application.min.js"></script>
+		<script type="text/javascript">
+			var app = Foundry.run(function(dependencies, options) {
+				dependencies.merge({
+					viewProvider: {
+						type: "Bloodhound.ViewProviders.MustacheViewProvider",
+						singleton: true
+					},
+					viewResolver: {
+						type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+						singleton: true,
+						properties: {
+							container: { value: "views" },
+							provider: "viewProvider",
+							templateUrlBase: { value: "./app/views" }
+						}
+					},
+					renderingEngine: {
+						type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+						singleton: true,
+						properties: {
+							viewResolver: "viewResolver"
+						}
+					},
+
+					// Modules
+					recentTasks: {
+						type: "RecentTasksModule",
+						parent: "module"
+					},
+					selection: {
+						type: "SelectionModule",
+						parent: "module"
+					},
+					taskList: {
+						type: "TaskListModule",
+						parent: "module"
+					}
+				});
+
+				dependencies.module.properties.renderingEngine = "renderingEngine";
+
+				options.lazyLoadModules = true;
+			});
+		</script>
+	</body>
+</html>

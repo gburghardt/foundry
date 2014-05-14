@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="edge">
-		<title>Integrating Pollyfills &mdash; Foundry</title>
+		<title>Foundry: Integrating Pollyfills</title>
 		<style type="text/css">
 			.module {
 				background-color: #f0f0f0;
@@ -37,37 +37,55 @@
 			<p>Loading...</p>
 		</div>
 
-		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../js/yepnope.1.5.4-min.js"></script>
-		<script type="text/javascript" src="../../../js/foundry/v0.1.2/foundry.concat.js"></script>
-		<script type="text/javascript" src="../../../js/foundry/v0.1.2/foundry_pollyfill_yepnope.concat.js"></script>
-		<script type="text/javascript" src="../../../js/module-base/module/base.js"></script>
-		<script type="text/javascript" src="../../../js/module-utils/module-utils.concat.js"></script>
+		<div id="views" style="display: none;">
+			<!-- Static and dynamic views go here -->
+		</div>
 
-		<!-- Your Application Files -->
-		<script type="text/javascript" src="./complex_module.js"></script>
-		<script type="text/javascript" src="./goldilocks_module.js"></script>
-		<script type="text/javascript" src="./mini_module.js"></script>
-
+		<script type="text/javascript" src="./dist/foundry-framework.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-module_pack.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-application.min.js"></script>
 		<script type="text/javascript">
-
 			var app;
 
-			Foundry.pollyfill({
-				test: !!window.matchMedia,
-				nope: [
-					"../../../js/matchMedia.js",
-					"../../../js/matchMedia.addListener.js"
-				]
-			})
-			.afterAll(function() {
-				app = Foundry.run(function(dependencies, options) {
-					options.lazyLoadModules = true;
-				});
-			})
-			.start();
+			Foundry
+				.pollyfill({
+					test: !!window.matchMedia,
+					nope: [
+						"./vendor/matchMedia/matchMedia.js",
+						"./vendor/matchMedia/matchMedia.addListener.js"
+					]
+				})
+				.afterAll(function() {
+					app = Foundry.run(function(dependencies, options) {
+						dependencies.merge({
+							viewProvider: {
+								type: "Bloodhound.ViewProviders.MustacheViewProvider",
+								singleton: true
+							},
+							viewResolver: {
+								type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+								singleton: true,
+								properties: {
+									container: { value: "views" },
+									provider: "viewProvider",
+									templateUrlBase: { value: "./app/views" }
+								}
+							},
+							renderingEngine: {
+								type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+								singleton: true,
+								properties: {
+									viewResolver: "viewResolver"
+								}
+							}
+						});
 
+						dependencies.module.properties.renderingEngine = "renderingEngine";
+
+						options.lazyLoadModules = true;
+					});
+				})
+				.start();
 		</script>
-
 	</body>
 </html>

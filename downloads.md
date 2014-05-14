@@ -8,13 +8,20 @@ title: Download Foundry
 Since Foundry is currently under heavy development, the latest stable
 code is available at [https://github.com/gburghardt/foundry](https://github.com/gburghardt/foundry).
 
-## The Foundry Bootstrapping Project
+<div class="info">
+  <h2>The Foundry Starter Project</h2>
 
-The easiest way to get up and running with Foundy is by cloning or downloading
-the Foundry Bootstrapping Project:
+  <p>
+    The easiest way to get up and running with Foundy is by cloning or downloading
+    the <a href="https://github.com/gburghardt/foundry-starter-project">Foundry Starter Project:
+  </p>
 
-- [GitHub](https://github.com/gburghardt/foundry.bootstrap)
-- Download: [zip](https://github.com/gburghardt/foundry.bootstrap/archive/master.zip)
+  <p class="downloads">
+    <a href="https://github.com/gburghardt/foundry-starter-project/archive/master.zip" class="download-zip" title="Download the Foundry Starter Project"></a>
+  </p>
+
+  <p>Related Blog Post: <a href="{{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}">The Foundry Starter Project</a>
+</div>
 
 ## Acquiring Foundry via Git:
 

@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="edge">
-		<title>New Modules On The Fly &mdash; Foundry</title>
+		<title>Foundry: New Modules On-The-Fly</title>
 		<style type="text/css">
 			body {
 				margin: 0;
@@ -121,42 +121,57 @@
 		<div class="main">
 		</div>
 
-		<!-- Base Framework -->
-		<script type="text/javascript" src="../../../js/foundry/v0.1.2/foundry.concat.js"></script>
-		<script type="text/javascript" src="../../../js/module-base/module/base.js"></script>
-		<script type="text/javascript" src="../../../js/module-utils/module-utils.concat.js"></script>
+		<div id="views" style="display: none;">
+			<!-- Static and dynamic views go here -->
 
-		<!-- Your Application Files -->
-		<script type="text/javascript" src="./task_list_module.js"></script>
+			<script type="text/html" data-template="taskList">
+				<form method="GET" action="#" data-actions="#{controllerId}.add">
+					<h2>#{title}</h2>
+					<p>
+						<input type="text" name="task">
+						<button type="submit">Add</button>
+					</p>
+					<ol></ol>
+					<p>
+						<button type="button" data-actions="#{controllerId}.destroy">Delete List</button>
+						<button type="button" data-actions="#{controllerId}.removeSelected">Remove Selected Items</button>
+					</p>
+				</form>
+			</script>
+		</div>
 
-		<!-- Client side templates -->
-		<script type="text/html" data-template="taskList">
-			<form method="GET" action="#" data-actions="#{controllerId}.add">
-				<h2>#{title}</h2>
-				<p>
-					<input type="text" name="task">
-					<button type="submit">Add</button>
-				</p>
-				<ol></ol>
-				<p>
-					<button type="button" data-actions="#{controllerId}.destroy">Delete List</button>
-					<button type="button" data-actions="#{controllerId}.removeSelected">Remove Selected Items</button>
-				</p>
-			</form>
-		</script>
-
+		<script type="text/javascript" src="./dist/foundry-framework.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-module_pack.min.js"></script>
+		<script type="text/javascript" src="./dist/foundry-application.min.js"></script>
 		<script type="text/javascript">
+			var app = Foundry.run(function(dependencies, options) {
+				dependencies.merge({
+					viewProvider: {
+						type: "Bloodhound.ViewProviders.MustacheViewProvider",
+						singleton: true
+					},
+					viewResolver: {
+						type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+						singleton: true,
+						properties: {
+							container: { value: "views" },
+							provider: "viewProvider",
+							templateUrlBase: { value: "./app/views" }
+						}
+					},
+					renderingEngine: {
+						type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+						singleton: true,
+						properties: {
+							viewResolver: "viewResolver"
+						}
+					}
+				});
 
-			// Instantiation and Initialization
-			var app = Foundry.run();
+				dependencies.module.properties.renderingEngine = "renderingEngine";
 
-			// Destruction
-			window.onunload = function() {
-				app.destructor();
-				app = null;
-			};
-
+				options.lazyLoadModules = true;
+			});
 		</script>
-
 	</body>
 </html>

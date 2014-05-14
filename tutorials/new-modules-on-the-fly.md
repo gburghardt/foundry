@@ -14,14 +14,22 @@ title: Creating New Modules On The Fly
 </h2>
 
 <div class="info">
-    <p>You can view the demo here: <a href="{{ site.baseurl }}/tutorials/examples/new-modules-on-the-fly/">New Modules On The Fly</a></p>
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/new-modules-on-the-fly.zip" class="download-zip"
+            title="Download &ldquo;New Modules On The Fly&rdquo; Demo as a ZIP file"></a>
+    </p>
+
+    <p>
+        View The Demo:
+        <a href="{{ site.baseurl }}/tutorials/examples/new-modules-on-the-fly/">New Modules On The Fly</a>
+    </p>
 </div>
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 
 ## Basics Of Dynamically Creating New Modules
@@ -165,3 +173,4 @@ This is the last tutorial for Foundry. More are in the works, but for now
 [1]: {{ site.baseurl }}/tutorials/
 [2]: https://github.com/gburghardt/foundry/
 [3]: {{ site.baseurl }}/blog/
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

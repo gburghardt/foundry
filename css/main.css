@@ -28,6 +28,22 @@ body {
 	padding: 0 4em;
 	max-width: 40em;
 }
+.downloads {
+	background: transparent url(../images/icon_download.png) no-repeat scroll 0 42px;
+	padding-left: 28px;
+}
+.download-zip {
+	background: transparent url(../images/sprite_download.png) no-repeat scroll 0 -70px;
+	display: inline-block;
+	padding-top: 70px;
+	vertical-align: bottom;
+	width: 92px;
+}
+.download-zip:active,
+.download-zip:focus,
+.download-zip:hover {
+	background-position: 0 0;
+}
 .footer {
 	margin: 1em 0;
 	text-align: center;
@@ -129,6 +145,11 @@ body {
 	border-radius: 6px;
 	display: inline-block;
 	padding: 4px 8px;
+}
+.posts {
+	list-style-type: none;
+	margin: 1em 0;
+	padding: 0;
 }
 
 @media screen and (max-width: 800px) {

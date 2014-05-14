@@ -12,6 +12,20 @@ title:  Dependency Injection With Foundry
     Foundry to keep your code decoupled and testable
 </h2>
 
+<div class="info">
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/dependency-injection.zip" class="download-zip"
+            title="Download &ldquo;Dependency Injection&rdquo; Demo as a ZIP file"></a>
+    </p>
+
+    <p>
+        View The Demo:
+        <a href="{{ site.baseurl }}/tutorials/examples/dependency-injection/">Dependency Injection</a>
+    </p>
+</div>
+
 Foundry comes with its own Dependency Injection framework. This is a great way
 to wire your modules together with their external dependencies, plus it exposes
 the bowels of the framework so you can swap in your own components in favor of
@@ -19,9 +33,7 @@ the components that ship with Foundry.
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. An understanding of [Dependency Injection and Inversion of Control](http://martinfowler.com/articles/injection.html)
 3. Moderate knowledge of Object Oriented JavaScript
 
@@ -98,6 +110,9 @@ on an exact JavaScript class name.
 ```html
 <form data-modules="taskList" ...>
     ...
+    <div data-module-property="selection" data-modules="selection">
+        ...
+    </div>
 </form>
 
 <div data-modules="recentTasks" ...>
@@ -168,3 +183,5 @@ side templates and a view resolver in Foundry.
     <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
     <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/client-side-templates.html" title="Next: Rendering Client Side Templates">Next</a></li>
 </ul>
+
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

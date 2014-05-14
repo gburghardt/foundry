@@ -15,17 +15,22 @@ title: A Practical Example Of Events In Foundry
 </h2>
 
 <div class="info">
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/events-in-foundry.zip" class="download-zip"
+            title="Download &ldquo;Events In Foundry&rdquo; Demo as a ZIP file"></a>
+    </p>
+
     <p>
-        You can view the demo here:
+        View The Demo:
         <a href="{{ site.baseurl }}/tutorials/examples/events-in-foundry/">Events In Foundry</a>
     </p>
 </div>
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. A basic understanding of [how Modules work in Foundry]({{ site.baseurl }}/tutorials/introduction-to-modules.html)
 3. A basic understanding of [events in Foundry]({{ site.baseurl }}/tutorials/events-in-foundry.html)
 
@@ -237,14 +242,6 @@ var TaskListModule = Module.Base.extend({
             }
         },
 
-        onControllerRegistered: function(frontController, controllerId) {
-            frontController.registerController(this.selection);
-        },
-
-        onControllerUnregistered: function(frontController) {
-            frontController.unregisterController(this.selection);
-        },
-
         handleItemSelectionSizeChanged: function(publisher, data) {
             this.element.querySelector(".selection-count").innerHTML =
                 this.selection.getSelectedCount();
@@ -383,3 +380,5 @@ Inversion of Control when creating your own modules.
     <li class="pagination-up"><a href="{{ site.baseurl }}/tutorials/">All Tutorials</a></li>
     <li class="pagination-next"><a href="{{ site.baseurl }}/tutorials/dependency-injection.html" title="Next: Using Dependency Injection With Foundry">Next</a></li>
 </ul>
+
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}

@@ -14,9 +14,16 @@ title: Rendering Client Side Templates
 </h2>
 
 <div class="info">
+    <h3>Download The Demo</h3>
+
+    <p class="downloads">
+        <a href="{{ site.baseurl }}/tutorials/examples/client-side-templates.zip" class="download-zip"
+            title="Download &ldquo;Client Side Templates&rdquo; Demo as a ZIP file"></a>
+    </p>
+
     <p>
-        You can view the demo here:
-        <a href="{{ site.baseurl }}/tutorials/examples/client-side-templates/">Rendering Client Side Templates With Foundry</a>
+        View The Demo:
+        <a href="{{ site.baseurl }}/tutorials/examples/client-side-templates/">Client Side Templates</a>
     </p>
 </div>
 
@@ -28,9 +35,7 @@ focus on one of the most popular ones:
 
 ## What You'll Need For This Tutorial
 
-1. [Foundry]({{ site.baseurl }}/downloads.html),
-   [module-base](https://github.com/gburghardt/module-base), and
-   [module-utils](https://github.com/gburghardt/module-utils)
+1. The [Foundry Starter Project][starter_project]
 2. Basic knowledge of [Dependency Injection with Foundry]({{ site.baseurl }}/tutorials/dependency-injection.html)
 3. A fresh copy of [Mustache.js][0]
 4. A fresh copy of [Bloodhound][1]
@@ -41,100 +46,12 @@ focus on one of the most popular ones:
 - How to configure the dependencies for [Bloodhound][1]
 - How to render views in modules
 
-## Boilerplate HTML
-
-First, let's start with the HTML we'll need to render a blog post, and its
-comments using Mustache.js templates.
-
-```html
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="edge">
-        <title>Demo: Rendering Client Side Templates &mdash; Foundry</title>
-    </head>
-    <body>
-
-        <div data-modules="postDetail" data-module-options='{"post_id": 1}'>Loading ...</div>
-
-        <!-- Base Framework -->
-        <script type="text/javascript" src="/js/foundry/v0.1.2/foundry.concat.js"></script>
-        <script type="text/javascript" src="/js/module-base/module/base.js"></script>
-        <script type="text/javascript" src="/js/module-utils/module-utils.concat.js"></script>
-
-        <!-- Client Side Template Libs -->
-        <script type="text/javascript" src="/js/mustache.js/mustache.js"></script>
-        <script type="text/javascript" src="/js/promise/src/promise.js"></script>
-        <script type="text/javascript" src="/js/bloodhound/src/bloodhound.js"></script>
-        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/adapters/mustache_template.js"></script>
-        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/rendering_engines/dynamic_rendering_engine.js"></script>
-        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/view_providers/mustache_view_provider.js"></script>
-        <script type="text/javascript" src="/js/bloodhound/src/bloodhound/view_resolvers/dynamic_view_resolver.js"></script>
-
-        <!-- Application Files -->
-        <script type="text/javascript" src="./post_detail_module.js"></script>
-    </body>
-</html>
-```
-
-Most of the HTML is nothing new for Foundry. We have seven additional JavaScript
-files for Mustache.js and Bloodhound. Bloodhound is a view resolver for
-JavaScript that decouples the rendering of a view from the process of loading
-all the necessary templates. We will configure Bloodhound to use Mustache.js as
-the template language. Next we'll configure Foundry to use Bloodhound as the
-view resolver:
-
-```html
-<body>
-    ...
-
-    <!-- Application Files -->
-    <script type="text/javascript" src="./post_detail_module.js"></script>
-
-    <script type="text/javascript">
-
-        var app = Foundry.run(function(dependencies, options) {
-            dependencies.merge({
-                viewProvider: {
-                    type: "Bloodhound.ViewProviders.MustacheViewProvider",
-                    singleton: true
-                },
-                viewResolver: {
-                    type: "Bloodhound.ViewResolvers.DynamicViewResolver",
-                    singleton: true,
-                    properties: {
-                        container: "document",
-                        provider: "viewProvider",
-                        templateUrlBase: { value: "{{ site.baseurl }}/tutorials/examples/client-side-templates" }
-                    }
-                },
-                renderingEngine: {
-                    type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
-                    singleton: true,
-                    properties: {
-                        viewResolver: "viewResolver"
-                    }
-                },
-                postDetail: {
-                    type: "PostDetailModule",
-                    parent: "module"
-                }
-            });
-
-            // All modules will have this rendering engine available
-            dependencies.module.properties.renderingEngine = "renderingEngine";
-        });
-
-    </script>
-</body>
-```
-
 ## Creating A Module That Renders A View
 
-Now let's create the `PostDetailModule` class:
+Let's create a `PostDetailModule` class, which you will save in
+`app/modules/post_detail_module.js`:
 
-<h3 class="code-label">Contents of post_detail_module.js</h3>
+<h3 class="code-label">app/modules/post_detail_module.js</h3>
 
 ```javascript
 var PostDetailModule = Module.Base.extend({
@@ -197,9 +114,9 @@ after all templates and sub templates have been downloaded and rendered.
 
 ## The Data To Render
 
-We will just use a hard coded JSON file called `1.json`:
+We will just use a hard coded JSON file in `app/data/1.json`:
 
-<h3 class="code-label">Contents of 1.json</h3>
+<h3 class="code-label">app/data/1.json</h3>
 
 ```javascript
 {
@@ -250,9 +167,9 @@ Inside that is a Mustache.js partial that renders the comments. In our module,
 the name of the view we render is in `this.options.view`, which is equal to
 `post/detail`. Bloodhound auto generates a URL from this:
 
-/tutorials/examples/client-side-templates/<strong>post/detail</strong>.tpl
+app/views/<strong>post/detail</strong>.tpl
 
-<h3 class="code-label">post/detail.tpl</h3>
+<h3 class="code-label">app/views/post/detail.tpl</h3>
 
 ```html
 {% raw %}
@@ -277,7 +194,7 @@ the name of the view we render is in `this.options.view`, which is equal to
 Here we see {% raw %}`{{> post/comments}}`{% endraw %}, which will cause Bloodhound to fetch a
 template named `post/comments` and render that as a partial in Mustache.js:
 
-<h3 class="code-label">post/comments.tpl</h3>
+<h3 class="code-label">app/views/post/comments.tpl</h3>
 
 ```html
 {% raw %}
@@ -289,6 +206,62 @@ template named `post/comments` and render that as a partial in Mustache.js:
     {{/comments}}
 </ol>
 {% endraw %}
+```
+
+## Adding The Post Detail Module To The Page
+
+Open up `index.html`. Add a dependency config for the PostDetailModule you just
+created called "postDetail":
+
+<h3 class="code-label">index.html</h3>
+
+```html
+<body>
+    ...
+
+    <script type="text/javascript">
+        var app = Foundry.run(function(dependencies, options) {
+            dependencies.merge({
+                viewProvider: {
+                    type: "Bloodhound.ViewProviders.MustacheViewProvider",
+                    singleton: true
+                },
+                viewResolver: {
+                    type: "Bloodhound.ViewResolvers.DynamicViewResolver",
+                    singleton: true,
+                    properties: {
+                        container: { value: "views" },
+                        provider: "viewProvider",
+                        templateUrlBase: { value: "./app/views" }
+                    }
+                },
+                renderingEngine: {
+                    type: "Bloodhound.RenderingEngines.DynamicRenderingEngine",
+                    singleton: true,
+                    properties: {
+                        viewResolver: "viewResolver"
+                    }
+                },
+
+                // Your modules go here
+                postDetail: {
+                    type: "PostDetailModule",
+                    parent: "module"
+                }
+            });
+
+            dependencies.module.properties.renderingEngine = "renderingEngine";
+
+            options.lazyLoadModules = true;
+        });
+    </script>
+```
+
+Next, just after the opening `<body>` tag place the following DIV tag:
+
+```html
+<body>
+    <div data-modules="postDetail" data-module-options='{"post_id": 1}'></div>
 ```
 
 That's all it takes to wire up Mustache.js to Foundry. If you switch out the
@@ -321,3 +294,4 @@ in the next tutorial.
 [0]: https://github.com/janl/mustache.js
 [1]: https://github.com/gburghardt/bloodhound
 [2]: https://github.com/gburghardt/promise
+[starter_project]: {{ site.baseurl }}{% post_url 2014-05-05-foundry-starter-project %}
