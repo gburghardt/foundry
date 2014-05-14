@@ -1,4 +1,4 @@
-/*! foundry 2014-05-05 */
+/*! foundry 2014-05-14 */
 Foundry.pollyfill = function() {
 	return new Foundry.PollyfillPromise(Array.prototype.slice.call(arguments));
 };

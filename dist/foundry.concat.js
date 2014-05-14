@@ -1,4 +1,4 @@
-/*! foundry 2014-05-05 */
+/*! foundry 2014-05-14 */
 var Oxydizr = {};
 Oxydizr.FrontController = function FrontController() {
 	this.events = {};
@@ -685,16 +685,16 @@ function LazyLoader() {
 	    	resizeTimeout: 250,
 	    	scrollTimeout: 250
 	    },
-	    _scrollElement =
-	    _scrollTimer =
-	    _manager =
-	    _element =
-	    _document =
-	    _window =
+	    _scrollElement = null,
+	    _scrollTimer = null,
+	    _manager = null,
+	    _element = null,
+	    _document = null,
+	    _window = null,
 	    _resizeTimer = null,
-	    _scrollLeft =
-	    _scrollTop =
-	    _viewportHeight =
+	    _scrollLeft = 0,
+	    _scrollTop = 0,
+	    _viewportHeight = 0,
 	    _viewportWidth = 0;
 
 	// Private Methods
