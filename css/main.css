@@ -163,6 +163,10 @@ body {
 		padding-left: 1em;
 		padding-right: 1em;
 	}
+	.nav-horizontal
+	.nav-secondary {
+		font-size: 1.5em;
+	}
 	.nav-horizontal {
 		display: block;
 		margin-top: 0;
@@ -182,10 +186,12 @@ body {
 	.nav-secondary {
 		border-left-width: 0;
 		float: none;
-		font-size: 1em;
 		margin: 1em 0;
 		padding: 0 0 2em 0;
 		width: auto;
+	}
+	.nav-secondary ul {
+		font-size: inherit;
 	}
 	.nav-secondary a {
 		border: 1px solid #0036BF;
