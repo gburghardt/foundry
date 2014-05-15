@@ -2,8 +2,9 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="x-ua-compatible" content="edge">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>Foundry: New Modules On-The-Fly</title>
+		<meta name="viewport" content="width=device-width">
 		<style type="text/css">
 			body {
 				margin: 0;
@@ -50,7 +51,8 @@
 				background-color: #ffc;
 			}
 			.side {
-				border-right: 3px solid #e0e0e0;
+				border: 0 solid #e0e0e0;
+				border-right-width: 3px;
 				float: left;
 				margin: 0 0 0 14px;
 				padding-right: 14px;
@@ -63,6 +65,23 @@
 			}
 			.side ul li {
 				margin: .33em 0;
+			}
+			@media screen and (max-width: 800px) {
+				.main,
+				.side {
+					margin: 1em;
+				}
+				.side {
+					border-bottom-width: 3px;
+					border-right-width: 0;
+					float: none;
+					padding: 0;
+					width: auto;
+				}
+				.side ul li {
+					margin: 0;
+					padding: .67em;
+				}
 			}
 		</style>
 	</head>

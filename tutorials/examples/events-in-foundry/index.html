@@ -2,8 +2,9 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="x-ua-compatible" content="edge">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>Foundry: Events</title>
+		<meta name="viewport" content="width=device-width">
 		<style type="text/css">
 			.module {
 				border: 1px solid #000;
@@ -25,6 +26,20 @@
 			}
 			.selected {
 				background-color: #ffc;
+			}
+			@media screen and (max-width: 600px) {
+				.module.recentTasks,
+				.module.taskList {
+					float: none;
+					margin-right: 0;
+					width: auto;
+				}
+				.module.selection ol {
+					font-size: 1.5em;
+				}
+				.module.selection ol>li {
+					padding: .75em;
+				}
 			}
 		</style>
 	</head>
