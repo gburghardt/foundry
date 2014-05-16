@@ -1,4 +1,4 @@
-/*! foundry 2014-05-14 */
+/*! foundry 2014-05-16 */
 /*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
@@ -1133,7 +1133,7 @@ var docElement            = doc.documentElement,
 
 })( this, document );
 
-/*! foundry 2014-05-14 */
+/*! foundry 2014-05-16 */
 var Oxydizr = {};
 Oxydizr.FrontController = function FrontController() {
 	this.events = {};
@@ -1735,6 +1735,8 @@ for (i = 0, length = conditionalClasses.length; i < length; i++) {
 
 })(this);
 
+/*! module-manager 2014-05-16 */
+/*! module-manager 2014-05-16 */
 this.Module = this.Module || {};
 (function() {
 
@@ -1746,11 +1748,11 @@ Factory.prototype = {
 
 	constructor: Factory,
 
-	destructor: function destructor() {
+	destructor: function() {
 		this.objectFactory = null;
 	},
 
-	getInstance: function getInstance(type) {
+	getInstance: function(type) {
 		var instance = null, Klass = null;
 
 		if (this.objectFactory) {
@@ -1789,366 +1791,6 @@ Module.Factory = Factory;
 
 })();
 
-Module.FrontControllerModuleObserver = function FrontControllerModuleObserver(frontController) {
-	this.frontController = frontController || null;
-};
-
-Module.FrontControllerModuleObserver.prototype = {
-
-	frontController: null,
-
-	constructor: Module.FrontControllerModuleObserver,
-
-	_ensureControllerId: function(module) {
-		module.controllerId = module.controllerId
-		                   || module.options.controllerId
-		                   || module.guid;
-	},
-
-	onModuleCreated: function(module, element, type) {
-		this._ensureControllerId(module);
-	},
-
-	onSubModuleCreated: function(module, element, type) {
-		this.frontController.registerController(module);
-	},
-
-	onModuleRegistered: function(module, type) {
-		this.frontController.registerController(module);
-	},
-
-	onModuleUnregistered: function(module) {
-		this.frontController.unregisterController(module);
-	}
-
-};
-(function() {
-
-function LazyLoader() {
-
-	// Public Methods
-
-	this.init = init;
-	this.destructor = destructor;
-	this.setElement = setElement;
-	this.setManager = setManager;
-	this.setOptions = setOptions;
-
-	// Private Properties
-
-	var self = this,
-	    _initialized = false,
-	    _options = {
-	    	resizeTimeout: 250,
-	    	scrollTimeout: 250
-	    },
-	    _scrollElement = null,
-	    _scrollTimer = null,
-	    _manager = null,
-	    _element = null,
-	    _document = null,
-	    _window = null,
-	    _resizeTimer = null,
-	    _scrollLeft = 0,
-	    _scrollTop = 0,
-	    _viewportHeight = 0,
-	    _viewportWidth = 0;
-
-	// Private Methods
-
-	function init() {
-		if (_initialized) {
-			throw new Error("Cannot re-initialize Module.LazyLoader.");
-		}
-		else if (!_manager) {
-			throw new Error("Missing required property: manager. lazyLoader.setManager(...) to fix this error");
-		}
-		else if (!_element) {
-			throw new Error("Missing required property: element. lazyLoader.setElement(...) to fix this error");
-		}
-
-		addEvents();
-
-		initModulesInsideViewport();
-
-		if (!_scrollElement.scrollTop && !_scrollElement.scrollLeft) {
-			// Not all browsers agree on the _scrollElement. We are at the
-			// top of the page so we don't know whether the browser is
-			// scrolling the <html> or <body> tag. Defer judgement until
-			// the user has scrolled.
-			_scrollElement = null;
-		}
-
-		_initialized = true;
-
-		return self;
-	}
-
-	function initModulesInsideViewport() {
-		var elements = _element.querySelectorAll("[data-module-lazyload]"), i, element;
-		var viewport = Viewport.create(getScrollElement());
-
-		for (i = 0; i < elements.length; i++) {
-			element = elements[i];
-
-			if (viewport.isVisible(element)) {
-				lazyLoadModules(element, "scrollto");
-			}
-		}
-	}
-
-	function lazyLoadModules(element, value) {
-		var attr = element.getAttribute("data-module-lazyload");
-
-		if (attr === "any" || new RegExp(value).test(attr)) {
-			if (_manager.createModules(element, true).length) {
-				element.removeAttribute("data-module-lazyload");
-				element.setAttribute("data-module-lazyloaded", attr);
-			}
-		}
-
-		element = null;
-	}
-
-	function destructor() {
-		if (_element) {
-			removeEvents();
-			_element = _document = _scrollElement = _window = null;
-		}
-
-		if (_scrollTimer) {
-			clearTimeout(_scrollTimer);
-			_scrollTimer = null;
-		}
-
-		if (_resizeTimer) {
-			clearTimeout(_resizeTimer);
-			_resizeTimer = null;
-		}
-
-		_manager = _options.scrollElement = _options = self = null;
-	}
-
-	function addEvent(element, name, listener) {
-		if (name === "resize") {
-			listener.oldresize = element.onresize || null;
-			element.onresize = listener;
-		}
-		else if (element.addEventListener) {
-			element.addEventListener(name, listener, true);
-		}
-		else if (name === "scroll") {
-			element.onscroll = listener;
-		}
-		else {
-			element.attachEvent("on" + name, listener);
-		}
-	}
-
-	function addEvents() {
-		addEvent(_element, "mouseover", handleMouseOverEvent);
-		addEvent(_document, "scroll", handleScrollEvent);
-		addEvent(_window, "resize", handleResizeEvent);
-	}
-
-	function getScrollElement() {
-		if (_scrollElement === null) {
-			if (_document.body.scrollTop || _document.body.scrollLeft) {
-				_scrollElement = _document.body;
-			}
-			else {
-				_scrollElement = _document.documentElement;
-			}
-		}
-
-		return _scrollElement;
-	}
-
-	function handleMouseOverEvent(event) {
-		event = event || window.event;
-		event.target = event.target || event.srcElement;
-
-		if (event.target.getAttribute("data-module-lazyload")) {
-			lazyLoadModules(event.target, event.type);
-		}
-	}
-
-	function handleScrollEvent(event) {
-		removeEvent(_document, "scroll", handleScrollEvent);
-
-		if (_scrollTimer) {
-			clearInterval(_scrollTimer);
-		}
-
-		_scrollTimer = setInterval(checkScrollPosition, _options.scrollTimeout);
-	}
-
-	function checkScrollPosition() {
-		var scrollElement = getScrollElement(),
-		    newScrollLeft = scrollElement.scrollLeft,
-		    newScrollTop = scrollElement.scrollTop;
-
-		if (newScrollLeft != _scrollLeft || newScrollTop != _scrollTop) {
-			clearInterval(_scrollTimer);
-			addEvent(_document, "scroll", handleScrollEvent);
-			_scrollLeft = newScrollLeft;
-			_scrollTop = newScrollTop;
-			initModulesInsideViewport();
-		}
-	}
-
-	function handleResizeEvent(event) {
-		removeEvent(_window, "resize", handleResizeEvent);
-
-		if (_resizeTimer) {
-			clearInterval(_resizeTimer);
-		}
-
-		_resizeTimer = setInterval(checkViewportSize, _options.resizeTimeout);
-	}
-
-	function checkViewportSize() {
-		var newHeight = _document.documentElement.clientHeight,
-		    newWidth = _document.documentElement.clientWidth;
-
-		if (newWidth !== _viewportWidth || newHeight !== _viewportHeight) {
-			clearInterval(_resizeTimer);
-			addEvent(_window, "resize", handleResizeEvent);
-			_viewportHeight = newHeight;
-			_viewportWidth = newWidth;
-			initModulesInsideViewport();
-		}
-	}
-
-	function removeEvent(element, name, listener) {
-		if (name === "resize") {
-			element.onresize = listener.oldresize || null;
-			listener.oldresize = null;
-		}
-		else if (element.removeEventListener) {
-			element.removeEventListener(name, listener, true);
-		}
-		else if (name === "scroll") {
-			element.onscroll = null;
-		}
-		else {
-			element.detachEvent("on" + name, listener);
-		}
-	}
-
-	function removeEvents() {
-		removeEvent(_element, "mouseover", handleMouseOverEvent);
-		removeEvent(_document, "scroll", handleScrollEvent);
-		removeEvent(_window, "resize", handleResizeEvent);
-	}
-
-	function setElement(element) {
-		_element = element;
-		_document = _element.ownerDocument;
-	    _window = _document.defaultView;
-
-		element = null;
-
-		return self;
-	}
-
-	function setManager(manager) {
-		_manager = manager;
-		manager = null;
-		return self;
-	}
-
-	function setOptions(overrides) {
-		if (overrides) {
-			for (var key in overrides) {
-				if (overrides.hasOwnProperty(key)) {
-					_options[key] = overrides[key];
-				}
-			}
-		}
-
-		overrides = null;
-
-		return self;
-	}
-
-}
-
-// Internal class for viewport calculations
-function Viewport() {}
-
-Viewport.prototype = {
-	bottom: 0,
-	height: 0,
-	left: 0,
-	right: 0,
-	top: 0,
-	width: 0,
-
-	constructor: Viewport,
-
-	isBottomInBounds: function isBottomInBounds(position) {
-		return (position.top + position.height <= this.top + this.height && position.top + position.height > this.top) ? true : false;
-	},
-
-	isLeftInBounds: function isLeftInBounds(position) {
-		return (position.left >= this.left && position.left < this.left + this.width) ? true : false;
-	},
-
-	isRightInBounds: function isRightInBounds(position) {
-		return (position.left + position.width <= this.left + this.width && position.left + position.width > this.left) ? true : false;
-	},
-
-	isTopInBounds: function isTopInBounds(position) {
-		return (position.top >= this.top && position.top < this.top + this.height) ? true : false;
-	},
-
-	isVisible: function isVisible(element) {
-		var visible = false;
-		var position = this._getPosition(element);
-
-		if ((this.isRightInBounds(position) || this.isLeftInBounds(position)) && (this.isTopInBounds(position) || this.isBottomInBounds(position))) {
-			visible = true;
-		}
-
-		return visible;
-	},
-
-	_getPosition: function _getPosition(element) {
-		var parent = element.offsetParent;
-		var position = {
-			top: element.offsetTop,
-			left: element.offsetLeft,
-			width: element.offsetWidth,
-			height: element.offsetHeight
-		};
-
-		while(parent = parent.offsetParent) {
-			position.top += parent.offsetTop;
-			position.left += parent.offsetLeft;
-		}
-
-		return position;
-	}
-};
-
-Viewport.create = function create(element) {
-	var viewport = new this();
-
-	viewport.top = element.scrollTop;
-	viewport.left = element.scrollLeft;
-	viewport.width = element.clientWidth;
-	viewport.height = element.clientHeight;
-	viewport.right = element.offsetWidth - (viewport.left + viewport.width);
-	viewport.bottom = element.offsetHeight - viewport.top - viewport.height;
-
-	return viewport;
-};
-
-Module.LazyLoader = LazyLoader;
-
-})();
-
 (function() {
 
 function Manager() {};
@@ -2176,7 +1818,7 @@ Manager.prototype = {
 
 	constructor: Module.Manager,
 
-	destructor: function destructor(cascadeDestroy) {
+	destructor: function(cascadeDestroy) {
 		if (Module.manager === this) {
 			Module.manager = null;
 		}
@@ -2203,7 +1845,7 @@ Manager.prototype = {
 		}
 	},
 
-	_destroyGroups: function _destroyGroups() {
+	_destroyGroups: function() {
 		var key, group, i, length;
 
 		for (key in this.groups) {
@@ -2221,7 +1863,7 @@ Manager.prototype = {
 		this.groups = null;
 	},
 
-	_destroyRegistry: function _destroyRegistry(cascadeDestroy) {
+	_destroyRegistry: function(cascadeDestroy) {
 		var key, entry;
 
 		for (key in this.registry) {
@@ -2241,7 +1883,7 @@ Manager.prototype = {
 		this.registry = null;
 	},
 
-	init: function init() {
+	init: function() {
 		this.provider = this.provider || new Module.Provider();
 		this.provider.factory = this.provider.factory || new Module.Factory();
 		this.provider.manager = this;
@@ -2254,7 +1896,7 @@ Manager.prototype = {
 		return this;
 	},
 
-	eagerLoadModules: function eagerLoadModules(element) {
+	eagerLoadModules: function(element) {
 		var els = element.querySelectorAll("[data-modules]"),
 			i = 0;
 
@@ -2267,7 +1909,7 @@ Manager.prototype = {
 		return this;
 	},
 
-	lazyLoadModules: function lazyLoadModules(element, options) {
+	lazyLoadModules: function(element, options) {
 		this.lazyLoader = (this.lazyLoader || new Module.LazyLoader())
 			.setManager(this)
 			.setElement(element)
@@ -2279,7 +1921,7 @@ Manager.prototype = {
 		return this;
 	},
 
-	createModule: function createModule(element, type, options, register) {
+	createModule: function(element, type, options, register) {
 		var module = this.provider.createModule(element, type, options);
 
 		if (register) {
@@ -2291,7 +1933,7 @@ Manager.prototype = {
 		return module;
 	},
 
-	createModules: function createModules(element, lazyLoad) {
+	createModules: function(element, lazyLoad) {
 		if (!element) {
 			throw new Error("Missing required argument: element");
 		}
@@ -2320,14 +1962,14 @@ Manager.prototype = {
 		return modules;
 	},
 
-	focusDefaultModule: function focusDefaultModule(anything) {
+	focusDefaultModule: function(anything) {
 		if (this.defaultModule && !this.defaultModuleFocused) {
 			this.defaultModuleFocused = true;
 			this.defaultModule.focus(anything);
 		}
 	},
 
-	initModuleInContainer: function initModuleInContainer(element, container, config, template, type, module) {
+	initModuleInContainer: function(element, container, config, template, type, module) {
 		var createdAt = new Date();
 		var renderData = {
 			guid: module.guid,
@@ -2366,13 +2008,13 @@ Manager.prototype = {
 		}
 	},
 
-	markModulesCreated: function markModulesCreated(element, metaData) {
+	markModulesCreated: function(element, metaData) {
 		element.setAttribute("data-modules-created", metaData.types.join(" "));
 		element.removeAttribute("data-modules");
 		element = metaData = null;
 	},
 
-	registerModule: function registerModule(type, module) {
+	registerModule: function(type, module) {
 		if (module.guid === undefined || module.guid === null) {
 			throw new Error("Cannot register module " + type + " without a guid property");
 		}
@@ -2392,7 +2034,7 @@ Manager.prototype = {
 		module = null;
 	},
 
-	unregisterModule: function unregisterModule(module) {
+	unregisterModule: function(module) {
 		if (!module.guid || !this.registry[module.guid]) {
 			module = null;
 			return false;
@@ -2423,7 +2065,7 @@ Manager.prototype = {
 		return unregistered;
 	},
 
-	setDefaultModule: function setDefaultModule(module) {
+	setDefaultModule: function(module) {
 		if (!this.defaultModule) {
 			this.defaultModule = module;
 		}
@@ -2460,7 +2102,7 @@ Module.Manager = Manager;
 
 		constructor: MetaData,
 
-		forEach: function forEach(callback, context) {
+		forEach: function(callback, context) {
 			var i = 0, length = this.types.length,
 			    result, type, options;
 
@@ -2480,18 +2122,15 @@ Module.Manager = Manager;
 			}
 		},
 
-		mediaMatches: function mediaMatches() {
+		mediaMatches: function() {
 			if (!g.matchMedia) {
 				throw new Error("This browser does not support JavaScript media queries. Please include a polyfill (https://github.com/paulirish/matchMedia.js)");
 			}
 
-			if (this.media)
-				console.info("Match media: " + this.media, g.matchMedia(this.media).matches);
-
 			return this.media === null || g.matchMedia(this.media).matches;
 		},
 
-		setElement: function setElement(element) {
+		setElement: function(element) {
 			this.element = element;
 
 			var types = element.getAttribute("data-modules"),
@@ -2531,7 +2170,7 @@ Provider.prototype = {
 
 	constructor: Provider,
 
-	destructor: function destructor(cascadeDestroy) {
+	destructor: function(cascadeDestroy) {
 		if (cascadeDestroy && this.factory) {
 			this.factory.destructor();
 		}
@@ -2539,7 +2178,7 @@ Provider.prototype = {
 		this.factory = this.manager = null;
 	},
 
-	_createModuleClass: function _createModuleClass(type) {
+	_createModuleClass: function(type) {
 		return "module " + type.charAt(0).toLowerCase() + type.slice(1, type.length)
 			.replace(/(\.[A-Z])/g, function(match, $1) {
 				return "-" + $1.replace(/\./g, "").toLowerCase();
@@ -2548,7 +2187,7 @@ Provider.prototype = {
 			.replace(/^\s+|\s+$/g, "");
 	},
 
-	createModule: function createModule(element, type, options) {
+	createModule: function(element, type, options) {
 		var module = this.factory.getInstance(type);
 		var className = this._createModuleClass(type);
 
@@ -2570,7 +2209,7 @@ Provider.prototype = {
 		return module;
 	},
 
-	createModules: function createModule(metaData, callback, context) {
+	createModules: function(metaData, callback, context) {
 		var modules = [],
 		    module,
 		    callback = callback || function() {};
@@ -2586,7 +2225,7 @@ Provider.prototype = {
 		return modules;
 	},
 
-	_createSubModules: function _createSubModules(module) {
+	_createSubModules: function(module) {
 		var els = module.element.getElementsByTagName("*"),
 		    length = els.length,
 		    i = 0, element, name;
@@ -2601,7 +2240,7 @@ Provider.prototype = {
 		}
 	},
 
-	_createSubModuleProperty: function _createSubModuleProperty(parentModule, name, element) {
+	_createSubModuleProperty: function(parentModule, name, element) {
 		var metaData = new Module.MetaData(element),
 		   subModule;
 
@@ -2638,6 +2277,553 @@ Module.Provider = Provider;
 
 })();
 
+/*! module-manager 2014-05-16 */
+Module.FrontControllerModuleObserver = function FrontControllerModuleObserver(frontController) {
+	this.frontController = frontController || null;
+};
+
+Module.FrontControllerModuleObserver.prototype = {
+
+	frontController: null,
+
+	constructor: Module.FrontControllerModuleObserver,
+
+	_ensureControllerId: function(module) {
+		module.controllerId = module.controllerId
+		                   || module.options.controllerId
+		                   || module.guid;
+	},
+
+	onModuleCreated: function(module, element, type) {
+		this._ensureControllerId(module);
+	},
+
+	onSubModuleCreated: function(module, element, type) {
+		this.frontController.registerController(module);
+	},
+
+	onModuleRegistered: function(module, type) {
+		this.frontController.registerController(module);
+	},
+
+	onModuleUnregistered: function(module) {
+		this.frontController.unregisterController(module);
+	}
+
+};
+/*! module-manager 2014-05-16 */
+/*! browser-viewport 2014-05-16 */
+function Viewport(_window) {
+	if (!_window) {
+		throw new Error("Missing required argument: window");
+	}
+
+	// Private Properties
+
+	var self = this,
+	    _events = {
+	    	"resize:complete": {
+	    		type: "resize",
+	    		handle: null,
+	    		useCapture: false,
+	    		bound: false,
+	    		listeners: [],
+	    		element: _window
+	    	},
+	    	"scroll:complete": {
+	    		type: "scroll",
+	    		handle: null,
+	    		useCapture: false,
+	    		bound: false,
+	    		listeners: [],
+	    		element: _window.document
+	    	}
+	    },
+	    _eventListenerDelay = 20,
+	    _orientation = _window.orientation || this.height > this.width ? 0 : 90;
+	    _orientationEvent = {
+	    	mql: _window.matchMedia ? _window.matchMedia("(orientation: portrait)") : null,
+	    	regex: /^orientation:\w+$/i,
+	    	listeners: {
+	    		count: 0,
+		    	"orientation:change": [],
+		    	"orientation:portrait": [],
+		    	"orientation:landscape": []
+		    },
+	    	test: function(type) {
+	    		return this.regex.test(type)
+	    		    && !!this.listeners[type];
+	    	}
+	    },
+	    _resizeTimer = null,
+	    _resizeTimeout = 300,
+	    _scrollTimer = null,
+	    _scrollTimeout = 300,
+	    createAccessor = function(name, get, set) {
+	    	Object.defineProperty(self, name, {
+	    		enumerable: true,
+	    		get: get,
+	    		set: set
+	    	});
+	    },
+	    createGetter = function(name, get) {
+	    	Object.defineProperty(self, name, {
+	    		enumerable: true,
+	    		get: get
+	    	});
+	    };
+
+	// Public Properties
+
+	createGetter("bottom", function() {
+		return _window.pageYOffset + _window.innerHeight;
+	});
+
+	createGetter("document", function() {
+		return _window.document;
+	});
+
+	createAccessor("eventListenerDelay",
+		function() {
+			return _eventListenerDelay;
+		},
+		function(value) {
+			_eventListenerDelay = value;
+		}
+	);
+
+	createGetter("height", function() {
+		return _window.innerHeight;
+	});
+
+	createGetter("left", function() {
+		return _window.pageXOffset;
+	});
+
+	createGetter("location", function() {
+		return _window.location;
+	});
+
+	createGetter("orientation", function() {
+		return _orientation;
+	});
+
+	createAccessor("resizeTimeout",
+		function() {
+			return _resizeTimeout;
+		},
+		function(value) {
+			_resizeTimeout = value;
+		}
+	);
+
+	createGetter("right", function() {
+		return _window.pageXOffset + _window.innerWidth;
+	});
+
+	createGetter("screen", function() {
+		return _window.screen;
+	});
+
+	createAccessor("scrollTimeout",
+		function() {
+			return _scrollTimeout;
+		},
+		function(value) {
+			_scrollTimeout = value;
+		}
+	);
+
+	createGetter("top", function() {
+		return _window.pageYOffset;
+	});
+
+	createGetter("width", function() {
+		return _window.innerWidth;
+	});
+
+	createGetter("window", function() {
+		return _window;
+	});
+
+	// Public Methods
+
+	this.destructor = function() {
+		if (_resizeTimer) {
+			_window.clearTimeout(_resizeTimer);
+			_resizeTimer = null;
+		}
+
+		if (_scrollTimer) {
+			_window.clearTimeout(_scrollTimer);
+			_scrollTimer = null;
+		}
+
+		removeSpecialEvent(_events["resize:complete"]);
+		removeSpecialEvent(_events["scroll:complete"]);
+
+		self = _events = _window = null;
+	};
+
+	this.addEventListener = function(type, listener) {
+		type = type.toLowerCase();
+
+		var event, listeners;
+
+		if (_orientationEvent.test(type)) {
+			listeners = _orientationEvent.listeners;
+
+			if (!listeners.count && _orientationEvent.mql) {
+				_orientationEvent.mql.addListener(handleOrientationChangeEvent);
+			}
+
+			listeners[type].push(listener);
+			listeners.count++;
+		}
+		else if (event = _events[type]) {
+			addSpecialEvent(event);
+			event.listeners.push(listener);
+		}
+	};
+
+	this.removeEventListener = function(type, listener) {
+		type = type.toLowerCase();
+
+		var event, index, listeners;
+
+		if (_orientationEvent.test(type)) {
+			listeners = _orientationEvent.listeners[type];
+			index = listeners.indexOf(listener);
+
+			if (index > -1) {
+				listeners.splice(index, 1);
+
+				if (--listeners.count === 0 && _orientationEvent.mql) {
+					_orientationEvent.mql.removeListener(handleOrientationChangeEvent);
+				}
+			}
+		}
+		else if (_events[type]) {
+			event = _events[type];
+			index = event.listeners.indexOf(listener);
+
+			if (index > -1) {
+				event.listeners.splice(index, 1);
+
+				if (!event.listeners.length) {
+					removeSpecialEvent(event);
+				}
+			}
+		}
+	};
+
+	// Private Methods
+
+	var addSpecialEvent = function(event) {
+		if (event.bound) {
+			return;
+		}
+
+		event.element.addEventListener(event.type, event.handle, event.useCapture);
+		event.bound = true;
+	},
+	fireResizedEvent = function() {
+		fireEvent(_events["resize:complete"].listeners);
+	},
+	fireScrollCompleteEvent = function() {
+		fireEvent(_events["scroll:complete"].listeners);
+	},
+	fireEvent = function(listeners) {
+		if (!listeners.length) {
+			return;
+		}
+
+		var callback = function() {
+			if (++i === listeners.length || listeners[i](self) === false) {
+				return;
+			}
+
+			_window.setTimeout(callback, _eventListenerDelay);
+		}, i = -1;
+
+		callback();
+	},
+	handleOrientationChangeEvent = function(m) {
+		_orientation = m.matches ? 0 : _window.orientation || 90;
+
+		fireEvent(_orientationEvent.listeners["orientation:change"]);
+
+		if (m.matches) {
+			fireEvent(_orientationEvent.listeners["orientation:portrait"]);
+		}
+		else {
+			fireEvent(_orientationEvent.listeners["orientation:landscape"]);
+		}
+	},
+	handleResizeEvent = function(event) {
+		if (_resizeTimer) {
+			_window.clearTimeout(_resizeTimer);
+			_resizeTimer = null;
+		}
+
+		_resizeTimer = _window.setTimeout(fireResizedEvent, _resizeTimeout);
+	},
+	handleScrollEvent = function(event) {
+		if (_scrollTimer) {
+			_window.clearTimeout(_scrollTimer);
+			_scrollTimer = null;
+		}
+
+		_scrollTimer = _window.setTimeout(fireScrollCompleteEvent, _scrollTimeout);
+	},
+	removeSpecialEvent = function(event) {
+		if (!event.bound) {
+			return;
+		}
+
+		event.element.removeEventListener(event.type, event.handle, event.useCapture);
+		event.bound = false;
+	};
+
+	_events["resize:complete"].handle = handleResizeEvent;
+	_events["scroll:complete"].handle = handleScrollEvent;
+}
+
+Viewport.prototype = {
+
+	constructor: Viewport,
+
+	contains: function(element) {
+		var their = this.getElementPosition(element),
+		    my = this.getPosition();
+
+		if (their.left < my.right
+			&& their.right > my.left
+			&& their.top < my.bottom
+			&& their.bottom > my.top) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+
+	getElementPosition: function(element) {
+		var pos = {
+			left:   element.offsetLeft,
+			top:    element.offsetTop,
+			width:  element.offsetWidth,
+			height: element.offsetHeight
+		};
+
+		while (element = element.offsetParent) {
+			pos.left += element.offsetLeft;
+			pos.top += element.offsetTop;
+		}
+
+		pos.right = pos.left + pos.width;
+		pos.bottom = pos.top + pos.height;
+
+		return pos;
+	},
+
+	getPosition: function() {
+		return {
+			left:   this.left,
+			top:    this.top,
+			width:  this.width,
+			height: this.height,
+			right:  this.right,
+			bottom: this.bottom
+		};
+	},
+
+	is: function(x) {
+		return this === x
+		    || this.window === x
+		    || this.screen === x
+		    || this.document === x;
+	},
+
+	matchMedia: function(query) {
+		return this.window.matchMedia
+		     ? this.window.matchMedia(query)
+		     : { matches: false };
+	},
+
+	querySelector: function(selector, callback, context) {
+		var element = null;
+
+		this.querySelectorAll(selector, function(el) {
+			element = el;
+			return false;
+		});
+
+		return element;
+	},
+
+	querySelectorAll: function(selector, callback, context) {
+		callback = callback || function() {};
+		context = context || this;
+
+		var elements = this.document.body.querySelectorAll(selector),
+		    i = 0, result, matches = [], element;
+
+		for (i; i < elements.length; i++) {
+			element = elements[i];
+
+			if (this.contains(element)) {
+				matches.push(element);
+
+				if (result !== false) {
+					result = callback.call(context, element, i, this);
+				}
+			}
+		}
+
+		return matches;
+	},
+
+	toString: function() {
+		return "[object Viewport: " + this.location + "]";
+	}
+
+};
+
+(function() {
+
+function LazyLoader() {
+	this.handleScrollComplete = this.handleScrollComplete.bind(this);
+	this.handleResizeComplete = this.handleResizeComplete.bind(this);
+	this.handleMouseover = this.handleMouseover.bind(this);
+	this.options = {
+		resizeTimeout: 0,
+	    scrollTimeout: 0
+	};
+}
+LazyLoader.prototype = {
+
+	document: null,
+
+	element: null,
+
+	manager: null,
+
+	options: null,
+
+	viewport: null,
+
+	window: null,
+
+	constructor: LazyLoader,
+
+	destructor: function() {
+		if (this.viewport) {
+			this.viewport.removeEventListener("scroll:complete", this.handleScrollComplete);
+			this.viewport.removeEventListener("resize:complete", this.handleResizeComplete);
+			this.viewport = null;
+		}
+
+		if (this.element) {
+			this.element.removeEventListener("mouseover", this.handleMouseover, false);
+			this.element = null;
+		}
+
+		this.document = this.window = this.options = this.manager = null;
+	},
+
+	init: function() {
+		if (!this.viewport) {
+			this.setViewport(new Viewport(window));
+		}
+
+		if (this.options.resizeTimeout > 0) {
+			this.viewport.resizeTimeout = this.options.resizeTimeout;
+		}
+
+		if (this.options.scrollTimeout > 0) {
+			this.viewport.scrollTimeout = this.options.scrollTimeout;
+		}
+
+		this.viewport.addEventListener("scroll:complete", this.handleScrollComplete);
+		this.viewport.addEventListener("resize:complete", this.handleResizeComplete);
+		this.element.addEventListener("mouseover", this.handleMouseover, false);
+
+		this._initModulesInViewport();
+
+		return this;
+	},
+
+	handleMouseover: function(event) {
+		event = event || window.event;
+		event.target = event.target || event.srcElement;
+
+		if (event.target.getAttribute("data-module-lazyload")) {
+			this._lazyLoadModules(event.target, event.type);
+		}
+	},
+
+	handleScrollComplete: function(viewport) {
+		this._initModulesInViewport();
+	},
+
+	handleResizeComplete: function(viewport) {
+		this._initModulesInViewport();
+	},
+
+	_initModulesInViewport: function() {
+		this.viewport.querySelectorAll("[data-module-lazyload]", function(element) {
+			this._lazyLoadModules(element, "scrollto");
+		}, this);
+	},
+
+	_lazyLoadModules: function(element, value) {
+		var attr = element.getAttribute("data-module-lazyload");
+
+		if (attr === "any" || new RegExp(value).test(attr)) {
+			if (this.manager.createModules(element, true).length) {
+				element.removeAttribute("data-module-lazyload");
+				element.setAttribute("data-module-lazyloaded", attr);
+			}
+		}
+	},
+
+	setElement: function(element) {
+		this.element = element;
+		this.document = element.ownerDocument;
+	    this.window = this.document.defaultView;
+		return this;
+	},
+
+	setManager: function(manager) {
+		this.manager = manager;
+		return this;
+	},
+
+	setOptions: function(overrides) {
+		if (overrides) {
+			for (var key in overrides) {
+				if (overrides.hasOwnProperty(key)) {
+					this.options[key] = overrides[key];
+				}
+			}
+		}
+
+		return this;
+	},
+
+	setViewport: function(viewport) {
+		this.viewport = viewport;
+		this.setElement(viewport.document.documentElement);
+		return this;
+	}
+
+};
+
+Module.LazyLoader = LazyLoader;
+
+})();
+
 var Foundry = {
 	version: "0.1.1"
 };
@@ -2655,6 +2841,13 @@ Foundry.run = function(callback) {
 				frontController: "frontController",
 				moduleManager: "moduleManager"
 			}
+		},
+		viewport: {
+			type: "Viewport",
+			singleton: true,
+			constructorArgs: [
+				"global"
+			]
 		},
 		frontController: {
 			type: "Oxydizr.FrontController",
@@ -2690,13 +2883,22 @@ Foundry.run = function(callback) {
 			singleton: true,
 			properties: {
 				provider: "moduleProvider",
-				moduleObserver: "moduleObserver"
+				moduleObserver: "moduleObserver",
+				lazyLoader: "moduleLazyLoader"
 			}
 		},
 		moduleObserver: {
 			type: "Module.FrontControllerModuleObserver",
 			properties: {
 				frontController: "frontController"
+			}
+		},
+		moduleLazyLoader: {
+			type: "Module.LazyLoader",
+			singleton: true,
+			properties: {
+				manager: "moduleManager",
+				viewport: "viewport"
 			}
 		},
 		module: {
@@ -3195,7 +3397,7 @@ Foundry.NewModuleController.prototype = {
 	}
 
 };
-/*! foundry 2014-05-14 */
+/*! foundry 2014-05-16 */
 Foundry.pollyfill = function() {
 	return new Foundry.PollyfillPromise(Array.prototype.slice.call(arguments));
 };
