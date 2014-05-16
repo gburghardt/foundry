@@ -12,6 +12,13 @@ Foundry.run = function(callback) {
 				moduleManager: "moduleManager"
 			}
 		},
+		viewport: {
+			type: "Viewport",
+			singleton: true,
+			constructorArgs: [
+				"global"
+			]
+		},
 		frontController: {
 			type: "Oxydizr.FrontController",
 			singleton: true
@@ -46,13 +53,22 @@ Foundry.run = function(callback) {
 			singleton: true,
 			properties: {
 				provider: "moduleProvider",
-				moduleObserver: "moduleObserver"
+				moduleObserver: "moduleObserver",
+				lazyLoader: "moduleLazyLoader"
 			}
 		},
 		moduleObserver: {
 			type: "Module.FrontControllerModuleObserver",
 			properties: {
 				frontController: "frontController"
+			}
+		},
+		moduleLazyLoader: {
+			type: "Module.LazyLoader",
+			singleton: true,
+			properties: {
+				manager: "moduleManager",
+				viewport: "viewport"
 			}
 		},
 		module: {
